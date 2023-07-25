@@ -1,0 +1,61 @@
+<html layout:decorate="~{layout}">
+<div layout:fragment="content" class="container my-3">
+    <div class="my-3 border-bottom">
+        <div>
+            <h4>집주인 회원가입</h4>
+        </div>
+    </div>
+    <form th:action="@{/user/landlord_signup}" th:object="${landlordCreateForm}" method="post">
+        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+        <div class="mb-3">
+            <label for="id" class="form-label">사용자 ID</label>
+            <input type="text" th:field="*{id}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="password1" class="form-label">비밀번호</label>
+            <input type="password" th:field="*{password1}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="password2" class="form-label">비밀번호 확인</label>
+            <input type="password" th:field="*{password2}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="name" class="form-label">사용자 이름</label>
+            <input type="text" th:field="*{name}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="contact_number" class="form-label">연락처</label>
+            <input type="text" th:field="*{contact_number}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">이메일</label>
+            <input type="email" th:field="*{email}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="gender" class="form-label">성별</label>
+            <input type="text" th:field="*{gender}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="contact_number_sub" class="form-label">비상연락처</label>
+            <input type="text" th:field="*{contact_number_sub}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="birth" class="form-label">생년월일</label>
+            <input type="text" th:field="*{birth}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="owned_address" class="form-label">소유건물 주소</label>
+            <input type="text" th:field="*{owned_address}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="owned_address_detail" class="form-label">소유건물 상세주소</label>
+            <input type="text" th:field="*{owned_address_detail}" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="co_owner_id" class="form-label">공동소유자</label>
+            <input type="text" th:field="*{co_owner_id}" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">회원가입</button>
+    </form>
+</div>
+</html>
