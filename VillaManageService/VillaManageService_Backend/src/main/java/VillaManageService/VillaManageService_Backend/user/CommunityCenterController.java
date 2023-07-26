@@ -2,6 +2,9 @@ package VillaManageService.VillaManageService_Backend.user;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.validation.FieldError;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @Controller
@@ -20,36 +22,55 @@ public class CommunityCenterController {
     private final CommunityCenterService communityCenterService;
 
     @GetMapping("/communityCenter_signup")
-    public String signup(CommunityCenterCreateForm communityCenterCreateForm) {
-        return "communityCenter_signup_form";
+    public ResponseEntity<String> signup(CommunityCenterCreateForm communityCenterCreateForm) {
+        return ResponseEntity.ok("ok");
     }
 
     @PostMapping("/communityCenter_signup")
-    public String signup(@Valid CommunityCenterCreateForm communityCenterCreateForm, BindingResult bindingResult) {
+    public ResponseEntity<String> signup(@Valid @RequestBody CommunityCenterCreateForm communityCenterCreateForm,
+                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "communityCenter_signup_form";
+            // Construct a meaningful error message
+            StringBuilder errorMessage = new StringBuilder("Validation failed. ");
+
+            // Loop through the field errors and append them to the error message
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessage.append(error.getDefaultMessage()).append("; ");
+            }
+
+            // Return the error message
+            return ResponseEntity.badRequest().body(errorMessage.toString());
         }
 
         if (!communityCenterCreateForm.getPassword1().equals(communityCenterCreateForm.getPassword2())) {
             bindingResult.rejectValue("password2", "passwordInCorrect",
                     "2개의 패스워드가 일치하지 않습니다.");
-            return "communityCenter_signup_form";
+
+            StringBuilder errorMessage = new StringBuilder("Validation failed. ");
+
+            // Loop through the field errors and append them to the error message
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessage.append(error.getDefaultMessage()).append("; ");
+            }
+
+            // Return the error message
+            return ResponseEntity.badRequest().body(errorMessage.toString());
         }
 
         try {
             communityCenterService.create(communityCenterCreateForm.getId(), communityCenterCreateForm.getPassword1(),
-                    communityCenterCreateForm.getName(), communityCenterCreateForm.getContact_number(),
-                    communityCenterCreateForm.getDepartment(), communityCenterCreateForm.getCenter_address());
+                    communityCenterCreateForm.getName(), communityCenterCreateForm.getContactNumber(),
+                    communityCenterCreateForm.getDepartment(), communityCenterCreateForm.getCenterAddress());
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
-            return "communityCenter_signup_form";
+            return ResponseEntity.ok("ok");
         } catch (Exception e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", e.getMessage());
-            return "communityCenter_signup_form";
+            return ResponseEntity.ok("ok");
         }
 
-        return "redirect:/user/communityCenter_signup";
+        return ResponseEntity.ok("ok");
     }
 }

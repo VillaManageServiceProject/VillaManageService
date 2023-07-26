@@ -12,15 +12,15 @@ public class BuildingManagerService {
     private final BuildingManagerRepository buildingManagerRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public BuildingManager create(String id, String password, String name, String contact_number, String department,
-                                  String address) {
+    public BuildingManager create(String id, String password, String name, String contactNumber, String department,
+                                  String manageAddress) {
         BuildingManager buildingManager = new BuildingManager();
         buildingManager.setId(id);
         buildingManager.setPassword(passwordEncoder.encode(password));
         buildingManager.setName(name);
-        buildingManager.setContact_number(contact_number);
+        buildingManager.setContactNumber(contactNumber);
         buildingManager.setDepartment(department);
-        buildingManager.setAddress(address);
+        buildingManager.setManageAddress(manageAddress);
         this.buildingManagerRepository.save(buildingManager);
         return buildingManager;
     }

@@ -1,11 +1,6 @@
 package VillaManageService.VillaManageService_Backend.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
@@ -28,11 +23,11 @@ public class CommunityCenterCreateForm {
     private String name;
 
     @NotBlank(message = "연락처는 필수항목입니다.")
-    private String contact_number;
+    private String contactNumber;
 
-    @NotBlank(message = "담당 부서는 필수항목입니다.")
+    @NotBlank(message = "직함(부서)는 필수항목입니다.")
     private String department;
 
     @NotBlank(message = "주민센터 주소는 필수항목입니다.")
-    private String center_address;
+    private String centerAddress;
 }

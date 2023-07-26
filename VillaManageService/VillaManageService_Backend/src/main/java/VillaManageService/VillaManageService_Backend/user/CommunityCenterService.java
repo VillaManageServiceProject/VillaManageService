@@ -12,15 +12,15 @@ public class CommunityCenterService {
     private final CommunityCenterRepository communityCenterRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CommunityCenter create(String id, String password, String name, String contact_number, String department,
-                                  String center_address) {
+    public CommunityCenter create(String id, String password, String name, String contactNumber, String department,
+                                  String centerAddress) {
         CommunityCenter communityCenter = new CommunityCenter();
         communityCenter.setId(id);
         communityCenter.setPassword(passwordEncoder.encode(password));
         communityCenter.setName(name);
-        communityCenter.setContact_number(contact_number);
+        communityCenter.setContactNumber(contactNumber);
         communityCenter.setDepartment(department);
-        communityCenter.setCenter_address(center_address);
+        communityCenter.setCenterAddress(centerAddress);
         this.communityCenterRepository.save(communityCenter);
         return communityCenter;
     }

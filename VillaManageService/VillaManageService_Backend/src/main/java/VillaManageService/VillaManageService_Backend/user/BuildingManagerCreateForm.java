@@ -1,12 +1,6 @@
 package VillaManageService.VillaManageService_Backend.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import lombok.Getter;
@@ -29,11 +23,11 @@ public class BuildingManagerCreateForm {
     private String name;
 
     @NotBlank(message = "연락처는 필수항목입니다.")
-    private String contact_number;
+    private String contactNumber;
 
-    @NotBlank(message = "관리 건물명은 필수항목입니다.")
+    @NotBlank(message = "직함(부서)은 필수항목입니다.")
     private String department;
 
-    @NotBlank(message = "건물관리인의 주소는 필수항목입니다.")
-    private String address;
+    @NotBlank(message = "관리 건물의 주소는 필수항목입니다.")
+    private String manageAddress;
 }

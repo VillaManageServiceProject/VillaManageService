@@ -2,8 +2,6 @@ package VillaManageService.VillaManageService_Backend.user;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import lombok.Getter;
@@ -23,30 +21,27 @@ public class Resident {
 
     private String name;
 
-    private String contact_number;
-
-//    private String favorite;
-//
-//    private String recent_search;
+    private String favorite;
 
     private String address;
 
-//    private int address_detail;
+    private int addressDetail;
 
-    @Column(unique = true)
     private String email;
 
     private int gender;
 
-    private String contact_number_sub;
+    private String contactNumber;
+
+    private String contactNumberSub;
 
     private Date birth;
 
-    private String relation_household;
+    private String relationHousehold;
 
-    private Boolean contractor;
+    private Boolean isContractor;
 
-    private Boolean master;
+    private Boolean isMaster;
 
-    private Boolean owner;
+    private Boolean isOwner;
 }
