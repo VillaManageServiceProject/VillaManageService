@@ -1,6 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import styled from 'styled-components/native';
-import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, Modal, StyleSheet} from 'react-native';
+import {RadioButton} from 'react-native-paper';
 import IconInput from '../components/IconInput';
 import {CommonButton, SpecificButton} from '../components/Button';
 import TextButton from '../components/TextButton';
@@ -38,31 +39,45 @@ export const ResidentsJoinScreen = ({route}) => {
   const [open, setOpen] = useState(false);
   const [isModal, setModal] = useState(false);
   const [position, setPosition] = React.useState('');
+  const [selectedIsContractor, setSelectedIsContractor] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const [userData, setUserData] = useState({
     id: '',
-    // password: '',
-    // name: '',
-    // contact_number: '',
-    // contact_number_sub: '',
-    // address: '',
-    // email: '',
-    // gender: 0,
-    // birth: new Date(),
-    // relation_household: '',
-    // contractor: false,
-    // master: false,
-    // owner: false,
+    password1: '',
+    password2: '',
+    name: '',
+    contactNumber: '',
+    contactNumberSub: '',
+    address: '',
+    addressDetail: 0,
+    email: '',
+    gender: 0,
+    birth: '1998-02-20',
+    relationHousehold: '',
+    isContractor: false,
+    isMaster: false,
+    isOwner: false,
   });
+
+  useLayoutEffect(() => {
+    console.log(addressData);
+    if (addressData && addressData.address) {
+      console.log(addressData.address);
+      setUserData(prev => ({...prev, address: addressData.address}));
+      // addressComp.current.text = addressData.address;
+    }
+  }, [addressData]);
 
   const handleTabsChange = index => {
     setTabIndex(index);
     setUserData(prev => ({...prev, gender: index}));
   };
 
-  const handleSetOwner = data => {
+  const handleSetisOwner = data => {
+    console.log(data);
     setPosition(data);
-    setUserData(prev => ({...prev, owner: data}));
+    setUserData(prev => ({...prev, isOwner: data === '주인'}));
   };
 
   // const handleAddressSelect = () => {
@@ -70,22 +85,35 @@ export const ResidentsJoinScreen = ({route}) => {
   //   return addressData.address;
   // };
 
-  const handleInputID = data => {
-    setUserData(prev => ({...prev, user_id: data}));
-    console.log(userData);
+  const handleSelectisContractor = () => {
+    setSelectedIsContractor(prev =>
+      prev === 'isContractor' ? '' : 'isContractor',
+    );
+    setUserData(prev => ({...prev, isContractor: !prev.isContractor}));
   };
 
   const handleFormSubmit = async () => {
-    // try {
-    console.log(userData);
+    try {
+      const userType = 'resident';
+      const response = await signup({userType: userType, userData: userData});
+      // Handle the response from the signup API
+      console.log(response);
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
 
-    const response = await signup(userData);
-    // Handle the response from the signup API
-    //   console.log(response);
-    // } catch (error) {
-    //   // Handle any errors that occurred during the signup API call
-    //   console.error(error);
-    // }
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
 
     // Make an API call to send the data to the backend
     // Example using fetch:
@@ -125,13 +153,23 @@ export const ResidentsJoinScreen = ({route}) => {
         <IconInput
           Icon="none"
           placeholder="아이디"
-          onChangeText={text => setUserData(prev => ({...prev, user_id: text}))}
+          onChangeText={text => setUserData(prev => ({...prev, id: text}))}
         />
         <Spacing height={10} />
         <IconInput
           Icon="none"
           placeholder="비밀번호"
-          onChangeText={text => setUserData(prev => ({...prev, pw: text}))}
+          onChangeText={text =>
+            setUserData(prev => ({...prev, password1: text}))
+          }
+        />
+        <Spacing height={10} />
+        <IconInput
+          Icon="none"
+          placeholder="비밀번호 확인"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, password2: text}))
+          }
         />
         <Spacing height={10} />
         <IconInput
@@ -186,8 +224,12 @@ export const ResidentsJoinScreen = ({route}) => {
             open={open}
             date={date}
             onConfirm={date => {
+              setDate(date);
               setOpen(false);
-              setUserData(prev => ({...prev, birth: date}));
+              setUserData(prev => ({
+                ...prev,
+                birth: date.toISOString().substring(0, 10),
+              }));
             }}
             onCancel={() => {
               setOpen(false);
@@ -201,7 +243,7 @@ export const ResidentsJoinScreen = ({route}) => {
           Icon="none"
           placeholder="전화번호1(본인)"
           onChangeText={text =>
-            setUserData(prev => ({...prev, contact_number: text}))
+            setUserData(prev => ({...prev, contactNumber: text}))
           }
         />
         <Spacing height={10} />
@@ -209,7 +251,7 @@ export const ResidentsJoinScreen = ({route}) => {
           Icon="none"
           placeholder="전화번호2(가족,친척 등 비상연락망)"
           onChangeText={text =>
-            setUserData(prev => ({...prev, contact_number_sub: text}))
+            setUserData(prev => ({...prev, contactNumberSub: text}))
           }
         />
         <Spacing height={20} />
@@ -227,7 +269,11 @@ export const ResidentsJoinScreen = ({route}) => {
             height={40}
             fontSize={14}
             text={addressData === undefined ? '주소찾기' : addressData.address}
-            onPress={() => navigation.navigate('SearchAddress')}
+            onPress={() =>
+              navigation.navigate('SearchAddress', {
+                parentScreenName: 'ResidentsJoin',
+              })
+            }
           />
         </View>
         <Spacing height={20} />
@@ -237,23 +283,53 @@ export const ResidentsJoinScreen = ({route}) => {
           onChangeText={text =>
             setUserData(prev => ({
               ...prev,
-              address: addressData.address + ' ' + text + '호',
+              addressDetail: text,
             }))
           }
         />
         <Spacing height={10} />
-        <IconInput
+        {/* <IconInput
           Icon="none"
           placeholder="계약자"
           onChangeText={text =>
-            setUserData(prev => ({...prev, contractor: text}))
+            setUserData(prev => ({...prev, isContractor: text}))
           }
-        />
+        /> */}
+        <View
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            paddingLeft: 15,
+            // marginRight: 20,
+            // backgroundColor: 'red',
+          }}>
+          <Text style={{marginRight: 5}}>계약자</Text>
+          <RadioButton
+            value="isContractor"
+            status={
+              selectedIsContractor === 'isContractor' ? 'checked' : 'unchecked'
+            }
+            onPress={handleSelectisContractor}
+          />
+        </View>
+        {/* <RadioButton
+          value="isContractor"
+          status={selectedIsContractor === 'isContractor' ? 'checked' : 'unchecked'}
+          onPress={() =>
+            setSelectAllChecked(prev =>
+              prev === 'isContractor' ? '' : 'isContractor',
+            )
+          }
+        /> */}
         <Spacing height={10} />
         <IconInput
           Icon="none"
           placeholder="세대주와의 관계"
-          onChangeText={text => setUserData(prev => ({...prev, address: text}))}
+          onChangeText={text =>
+            setUserData(prev => ({...prev, relationHousehold: text}))
+          }
         />
         <Spacing height={20} />
         <View
@@ -264,10 +340,10 @@ export const ResidentsJoinScreen = ({route}) => {
             justifyContent: 'space-between',
             paddingLeft: 15,
           }}>
-          <Text>주인여부</Text>
+          <Text>본 건물 소유 여부</Text>
           <View>
             <SelectList
-              setSelected={val => handleSetOwner(val)}
+              setSelected={val => handleSetisOwner(val)}
               data={[
                 {key: '1', value: '임차인'},
                 {key: '2', value: '주인'},
@@ -283,6 +359,8 @@ export const ResidentsJoinScreen = ({route}) => {
           </View>
         </View>
         <Spacing height={40} />
+        <Text style={{color: 'red'}}>{submitError}</Text>
+        <Spacing height={10} />
         <CommonButton
           text="완료"
           fontSize={15}

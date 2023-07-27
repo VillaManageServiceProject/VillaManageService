@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
-import {View} from 'react-native';
+import {View, Text} from 'react-native';
 import IconInput from '../components/IconInput';
 import {CommonButton} from '../components/Button';
 import TextButton from '../components/TextButton';
@@ -22,6 +22,36 @@ import IconTitle from '../components/IconTitle';
 // };
 
 export const LoginScreen = ({route}) => {
+  const [submitError, setSubmitError] = useState('');
+
+  const [userData, setUserData] = useState({
+    id: '',
+    password: '',
+  });
+
+  const handleFormSubmit = async () => {
+    try {
+      const response = await login({credentials: userData});
+      // Handle the response from the signup API
+      console.log(response);
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+  };
+
   return (
     <Container>
       <View
@@ -33,9 +63,19 @@ export const LoginScreen = ({route}) => {
         }}>
         <IconTitle IconType="MaterialIcons" IconName="login" title="Login" />
         <Spacing height={40} />
-        <IconInput IconName="person-outline" placeholder="아이디" />
+        <IconInput
+          IconName="person-outline"
+          placeholder="아이디"
+          onChangeText={text => setUserData(prev => ({...prev, id: text}))}
+        />
         <Spacing height={10} />
-        <IconInput IconName="key-outline" placeholder="비밀번호" />
+        <IconInput
+          IconName="key-outline"
+          placeholder="비밀번호"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, password1: text}))
+          }
+        />
         <Spacing height={15} />
         <View
           style={{
@@ -51,7 +91,9 @@ export const LoginScreen = ({route}) => {
           <TextButton Icon="false" text="아이디/비밀번호 찾기" />
         </View>
         <Spacing height={15} />
-        <CommonButton text="로그인" />
+        <Text style={{color: 'red'}}>{submitError}</Text>
+        <Spacing height={15} />
+        <CommonButton text="로그인" onPress={handleFormSubmit} />
         <Spacing height={10} />
         <CommonButton
           text="회원가입"

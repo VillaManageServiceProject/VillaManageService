@@ -48,7 +48,7 @@ export const JoinScreen = ({route}) => {
           height={130}
           fontSize={23}
           onPress={() =>
-            route.params.nav.navigate('CommunityCenteJoin', {
+            route.params.nav.navigate('CommunityCenterJoin', {
               navigation: route.params.nav,
             })
           }

@@ -2,7 +2,8 @@ import React, {Component} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import Postcode from '@actbase/react-daum-postcode';
 
-export default SearchAddressScreen = () => {
+export default SearchAddressScreen = ({route}) => {
+  const {parentScreenName} = route.params;
   const navigation = useNavigation();
 
   const getAddressData = data => {
@@ -23,8 +24,12 @@ export default SearchAddressScreen = () => {
     //     defaultAddress: defaultAddress,
     //   },
     // });
+    // const addressData = data;
+    // console.log(addressData);
+    // navigation.goBack({addressData: data});
 
-    navigation.navigate('ResidentsJoin', {addressData: data});
+    console.log(parentScreenName);
+    navigation.navigate(parentScreenName, {addressData: data});
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import styled from 'styled-components/native';
 import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
 import IconInput from '../components/IconInput';
@@ -10,6 +10,7 @@ import DatePicker from 'react-native-date-picker';
 import Postcode from '@actbase/react-daum-postcode';
 import {useNavigation} from '@react-navigation/native';
 import {SelectList} from 'react-native-dropdown-select-list';
+import {signup} from '../api';
 
 export const LandlordJoinScreen = ({route}) => {
   const navigation = useNavigation();
@@ -22,9 +23,35 @@ export const LandlordJoinScreen = ({route}) => {
   const [open, setOpen] = useState(false);
   const [isModal, setModal] = useState(false);
   const [position, setPosition] = React.useState('');
+  const [submitError, setSubmitError] = useState('');
+
+  const [userData, setUserData] = useState({
+    id: '',
+    password1: '',
+    password2: '',
+    name: '',
+    contactNumber: '',
+    contactNumberSub: '',
+    email: '',
+    gender: 0,
+    birth: '1998-02-20',
+    ownedAddress: '',
+    ownedAddressDetail: 0,
+    coOwnerId: '',
+  });
+
+  useLayoutEffect(() => {
+    console.log(addressData);
+    if (addressData && addressData.address) {
+      console.log(addressData.address);
+      setUserData(prev => ({...prev, ownedAddress: addressData.address}));
+      // addressComp.current.text = addressData.address;
+    }
+  }, [addressData]);
 
   const handleTabsChange = index => {
     setTabIndex(index);
+    setUserData(prev => ({...prev, gender: index}));
   };
 
   const handleDateChange = newDate => {
@@ -34,6 +61,30 @@ export const LandlordJoinScreen = ({route}) => {
   const handleAddressSelect = data => {
     setAddress(data);
     setModal(false);
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      const userType = 'landlord';
+      const response = await signup({userType: userType, userData: userData});
+      // Handle the response from the signup API
+      console.log(response);
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
   };
 
   return (
@@ -51,13 +102,41 @@ export const LandlordJoinScreen = ({route}) => {
           title="임대인 계정만들기"
         />
         <Spacing height={40} />
-        <IconInput Icon="none" placeholder="아이디" />
+        <IconInput
+          Icon="none"
+          placeholder="아이디"
+          onChangeText={text => setUserData(prev => ({...prev, id: text}))}
+        />
         <Spacing height={10} />
-        <IconInput Icon="none" placeholder="비밀번호" />
+        <IconInput
+          Icon="none"
+          placeholder="비밀번호"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, password1: text}))
+          }
+        />
         <Spacing height={10} />
-        <IconInput Icon="none" placeholder="이름" />
+        <IconInput
+          Icon="none"
+          placeholder="비밀번호 확인"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, password2: text}))
+          }
+        />
         <Spacing height={10} />
-        <IconInput Icon="none" placeholder="E-mail" />
+        <IconInput
+          Icon="none"
+          placeholder="이름"
+          onChangeText={text => setUserData(prev => ({...prev, name: text}))}
+        />
+        <Spacing height={10} />
+        <IconInput
+          Icon="none"
+          placeholder="E-mail"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, password1: text}))
+          }
+        />
         <View
           style={{
             width: '100%',
@@ -99,8 +178,12 @@ export const LandlordJoinScreen = ({route}) => {
             open={open}
             date={date}
             onConfirm={date => {
-              setOpen(false);
               setDate(date);
+              setOpen(false);
+              setUserData(prev => ({
+                ...prev,
+                birth: date.toISOString().substring(0, 10),
+              }));
             }}
             onCancel={() => {
               setOpen(false);
@@ -110,9 +193,29 @@ export const LandlordJoinScreen = ({route}) => {
           />
         </View>
         <Spacing height={20} />
-        <IconInput Icon="none" placeholder="전화번호1(본인)" />
+        <IconInput
+          Icon="none"
+          placeholder="전화번호1(본인)"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, contactNumber: text}))
+          }
+        />
         <Spacing height={10} />
-        <IconInput Icon="none" placeholder="전화번호2(공동소유자)" />
+        <IconInput
+          Icon="none"
+          placeholder="전화번호2(가족,친척 등 비상연락망)"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, contactNumberSub: text}))
+          }
+        />
+        <Spacing height={10} />
+        <IconInput
+          Icon="none"
+          placeholder="공동소유자 아이디"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, coOwnerId: text}))
+          }
+        />
         <Spacing height={20} />
         <View
           style={{
@@ -128,13 +231,33 @@ export const LandlordJoinScreen = ({route}) => {
             height={40}
             fontSize={14}
             text={addressData === undefined ? '주소찾기' : addressData.address}
-            onPress={() => navigation.navigate('SearchAddress')}
+            onPress={() =>
+              navigation.navigate('SearchAddress', {
+                parentScreenName: 'LandlordJoin',
+              })
+            }
           />
         </View>
         <Spacing height={20} />
-        <IconInput Icon="none" placeholder="상세주소(호수)" />
+        <IconInput
+          Icon="none"
+          placeholder="상세주소(호수)"
+          onChangeText={text =>
+            setUserData(prev => ({
+              ...prev,
+              ownedAddressDetail: text,
+            }))
+          }
+        />
         <Spacing height={40} />
-        <CommonButton text="완료" fontSize={15} backgroundColor="#DFE1E5" />
+        <Text style={{color: 'red'}}>{submitError}</Text>
+        <Spacing height={10} />
+        <CommonButton
+          text="완료"
+          fontSize={15}
+          backgroundColor="#DFE1E5"
+          onPress={handleFormSubmit}
+        />
       </View>
     </Container>
   );

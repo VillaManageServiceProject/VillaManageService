@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState, useRef} from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components/native';
 import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
 import IconInput from '../components/IconInput';
@@ -12,9 +12,8 @@ import {useNavigation} from '@react-navigation/native';
 import {SelectList} from 'react-native-dropdown-select-list';
 import {signup} from '../api';
 
-export const BuildingManagerJoinScreen = ({route}) => {
+export const CommunityCenterJoinScreen = ({route}) => {
   const navigation = useNavigation();
-  const addressComp = useRef(null);
   const {addressData} = route.params;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -32,18 +31,9 @@ export const BuildingManagerJoinScreen = ({route}) => {
     password2: '',
     name: '',
     contactNumber: '',
-    manageAddress: '',
+    centerAddress: '',
     department: '',
   });
-
-  useLayoutEffect(() => {
-    console.log(addressData);
-    if (addressData && addressData.address) {
-      console.log(addressData.address);
-      setUserData(prev => ({...prev, manageAddress: addressData.address}));
-      // addressComp.current.text = addressData.address;
-    }
-  }, [addressData]);
 
   const handleTabsChange = index => {
     setTabIndex(index);
@@ -60,7 +50,7 @@ export const BuildingManagerJoinScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const userType = 'buildingManager';
+      const userType = 'communityCenter';
       const response = await signup({userType: userType, userData: userData});
       // Handle the response from the signup API
       console.log(response);
@@ -94,8 +84,8 @@ export const BuildingManagerJoinScreen = ({route}) => {
         <IconTitle
           IconType="MaterialCommunityIcons"
           IconName="account-plus-outline"
-          title="건물관리자 계정만들기"
-          fontSize={28}
+          title="공공기관 계정만들기"
+          fontSize={30}
         />
         <Spacing height={40} />
         <IconInput
@@ -122,6 +112,14 @@ export const BuildingManagerJoinScreen = ({route}) => {
         <Spacing height={10} />
         <IconInput
           Icon="none"
+          placeholder="주민센터 주소"
+          onChangeText={text =>
+            setUserData(prev => ({...prev, centerAddress: text}))
+          }
+        />
+        <Spacing height={10} />
+        <IconInput
+          Icon="none"
           placeholder="담당자명"
           onChangeText={text => setUserData(prev => ({...prev, name: text}))}
         />
@@ -136,34 +134,11 @@ export const BuildingManagerJoinScreen = ({route}) => {
         <Spacing height={10} />
         <IconInput
           Icon="none"
-          placeholder="전화번호"
+          placeholder="연락처"
           onChangeText={text =>
             setUserData(prev => ({...prev, contactNumber: text}))
           }
         />
-        <Spacing height={20} />
-        <View
-          style={{
-            width: '100%',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingLeft: 15,
-          }}>
-          <Text>관리건물주소</Text>
-          <SpecificButton
-            // ref={addressComp}
-            width={150}
-            height={40}
-            fontSize={14}
-            text={addressData === undefined ? '주소찾기' : addressData.address}
-            onPress={() =>
-              navigation.navigate('SearchAddress', {
-                parentScreenName: 'BuildingManagerJoin',
-              })
-            }
-          />
-        </View>
         <Spacing height={40} />
         <Text style={{color: 'red'}}>{submitError}</Text>
         <Spacing height={10} />

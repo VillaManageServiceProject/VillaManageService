@@ -7,7 +7,7 @@ import {JoinScreen} from '../screens/JoinScreen';
 import {ResidentsJoinScreen} from '../screens/ResidentsJoinScreen';
 import {LandlordJoinScreen} from '../screens/LandlordJoinScreen';
 import {BuildingManagerJoinScreen} from '../screens/BuildingManagerJoinScreen';
-import {CommunityCenteJoinScreen} from '../screens/CommunityCenteJoinScreen';
+import {CommunityCenterJoinScreen} from '../screens/CommunityCenterJoinScreen';
 import SearchAddressScreen from '../screens/SearchAddressScreen';
 import {AccountSettingScreen} from '../screens/AccountSettingScreen';
 import {VillaHomeScreen} from '../screens/VillaHomeScreen';
@@ -50,8 +50,8 @@ export const RootStackNavigations = () => {
       />
       <Stack.Screen name="LandlordJoin" component={LandlordJoinScreen} />
       <Stack.Screen
-        name="CommunityCenteJoin"
-        component={CommunityCenteJoinScreen}
+        name="CommunityCenterJoin"
+        component={CommunityCenterJoinScreen}
       />
       <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
       {/* </Stack.Group> */}
