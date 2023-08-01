@@ -1,4 +1,5 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {NavigationContainer} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {UnLoginedMapScreen, LoginedMapScreen} from '../screens/MapScreen';
 import {LoginScreen} from '../screens/LoginScreen';
@@ -29,44 +30,75 @@ const Stack = createNativeStackNavigator();
 //   </Drawer.Navigator>
 // );
 
-export const RootStackNavigations = () => {
+export const AuthenticationProvider = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    // Your login logic here, if login is successful, set isLoggedIn to true
+    console.log(isLoggedIn);
+    setIsLoggedIn(true);
+  };
+
+  return (
+    <NavigationContainer>
+      <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} />
+    </NavigationContainer>
+  );
+};
+
+export const RootStackNavigations = ({isLoggedIn, handleLogin}) => {
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // const handleLogin = () => {
+  //   // Your login logic here, if login is successful, set isLoggedIn to true
+  //   console.log('here');
+  //   setIsLoggedIn(true);
+  // };
 
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {isLoggedIn ? (
-        <Stack.Screen name="LoginedMap" component={LoginedMapScreen} />
+        <>
+          <Stack.Screen name="LoginedMap" component={LoginedMapScreen} />
+          <Stack.Screen
+            name="Villa"
+            component={VillaHomeScreen}
+            // options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name="AccountSetting"
+            component={AccountSettingScreen}
+          />
+          <Stack.Screen name="NoticeBoard" component={NoticeBoardScreen} />
+          <Stack.Screen name="AddNotice" component={AddNoticeScreen} />
+          <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="AddChat" component={AddChatScreen} />
+        </>
       ) : (
-        <Stack.Screen name="UnLoginedMap" component={UnLoginedMapScreen} />
+        <>
+          <Stack.Screen name="UnLoginedMap" component={UnLoginedMapScreen} />
+          {/* <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            handleLogin={handleLogin}
+          /> */}
+          <Stack.Screen name="Login" options={{unmountOnBlur: true}}>
+            {props => <LoginScreen {...props} handleLogin={handleLogin} />}
+          </Stack.Screen>
+          <Stack.Screen name="Join" component={JoinScreen} />
+          <Stack.Screen name="ResidentsJoin" component={ResidentsJoinScreen} />
+          <Stack.Screen
+            name="BuildingManagerJoin"
+            component={BuildingManagerJoinScreen}
+          />
+          <Stack.Screen name="LandlordJoin" component={LandlordJoinScreen} />
+          <Stack.Screen
+            name="CommunityCenterJoin"
+            component={CommunityCenterJoinScreen}
+          />
+          <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
+        </>
       )}
-
-      {/* <Stack.Group screenOptions={{headerShown: false}}> */}
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Join" component={JoinScreen} />
-      <Stack.Screen name="ResidentsJoin" component={ResidentsJoinScreen} />
-      <Stack.Screen
-        name="BuildingManagerJoin"
-        component={BuildingManagerJoinScreen}
-      />
-      <Stack.Screen name="LandlordJoin" component={LandlordJoinScreen} />
-      <Stack.Screen
-        name="CommunityCenterJoin"
-        component={CommunityCenterJoinScreen}
-      />
-      <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
-      {/* </Stack.Group> */}
-
-      {/* <Stack.Screen
-        name="Villa"
-        component={VillaHomeScreen}
-        // options={{headerShown: false}}
-      />
-
-      <Stack.Screen name="AccountSetting" component={AccountSettingScreen} />
-      <Stack.Screen name="NoticeBoard" component={NoticeBoardScreen} />
-      <Stack.Screen name="AddNotice" component={AddNoticeScreen} /> */}
-      {/* <Stack.Screen name="Chat" component={ChatScreen} /> */}
-      <Stack.Screen name="AddChat" component={AddChatScreen} />
     </Stack.Navigator>
   );
 };

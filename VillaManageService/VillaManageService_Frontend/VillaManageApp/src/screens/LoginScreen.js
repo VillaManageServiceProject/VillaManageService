@@ -1,10 +1,12 @@
 import React, {useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {View, Text} from 'react-native';
 import IconInput from '../components/IconInput';
 import {CommonButton} from '../components/Button';
 import TextButton from '../components/TextButton';
 import IconTitle from '../components/IconTitle';
+import {login, checkSession} from '../api';
 
 // const [email, setEmail] = useState('');
 // const [password, setPassword] = useState('');
@@ -21,7 +23,9 @@ import IconTitle from '../components/IconTitle';
 //   }
 // };
 
-export const LoginScreen = ({route}) => {
+export const LoginScreen = ({route, handleLogin}) => {
+  const navigation = useNavigation();
+
   const [submitError, setSubmitError] = useState('');
 
   const [userData, setUserData] = useState({
@@ -34,6 +38,11 @@ export const LoginScreen = ({route}) => {
       const response = await login({credentials: userData});
       // Handle the response from the signup API
       console.log(response);
+
+      if (response.status === 'success') {
+        console.log('hi3');
+        handleLogin();
+      }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -50,6 +59,8 @@ export const LoginScreen = ({route}) => {
         console.log('Error:', error.message);
       }
     }
+
+    // const response = await checkSession();
   };
 
   return (
@@ -73,7 +84,7 @@ export const LoginScreen = ({route}) => {
           IconName="key-outline"
           placeholder="비밀번호"
           onChangeText={text =>
-            setUserData(prev => ({...prev, password1: text}))
+            setUserData(prev => ({...prev, password: text}))
           }
         />
         <Spacing height={15} />

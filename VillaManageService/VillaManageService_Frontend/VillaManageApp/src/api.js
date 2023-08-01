@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // const API_BASE_URL = 'http://210.91.9.65:8080';
-const API_BASE_URL = 'http://14.39.9.98:8080';
+const API_BASE_URL = 'http://14.39.9.5:8080';
 // const API_BASE_URL = 'http://172.30.1.83:8080';
 
 const api = axios.create({
@@ -33,9 +33,10 @@ const api = axios.create({
 export const signup = async ({userType, userData}) => {
   try {
     // const csrfToken = await getCSRFToken();
-    console.log('/user/' + userType + '_signup');
+    console.log('/user/signup/' + userType);
     console.log(userData);
-    const response = await api.post('/user/' + userType + '_signup', userData);
+    const response = await api.post('/user/signup/' + userType, userData);
+    // const response = await api.post('/user/signup/' + userType, userData);
 
     console.log(response);
     return response.data;
@@ -44,11 +45,38 @@ export const signup = async ({userType, userData}) => {
   }
 };
 
-export const login = async credentials => {
+export const login = async ({credentials}) => {
   try {
+    console.log(credentials);
     const response = await api.post('/login', credentials);
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+
+export const checkSession = async () => {
+  // try {
+  const response = await api.get('/checkSession');
+  console.log(response);
+  // } catch (error) {
+  //   console.log(error);
+  // }
+};
+
+const handleAuthenticatedRequest = async () => {
+  try {
+    // Make a subsequent authenticated request to the server with the stored session identifier in the request headers.
+    const response = await axios.get(`${baseURL}/some/protected/resource`, {
+      headers: {
+        Cookie: `JSESSIONID=${storedSessionId}`,
+      },
+    });
+
+    // Handle the response from the server (e.g., display the result)
+    console.log(response.data);
+  } catch (error) {
+    // Handle the error for the authenticated request
+    console.error(error);
   }
 };

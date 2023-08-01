@@ -69,6 +69,9 @@ export const LandlordJoinScreen = ({route}) => {
       const response = await signup({userType: userType, userData: userData});
       // Handle the response from the signup API
       console.log(response);
+      if (response === 'ok') {
+        navigation.navigate('Login');
+      }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx

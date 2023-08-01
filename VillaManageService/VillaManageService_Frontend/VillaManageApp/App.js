@@ -27,24 +27,25 @@ import React from 'react';
 // enableScreens();
 
 import {NavigationContainer} from '@react-navigation/native';
-import {RootStackNavigations} from './src/navigations/RootStackNavigations';
+import {AuthenticationProvider} from './src/navigations/RootStackNavigations';
 
 // if (__DEV__) {
 //   import('react-native-reanimated/src/ReanimatedDevTools').then(() => {});
 // }
 
-const Screens = () => {
-  return (
-    // <GestureHandlerRootView style={{flex: 1}}>
-    <NavigationContainer>
-      <RootStackNavigations />
-    </NavigationContainer>
-    // </GestureHandlerRootView>
-  );
-};
+// const Screens = () => {
+//   return (
+//     // <GestureHandlerRootView style={{flex: 1}}>
+//     <NavigationContainer>
+//       <RootStackNavigations />
+//     </NavigationContainer>
+//     // </GestureHandlerRootView>
+//   );
+// };
 
 export default function App() {
-  return <Screens />;
+  // return <Screens />;
+  return <AuthenticationProvider />;
 }
 
 //////////////////////////////////////////////////////////////////
