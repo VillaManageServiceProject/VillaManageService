@@ -1,8 +1,6 @@
 package VillaManageService.VillaManageService_Backend.user;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,17 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Entity
-public class Resident {
-    @Id
-    @Column(unique = true)
-    private String id;
-
-    private String password;
-
-    private String name;
-
-    private String favorite;
-
+public class Resident extends Member{
     private String address;
 
     private int addressDetail;
