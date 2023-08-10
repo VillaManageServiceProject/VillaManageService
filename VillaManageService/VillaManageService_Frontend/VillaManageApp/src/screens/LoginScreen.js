@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
+import {UserContext} from '../context/UserProvider';
 import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {View, Text} from 'react-native';
@@ -23,9 +24,11 @@ import {login, checkSession} from '../api';
 //   }
 // };
 
-export const LoginScreen = ({route, handleLogin}) => {
+// export const LoginScreen = ({route, handleLogin}) => {
+export const LoginScreen = ({route}) => {
   const navigation = useNavigation();
 
+  const {userInfo, setUserInfo, handleLogin} = useContext(UserContext);
   const [submitError, setSubmitError] = useState('');
 
   const [userData, setUserData] = useState({
@@ -39,9 +42,10 @@ export const LoginScreen = ({route, handleLogin}) => {
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
+      if (response === 200) {
         console.log('hi3');
         handleLogin();
+        setUserInfo(response.data);
       }
     } catch (error) {
       if (error.response) {

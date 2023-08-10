@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from '../components/Icon';
-import Swiper from 'react-native-swiper';
+import {requestGET} from '../api';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import TextButton from '../components/TextButton';
 import VillaSideMenu from '../fragments/VillaSideMenu';
@@ -90,9 +90,49 @@ export const NoticeBoardScreen = ({route}) => {
   const navigation = useNavigation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [postData, setPostData] = useState('');
+
+  useFocusEffect(
+    React.useCallback(() => {
+      requestGetpost();
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
 
   const toggleSideMenu = () => {
     setIsMenuOpen(prev => !prev);
+  };
+
+  const requestGetpost = async () => {
+    try {
+      const response = await requestGET('post', '/');
+      // Handle the response from the signup API
+      console.log(response);
+
+      if (response.status === 'success') {
+        setPostData(response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
   };
 
   return (
@@ -130,10 +170,13 @@ export const NoticeBoardScreen = ({route}) => {
                 color="#9AA0A6"
                 // style={{marginRight: 10}}
               />
-              <Text style={{paddingBottom: 2, fontColor: '#9AA0A6'}}>새글</Text>
+              <Text color="#9AA0A6" style={{paddingBottom: 2}}>
+                새글
+              </Text>
             </TouchableOpacity>
           </View>
           <FlatList
+            // data={postData}
             data={NoticeBoardData}
             renderItem={({item}) => (
               <NoticeBoardItem
@@ -141,11 +184,15 @@ export const NoticeBoardScreen = ({route}) => {
                 title={item.title}
                 text={item.text}
                 createDate={item.createDate}
+                onPress={() => {
+                  navigation.navigate('Post');
+                }}
               />
             )}
             keyExtractor={(item, index) => index.toString()}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={<EmptyListComponent />}
             style={{width: '100%'}}
           />
         </View>
@@ -156,6 +203,14 @@ export const NoticeBoardScreen = ({route}) => {
 };
 
 const Spacing = ({height}) => <View style={{height}} />;
+
+const EmptyListComponent = () => {
+  return (
+    <View style={styles.emptyContainer}>
+      <Text>등록된 게시글이 없습니다.</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -269,5 +324,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     margin: 5,
     height: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

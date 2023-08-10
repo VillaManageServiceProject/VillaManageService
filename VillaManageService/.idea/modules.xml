@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/VillaManageService.iml" filepath="$PROJECT_DIR$/.idea/VillaManageService.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/VillaManageService_Backend.main.iml" filepath="$PROJECT_DIR$/.idea/modules/VillaManageService_Backend.main.iml" />
     </modules>
   </component>
 </project>

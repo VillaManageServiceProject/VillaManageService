@@ -1,6 +1,9 @@
 package VillaManageService.VillaManageService_Backend.board;
 
 import VillaManageService.VillaManageService_Backend.board.PostRepository;
+import VillaManageService.VillaManageService_Backend.user.CommunityCenter;
+import VillaManageService.VillaManageService_Backend.user.Member;
+import VillaManageService.VillaManageService_Backend.user.MemberRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,23 +12,22 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class PostService {
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
 
     // 글 생성
     public void createPost(PostCreateForm postCreateForm) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication.isAuthenticated()){
             String publisherId = authentication.getName();
-            Object c = authentication.getPrincipal();
-            System.out.println(publisherId);
-            Object a = authentication.getCredentials();
-            System.out.println(a.toString());
-            Object b = authentication.getDetails();
-            System.out.println(b.toString());
+            Optional<Member> _member = memberRepository.findById(publisherId);
+            CommunityCenter member = (CommunityCenter)_member.get();
+            String address = member.getCenterAddress();
         }
 //        Post post = new Post(postCreateForm);
 //        postRepository.save(post);

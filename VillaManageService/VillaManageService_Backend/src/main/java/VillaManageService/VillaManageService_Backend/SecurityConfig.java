@@ -1,6 +1,7 @@
 package VillaManageService.VillaManageService_Backend;
 
-import VillaManageService.VillaManageService_Backend.user.JsonIdPasswordAuthenticationFilter;
+import VillaManageService.VillaManageService_Backend.user.JwtAuthenticationFilter;
+import VillaManageService.VillaManageService_Backend.user.JwtTokenProvider;
 import VillaManageService.VillaManageService_Backend.user.LoginFailureHandler;
 import VillaManageService.VillaManageService_Backend.user.LoginSuccessHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,8 +11,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,20 +28,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ObjectMapper objectMapper;
+//    private final ObjectMapper objectMapper;
 
-    private final UserDetailsService loginService;
+//    private final UserDetailsService loginService;
+//
+//    private final LoginSuccessHandler loginSuccessHandler;
+//
+//    private final LoginFailureHandler loginFailureHandler;
 
-    private final LoginSuccessHandler loginSuccessHandler;
-
-    private final LoginFailureHandler loginFailureHandler;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
-                        .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
-//                        .anyRequest().authenticated())
+                        .requestMatchers(new AntPathRequestMatcher("/authenticate")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/posts")).hasRole("USER")
+                        .anyRequest().authenticated())
                 .csrf((csrf) -> csrf
                         .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))
                         .disable())
@@ -53,7 +59,8 @@ public class SecurityConfig {
                         .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
                         .logoutSuccessUrl("/")
                         .invalidateHttpSession(true))
-                .addFilterBefore(jsonIdPasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
         ;
 
         return http.build();
@@ -65,21 +72,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    AuthenticationManager authenticationManager() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(loginService);
-
-        return new ProviderManager(provider);
+    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean
-    public JsonIdPasswordAuthenticationFilter jsonIdPasswordAuthenticationFilter() {
-        JsonIdPasswordAuthenticationFilter jsonIdPasswordAuthenticationFilter
-                = new JsonIdPasswordAuthenticationFilter(objectMapper, loginSuccessHandler, loginFailureHandler);
-        jsonIdPasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        return jsonIdPasswordAuthenticationFilter;
-    }
+//    @Bean
+//    AuthenticationManager authenticationManager() {
+//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+//
+//        provider.setPasswordEncoder(passwordEncoder());
+//        provider.setUserDetailsService(loginService);
+//
+//        return new ProviderManager(provider);
+//    }
 
 }

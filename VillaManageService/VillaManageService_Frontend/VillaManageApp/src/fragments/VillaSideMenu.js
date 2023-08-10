@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useContext} from 'react';
+import {UserContext} from '../context/UserProvider';
 import {
   StyleSheet,
   View,
@@ -9,6 +10,7 @@ import {
 } from 'react-native';
 import SideMenu from '../components/SideMenu';
 import TextButton from '../components/TextButton';
+import {logout} from '../api';
 
 // export const VillaSideMenu = () => {
 //   //   const progress = useDrawerProgress();
@@ -39,6 +41,8 @@ import TextButton from '../components/TextButton';
 // };
 
 export default VillaSideMenu = ({onClose}) => {
+  const {userInfo, handleLogout} = useContext(UserContext);
+
   const menuAnimation = new Animated.Value(0);
 
   const slideIn = () => {
@@ -55,6 +59,35 @@ export default VillaSideMenu = ({onClose}) => {
       duration: 300,
       useNativeDriver: false,
     }).start(onClose);
+  };
+
+  const handleLogoutSubmit = async () => {
+    try {
+      const response = await logout();
+      // Handle the response from the signup API
+      console.log(response);
+
+      if (response.status === 'success') {
+        handleLogout();
+      }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
   };
 
   const menuTranslateX = menuAnimation.interpolate({
@@ -74,8 +107,8 @@ export default VillaSideMenu = ({onClose}) => {
         }}>
         <View style={{flex: 1, flexDirection: 'column'}}>
           <View style={{flexDirection: 'column', backgroundColor: 'yellow'}}>
-            <Text>username</Text>
-            <Text>id(세대주와의 관계)</Text>
+            {/* <Text>{userInfo.name}</Text>
+            <Text>{userInfo.id}</Text> */}
           </View>
         </View>
         <View
@@ -113,9 +146,9 @@ export default VillaSideMenu = ({onClose}) => {
           }}>
           <TextButton
             IconType="MaterialCommunityIcons"
-            IconName="login"
+            IconName="logout"
             text="Logout"
-            // backgroundColor="yellow"
+            onPress={handleLogoutSubmit}
           />
         </View>
       </View>

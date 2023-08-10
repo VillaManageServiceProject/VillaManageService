@@ -1,11 +1,16 @@
 import axios from 'axios';
 
 // const API_BASE_URL = 'http://210.91.9.65:8080';
-const API_BASE_URL = 'http://14.39.9.5:8080';
+// const API_BASE_URL = 'http://61.72.209.106:8080';
 // const API_BASE_URL = 'http://172.30.1.83:8080';
+const API_BASE_URL = 'http://172.30.1.69:8080';
+
+var csrfToken = null;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true,
+  headers: {Authorization: null},
 });
 
 // import CryptoJS from 'crypto-js';
@@ -48,7 +53,31 @@ export const signup = async ({userType, userData}) => {
 export const login = async ({credentials}) => {
   try {
     console.log(credentials);
-    const response = await api.post('/login', credentials);
+    // const response = await api.post('/user/login', credentials);
+    const response = await api.post('/authenticate', credentials);
+    console.log(response);
+
+    // csrfToken = response.headers['set-cookie'][0].split('=')[1].split(';')[0];
+    // csrfToken = response.headers['set-cookie'];
+    // if (csrfToken) {
+    //   api.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+    //   console.log('hi;;');
+    // }
+
+    const newJwtToken = response.data.jwt;
+    console.log(newJwtToken);
+    api.defaults.headers['Authorization'] = `Bearer ${newJwtToken}`;
+
+    return response.status;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logout = async () => {
+  try {
+    const response = await api.post('/logout');
+    api.defaults.headers['Authorization'] = null;
     return response.data;
   } catch (error) {
     throw error;
@@ -62,6 +91,27 @@ export const checkSession = async () => {
   // } catch (error) {
   //   console.log(error);
   // }
+};
+
+export const requestPOST = async (data, targetURL) => {
+  try {
+    console.log(data);
+    console.log(csrfToken);
+    const response = await api.post(targetURL, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const requestGET = async (targetData, targetURL) => {
+  try {
+    console.log(targetData);
+    const response = await api.post(targetURL, targetData);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const handleAuthenticatedRequest = async () => {

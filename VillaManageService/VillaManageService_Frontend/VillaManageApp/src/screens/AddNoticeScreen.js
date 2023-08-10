@@ -1,18 +1,65 @@
-import React, {useState, useNavigation} from 'react';
+import React, {useState, useContext} from 'react';
+import {UserContext} from '../context/UserProvider';
 import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
-import styled from 'styled-components/native';
+import {useNavigation} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import {CommonButton} from '../components/Button';
+import {checkSession, requestPOST} from '../api';
 
 export const AddNoticeScreen = ({route}) => {
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const navigation = useNavigation();
+  const {userInfo} = useContext(UserContext);
+
+  const [dateStart, setDateStart] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(new Date());
   const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
   const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
   const [noticeChecked, setNoticeChecked] = useState('Notice');
+
+  const [postData, setPostData] = useState({
+    // publisherId: userInfo.id,
+    // address: userInfo.address,
+    title: '',
+    // postDate: new Date().toISOString().substring(0, 10),
+    notification: '',
+    // relatedMemberId: '',
+    content: '',
+    // dateStart: new Date().toISOString().substring(0, 10),
+    // dateEnd: new Date().toISOString().substring(0, 10),
+  });
+
+  const handleFormSubmit = async () => {
+    try {
+      const response = await requestPOST(postData, '/posts');
+      // const response = await checkSession();
+      // Handle the response from the signup API
+      console.log(response);
+
+      if (response.status === 'success') {
+        navigation.navigate('NoticeBoard');
+      }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -33,10 +80,12 @@ export const AddNoticeScreen = ({route}) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 margin: 5,
-                backgroundColor: 'green',
               }}>
               <Text style={{marginRight: 20}}>제목</Text>
               <TextInput
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, title: text}))
+                }
                 style={{
                   width: '85%',
                   height: 45,
@@ -53,7 +102,6 @@ export const AddNoticeScreen = ({route}) => {
                 alignItems: 'center',
                 // justifyContent: 'space-between',
                 margin: 5,
-                backgroundColor: 'red',
               }}>
               <Text style={{marginRight: 20}}>공지</Text>
               <View style={styles.separator} />
@@ -75,7 +123,10 @@ export const AddNoticeScreen = ({route}) => {
                     status={
                       noticeChecked === 'Notice' ? 'checked' : 'unchecked'
                     }
-                    onPress={() => setNoticeChecked('Notice')}
+                    onPress={() => {
+                      setNoticeChecked('Notice');
+                      setPostData(prev => ({...prev, notification: true}));
+                    }}
                   />
                 </View>
                 <View
@@ -90,7 +141,10 @@ export const AddNoticeScreen = ({route}) => {
                     status={
                       noticeChecked === 'Common' ? 'checked' : 'unchecked'
                     }
-                    onPress={() => setNoticeChecked('Common')}
+                    onPress={() => {
+                      setNoticeChecked('Common');
+                      setPostData(prev => ({...prev, notification: true}));
+                    }}
                   />
                 </View>
               </View>
@@ -114,16 +168,20 @@ export const AddNoticeScreen = ({route}) => {
                   width={120}
                   height={40}
                   fontSize={14}
-                  text={startDate.toISOString().substring(0, 10)}
+                  text={dateStart.toISOString().substring(0, 10)}
                   onPress={() => setDateStartPickerOpen(true)}
                 />
                 <DatePicker
                   modal
                   open={isDateStartPickerOpened}
-                  date={startDate}
-                  onConfirm={startDate => {
+                  date={dateStart}
+                  onConfirm={dateStart => {
                     setDateStartPickerOpen(false);
-                    setStartDate(startDate);
+                    setDateStart(dateStart);
+                    // setPostData(prev => ({
+                    //   ...prev,
+                    //   dateStart: date.toISOString().substring(0, 10),
+                    // }));
                   }}
                   onCancel={() => {
                     setDateStartPickerOpen(false);
@@ -136,16 +194,20 @@ export const AddNoticeScreen = ({route}) => {
                   width={120}
                   height={40}
                   fontSize={14}
-                  text={endDate.toISOString().substring(0, 10)}
+                  text={dateEnd.toISOString().substring(0, 10)}
                   onPress={() => setDateEndPickerOpen(true)}
                 />
                 <DatePicker
                   modal
                   open={isDateEndPickerOpened}
-                  date={endDate}
-                  onConfirm={endDate => {
+                  date={dateEnd}
+                  onConfirm={dateEnd => {
                     setDateEndPickerOpen(false);
-                    setEndDate(endDate);
+                    setDateEnd(dateEnd);
+                    // setPostData(prev => ({
+                    //   ...prev,
+                    //   dateEnd: date.toISOString().substring(0, 10),
+                    // }));
                   }}
                   onCancel={() => {
                     setDateEndPickerOpen(false);
@@ -155,7 +217,30 @@ export const AddNoticeScreen = ({route}) => {
                 />
               </View>
             </View>
-            <View
+            {/* <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text style={{marginRight: 20}}>알림</Text>
+              <TextInput
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, relatedMemberId: text}))
+                }
+                style={{
+                  width: '85%',
+                  height: 45,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                }}
+              />
+            </View> */}
+            <Spacing height={20} />
+            {/* <View
               style={{
                 width: '100%',
                 flexDirection: 'row',
@@ -164,7 +249,7 @@ export const AddNoticeScreen = ({route}) => {
                 margin: 5,
               }}>
               <Text>알림</Text>
-            </View>
+            </View> */}
             <View
               style={{
                 width: '100%',
@@ -176,16 +261,25 @@ export const AddNoticeScreen = ({route}) => {
               <TextInput
                 multiline
                 placeholder="내용 입력"
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, content: text}))
+                }
                 style={{
                   width: '100%',
+                  height: 300,
                   borderWidth: 1,
                   borderRadius: 10,
                   borderColor: '#DFE1E5',
-                  marginVertical: 20,
+                  textAlignVertical: 'top',
                 }}
               />
             </View>
-            <CommonButton fontSize={15} text="올리기" />
+            <Spacing height={20} />
+            <CommonButton
+              fontSize={15}
+              text="올리기"
+              onPress={handleFormSubmit}
+            />
           </View>
         </ScrollView>
       </View>
@@ -267,21 +361,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     padding: 20,
-    backgroundColor: 'green',
   },
   slide2: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-    backgroundColor: 'green',
   },
   slide3: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-    backgroundColor: 'green',
   },
   text: {
     fontSize: 20,

@@ -1,9 +1,9 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useState} from 'react';
+import React, {useContext} from 'react';
 import {UnLoginedMapScreen, LoginedMapScreen} from '../screens/MapScreen';
 import {LoginScreen} from '../screens/LoginScreen';
-// import VillaDrawerNavigations from './VillaDrawerNavigations';
+import {UserContext, UserProvider} from '../context/UserProvider';
 import {JoinScreen} from '../screens/JoinScreen';
 import {ResidentsJoinScreen} from '../screens/ResidentsJoinScreen';
 import {LandlordJoinScreen} from '../screens/LandlordJoinScreen';
@@ -16,6 +16,7 @@ import {NoticeBoardScreen} from '../screens/NoticeBoardScreen';
 import {AddNoticeScreen} from '../screens/AddNoticeScreen';
 import {ChatScreen} from '../screens/ChatScreen';
 import {AddChatScreen} from '../screens/AddChatScreen';
+import {PostScreen} from '../screens/PostScreen';
 // import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Stack = createNativeStackNavigator();
@@ -31,22 +32,27 @@ const Stack = createNativeStackNavigator();
 // );
 
 export const AuthenticationProvider = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const handleLogin = () => {
-    // Your login logic here, if login is successful, set isLoggedIn to true
-    console.log(isLoggedIn);
-    setIsLoggedIn(true);
-  };
+  // const handleLogin = () => {
+  //   // Your login logic here, if login is successful, set isLoggedIn to true
+  //   console.log(isLoggedIn);
+  //   setIsLoggedIn(true);
+  // };
 
   return (
-    <NavigationContainer>
-      <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} />
-    </NavigationContainer>
+    <UserProvider>
+      <NavigationContainer>
+        {/* <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} /> */}
+        <RootStackNavigations />
+      </NavigationContainer>
+    </UserProvider>
   );
 };
 
-export const RootStackNavigations = ({isLoggedIn, handleLogin}) => {
+// export const RootStackNavigations = ({isLoggedIn, handleLogin}) => {
+export const RootStackNavigations = () => {
+  const {isLoggedIn} = useContext(UserContext);
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // const handleLogin = () => {
@@ -59,7 +65,7 @@ export const RootStackNavigations = ({isLoggedIn, handleLogin}) => {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {isLoggedIn ? (
         <>
-          <Stack.Screen name="LoginedMap" component={LoginedMapScreen} />
+          {/* <Stack.Screen name="LoginedMap" component={LoginedMapScreen} />
           <Stack.Screen
             name="Villa"
             component={VillaHomeScreen}
@@ -69,10 +75,11 @@ export const RootStackNavigations = ({isLoggedIn, handleLogin}) => {
             name="AccountSetting"
             component={AccountSettingScreen}
           />
-          <Stack.Screen name="NoticeBoard" component={NoticeBoardScreen} />
+          <Stack.Screen name="NoticeBoard" component={NoticeBoardScreen} /> */}
           <Stack.Screen name="AddNotice" component={AddNoticeScreen} />
-          <Stack.Screen name="Chat" component={ChatScreen} />
-          <Stack.Screen name="AddChat" component={AddChatScreen} />
+          {/* <Stack.Screen name="Post" component={PostScreen} /> */}
+          {/* <Stack.Screen name="Chat" component={ChatScreen} />
+          <Stack.Screen name="AddChat" component={AddChatScreen} /> */}
         </>
       ) : (
         <>
@@ -82,9 +89,10 @@ export const RootStackNavigations = ({isLoggedIn, handleLogin}) => {
             component={LoginScreen}
             handleLogin={handleLogin}
           /> */}
-          <Stack.Screen name="Login" options={{unmountOnBlur: true}}>
+          {/* <Stack.Screen name="Login" options={{unmountOnBlur: true}}>
             {props => <LoginScreen {...props} handleLogin={handleLogin} />}
-          </Stack.Screen>
+          </Stack.Screen> */}
+          <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Join" component={JoinScreen} />
           <Stack.Screen name="ResidentsJoin" component={ResidentsJoinScreen} />
           <Stack.Screen

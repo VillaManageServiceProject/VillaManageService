@@ -53,7 +53,7 @@ export const ResidentsJoinScreen = ({route}) => {
     addressDetail: 0,
     email: '',
     gender: 0,
-    birth: '1998-02-20',
+    birth: null,
     relationHousehold: '',
     isContractor: false,
     isMaster: false,
