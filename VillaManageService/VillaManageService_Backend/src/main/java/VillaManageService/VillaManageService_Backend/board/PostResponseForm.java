@@ -12,18 +12,18 @@ public class PostResponseForm {
 
     private String title;
 
-//    private String content;
-//
+    private String content;
+
     private LocalDateTime createdAt;
-//
-//    private LocalDateTime modifiedAt;
+
+    private LocalDateTime modifiedAt;
 
     // post의 정보를 받아 postResponseDto 생성
     public PostResponseForm(Post post) {
         this.postId = post.getPostId();
         this.title = post.getTitle();
-//        this.content = post.getContent();
+        this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
-//        this.modifiedAt = post.getModifiedAt();
+        this.modifiedAt = post.getModifiedAt();
     }
 }

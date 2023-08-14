@@ -10,7 +10,7 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PostListResponseForm extends Timestamped {
+public class PostListResponseForm {
     // 제목
     private String title;
 
@@ -26,11 +26,12 @@ public class PostListResponseForm extends Timestamped {
         this.title = post.getTitle();
         this.createdAt = post.getCreatedAt();
         this.modifiedAt = post.getModifiedAt();
+        this.publisherId = post.getPublisherId();
     }
 
-    public PostListResponseForm(Optional<Post> post) {
-        this.title = post.get().getTitle();
-        this.createdAt = post.get().getCreatedAt();
-        this.modifiedAt = post.get().getModifiedAt();
-    }
+//    public PostListResponseForm(Optional<Post> post) {
+//        this.title = post.get().getTitle();
+//        this.createdAt = post.get().getCreatedAt();
+//        this.modifiedAt = post.get().getModifiedAt();
+//    }
 }

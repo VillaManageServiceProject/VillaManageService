@@ -1,10 +1,9 @@
 package VillaManageService.VillaManageService_Backend.board;
 
 import VillaManageService.VillaManageService_Backend.board.PostRepository;
-import VillaManageService.VillaManageService_Backend.user.CommunityCenter;
-import VillaManageService.VillaManageService_Backend.user.Member;
-import VillaManageService.VillaManageService_Backend.user.MemberRepository;
+import VillaManageService.VillaManageService_Backend.user.*;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.beans.BulkBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -17,27 +16,28 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class PostService {
+
     private final PostRepository postRepository;
+
     private final MemberRepository memberRepository;
 
     // 글 생성
-    public void createPost(PostCreateForm postCreateForm) {
+    public PostResponseForm createPost(PostCreateForm postCreateForm) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication.isAuthenticated()){
+        if (authentication.isAuthenticated()) {
             String publisherId = authentication.getName();
             Optional<Member> _member = memberRepository.findById(publisherId);
-            CommunityCenter member = (CommunityCenter)_member.get();
-            String address = member.getCenterAddress();
+            Member member = _member.get();
+            Post post = new Post(postCreateForm, publisherId);
+            postRepository.save(post);
+            return new PostResponseForm(post);
         }
-//        Post post = new Post(postCreateForm);
-//        postRepository.save(post);
-//        return new PostResponseForm(post);
-        System.out.println("done");
+        return null;
     }
 
     // 모든 글 가져오기
-    public List<PostListResponseForm> findAll() {
-        try{
+    public List<PostListResponseForm> findAllPost() {
+        try {
             List<Post> PostList = postRepository.findAll();
 
             List<PostListResponseForm> responseFormList = new ArrayList<>();
