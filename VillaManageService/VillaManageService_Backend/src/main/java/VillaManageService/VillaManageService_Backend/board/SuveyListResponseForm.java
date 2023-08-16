@@ -1,13 +1,13 @@
 package VillaManageService.VillaManageService_Backend.board;
 
-        import lombok.Getter;
-        import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-        import java.time.LocalDateTime;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @Getter
-public class PostResponseForm {
+public class SurveyResponseForm {
     private Long postId;
 
     private String title;
