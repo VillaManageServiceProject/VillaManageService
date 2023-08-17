@@ -7,6 +7,7 @@ class NaverMap extends Component {
     super(props);
     this.state = {
       markers: [],
+      markerLegalcodes: [],
     };
   }
 
@@ -19,7 +20,7 @@ class NaverMap extends Component {
 
   handleSearch = async query => {
     // 주소 검색 API 호출
-    const response = await fetch(
+    const responseAddress = await fetch(
       `https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${query}`,
       {
         headers: {
@@ -28,11 +29,48 @@ class NaverMap extends Component {
         },
       },
     );
-    const data = await response.json();
+    const dataAddress = await responseAddress.json();
+    console.log(dataAddress);
 
     // 검색 결과를 marker 상태에 저장
-    if (data.status === 'OK') {
-      this.setState({markers: data.addresses});
+    if (dataAddress.status === 'OK') {
+      this.setState({markers: dataAddress.addresses});
+    } else {
+      console.log('검색 실패');
+    }
+  };
+
+  handlePressMarker = async (marker, index) => {
+    const responseLegalcode = await fetch(
+      `https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?request=coordsToaddr&coords=${marker.x},${marker.y}&sourcecrs=epsg:4326&output=json&orders=addr,admcode,roadaddr`,
+      {
+        headers: {
+          'X-NCP-APIGW-API-KEY-ID': 'tqfivq7m66',
+          'X-NCP-APIGW-API-KEY': 'iaDotrE05BMaraCKn9KfOSRrdUQT14TJeqMIkTBC',
+        },
+      },
+    );
+    const dataLegalcode = await responseLegalcode.json();
+    console.log(dataLegalcode);
+
+    // 검색 결과를 marker 상태에 저장
+    if (dataLegalcode.status.name === 'ok') {
+      // this.setState(prevState => ({
+      //   markerLegalcodes: [
+      //     ...prevState.markerLegalcodes,
+      //     dataLegalcode.results[0].code.id,
+      //   ],
+      // }));
+
+      console.log('marker: ' + marker.jibunAddress);
+      console.log(
+        this.props.nav.navigate('Villa', {
+          villaId:
+            dataLegalcode.results[0].code.id +
+            marker.jibunAddress.split(' ')[3].split('-')[0].padStart(4, '0') +
+            marker.jibunAddress.split(' ')[3].split('-')[1].padStart(4, '0'),
+        }),
+      );
     } else {
       console.log('검색 실패');
     }
@@ -70,9 +108,7 @@ class NaverMap extends Component {
             }}
             title={marker.roadAddress}
             pinColor="blue"
-            onClick={() =>
-              this.props.nav.navigate('Villa', {address: marker.roadAddress})
-            }
+            onClick={() => this.handlePressMarker(marker, index)}
           />
         ))}
       </NaverMapView>

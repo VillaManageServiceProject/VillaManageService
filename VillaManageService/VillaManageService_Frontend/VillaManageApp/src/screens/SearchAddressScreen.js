@@ -16,6 +16,9 @@ export default SearchAddressScreen = ({route}) => {
     } else {
       defaultAddress = '(' + data.buildingName + ')';
     }
+
+    console.log(data.bcode);
+    console.log(data.jibunAddress);
     // this.props.navigation.navigate('Drawers', {
     //   screen: 'Deliver',
     //   params: {

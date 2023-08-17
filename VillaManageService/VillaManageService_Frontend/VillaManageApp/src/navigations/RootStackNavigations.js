@@ -16,7 +16,11 @@ import {NoticeBoardScreen} from '../screens/NoticeBoardScreen';
 import {AddNoticeScreen} from '../screens/AddNoticeScreen';
 import {ChatScreen} from '../screens/ChatScreen';
 import {AddChatScreen} from '../screens/AddChatScreen';
+<<<<<<< Updated upstream
 import {PostScreen} from '../screens/PostScreen';
+=======
+import {VillaInfoScreen} from '../screens/VillaInfoScreen';
+>>>>>>> Stashed changes
 // import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Stack = createNativeStackNavigator();
@@ -105,6 +109,7 @@ export const RootStackNavigations = () => {
             component={CommunityCenterJoinScreen}
           />
           <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
+          <Stack.Screen name="villaInfo" component={VillaInfoScreen} />
         </>
       )}
     </Stack.Navigator>

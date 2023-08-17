@@ -1,4 +1,5 @@
-import React, {useState, useNavigation} from 'react';
+import React, {useState} from 'react';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, ScrollView} from 'react-native';
 import styled from 'styled-components/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -7,6 +8,7 @@ import Swiper from 'react-native-swiper';
 import {Calendar, LocaleConfig} from 'react-native-calendars';
 import TextButton from '../components/TextButton';
 import VillaSideMenu from '../fragments/VillaSideMenu';
+import {requestGET} from '../api';
 
 LocaleConfig.locales['fr'] = {
   monthNames: [
@@ -45,6 +47,43 @@ export const VillaHomeScreen = ({route}) => {
   const [selected, setSelected] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      requestGetVillaInfo();
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
+
+  const requestGetVillaInfo = async () => {
+    try {
+      const response = await requestGET(`/villa/${route.params.villaId}`);
+      // Handle the response from the signup API
+      console.log('villaId: ' + response.body.items.item[0].archArea);
+
+      if (response.status === 'success') {
+        setPostData(response.data);
+      }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+  };
+
   const selectVillaName = address => {
     const addressElements = address.split(' ');
     return addressElements[addressElements.length - 1];
@@ -62,7 +101,7 @@ export const VillaHomeScreen = ({route}) => {
           <View style={styles.left} />
           <View style={styles.center}>
             <Text style={styles.headerTitle}>
-              {selectVillaName(route.params.address)}
+              {/* {selectVillaName(route.params.address)} */}
             </Text>
           </View>
           <View style={styles.right}>
