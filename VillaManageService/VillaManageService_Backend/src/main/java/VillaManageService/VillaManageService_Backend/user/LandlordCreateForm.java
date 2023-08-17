@@ -38,6 +38,9 @@ public class LandlordCreateForm {
     @NotNull(message = "생년월일은 필수항목입니다.")
     private Date birth;
 
+    @NotBlank
+    private String villaId;
+
     @NotBlank(message = "소유지 주소는 필수항목입니다.")
     private String ownedAddress;
 

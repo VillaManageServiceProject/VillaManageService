@@ -1,5 +1,6 @@
 package VillaManageService.VillaManageService_Backend.user;
 
+import VillaManageService.VillaManageService_Backend.villa.VillaService;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberRegistrationController {
 
     private final MemberRegistrationService memberRegistrationService;
+
+    private final VillaService villaService;
 
     @PostMapping("/signup/buildingManager")
     public ResponseEntity<String> signup(@Valid @RequestBody BuildingManagerCreateForm buildingManagerCreateForm,
@@ -133,6 +136,8 @@ public class MemberRegistrationController {
         }
 
         try {
+            createVilla(landlordCreateForm.getVillaId(), landlordCreateForm.getOwnedAddress(), landlordCreateForm.getOwnedAddressDetail());
+
             memberRegistrationService.createLandlord(landlordCreateForm.getId(), landlordCreateForm.getPassword1(),
                     landlordCreateForm.getName(), landlordCreateForm.getEmail(), landlordCreateForm.getGender(),
                     landlordCreateForm.getContactNumber(), landlordCreateForm.getContactNumberSub(),
@@ -178,6 +183,8 @@ public class MemberRegistrationController {
         }
 
         try {
+            createVilla(residentCreateForm.getVillaId(), residentCreateForm.getAddress(), residentCreateForm.getAddressDetail());
+
             memberRegistrationService.createResident(residentCreateForm.getId(), residentCreateForm.getPassword1(),
                     residentCreateForm.getName(), residentCreateForm.getAddress(),
                     residentCreateForm.getAddressDetail(), residentCreateForm.getEmail(),
@@ -198,4 +205,7 @@ public class MemberRegistrationController {
         return ResponseEntity.ok("ok");
     }
 
+    private void createVilla(String villaId, String address, int addressDetail) throws Exception {
+        villaService.generateVilla(villaId, address, addressDetail);
+    }
 }

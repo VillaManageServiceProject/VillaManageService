@@ -23,6 +23,9 @@ public class ResidentCreateForm {
     @NotBlank(message = "이름은 필수항목입니다.")
     private String name;
 
+    @NotBlank
+    private String villaId;
+
     @NotBlank(message = "주소는 필수항목입니다.")
     private String address;
 
