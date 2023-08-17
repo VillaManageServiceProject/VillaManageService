@@ -1,11 +1,16 @@
 import axios from 'axios';
 
 // const API_BASE_URL = 'http://210.91.9.65:8080';
+<<<<<<< Updated upstream
 // const API_BASE_URL = 'http://61.72.209.106:8080';
 // const API_BASE_URL = 'http://172.30.1.83:8080';
 const API_BASE_URL = 'http://172.30.1.69:8080';
 
 var csrfToken = null;
+=======
+// const API_BASE_URL = 'http://14.39.9.5:8080';
+const API_BASE_URL = 'http://172.30.1.69:8080';
+>>>>>>> Stashed changes
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -78,6 +83,15 @@ export const logout = async () => {
   try {
     const response = await api.post('/logout');
     api.defaults.headers['Authorization'] = null;
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const requestGET = async targetURL => {
+  try {
+    const response = await api.get(targetURL);
     return response.data;
   } catch (error) {
     throw error;

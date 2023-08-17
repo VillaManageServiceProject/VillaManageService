@@ -1,11 +1,15 @@
 import React from 'react';
+import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {View} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {CommonButton} from '../components/Button';
 import IconTitle from '../components/IconTitle';
 
-export const JoinScreen = ({route}) => {
+// export const JoinScreen = ({route}) => {
+export const JoinScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <Container>
       <View
@@ -26,9 +30,10 @@ export const JoinScreen = ({route}) => {
           height={130}
           fontSize={23}
           onPress={() =>
-            route.params.nav.navigate('ResidentsJoin', {
-              navigation: route.params.nav,
-            })
+            // route.params.nav.navigate('ResidentsJoin', {
+            //   navigation: route.params.nav,
+            // })
+            navigation.navigate('ResidentsJoin')
           }
         />
         <Spacing height={10} />
@@ -37,9 +42,10 @@ export const JoinScreen = ({route}) => {
           height={130}
           fontSize={23}
           onPress={() =>
-            route.params.nav.navigate('LandlordJoin', {
-              navigation: route.params.nav,
-            })
+            // route.params.nav.navigate('LandlordJoin', {
+            //   navigation: route.params.nav,
+            // })
+            navigation.navigate('LandlordJoin')
           }
         />
         <Spacing height={10} />
@@ -48,9 +54,10 @@ export const JoinScreen = ({route}) => {
           height={130}
           fontSize={23}
           onPress={() =>
-            route.params.nav.navigate('CommunityCenterJoin', {
-              navigation: route.params.nav,
-            })
+            // route.params.nav.navigate('CommunityCenterJoin', {
+            //   navigation: route.params.nav,
+            // })
+            navigation.navigate('CommunityCenterJoin')
           }
         />
         <Spacing height={10} />
@@ -59,9 +66,10 @@ export const JoinScreen = ({route}) => {
           height={130}
           fontSize={23}
           onPress={() =>
-            route.params.nav.navigate('BuildingManagerJoin', {
-              navigation: route.params.nav,
-            })
+            // route.params.nav.navigate('BuildingManagerJoin', {
+            //   navigation: route.params.nav,
+            // })
+            navigation.navigate('BuildingManagerJoin')
           }
         />
       </View>

@@ -30,7 +30,7 @@ import {signup} from '../api';
 
 export const ResidentsJoinScreen = ({route}) => {
   const navigation = useNavigation();
-  const {addressData} = route.params;
+  const {addressData} = route.params === undefined ? '' : route.params;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [tabIndex, setTabIndex] = React.useState(1);
@@ -43,14 +43,15 @@ export const ResidentsJoinScreen = ({route}) => {
   const [submitError, setSubmitError] = useState('');
 
   const [userData, setUserData] = useState({
-    id: '',
-    password1: '',
-    password2: '',
+    id: 'aaa',
+    password1: '123',
+    password2: '123',
     name: '',
     contactNumber: '',
     contactNumberSub: '',
-    address: '',
-    addressDetail: 0,
+    villaId: '112901330001090030',
+    address: '서울 성북구 정릉동 109-30',
+    addressDetail: 101,
     email: '',
     gender: 0,
     birth: null,
@@ -64,7 +65,22 @@ export const ResidentsJoinScreen = ({route}) => {
     console.log(addressData);
     if (addressData && addressData.address) {
       console.log(addressData.address);
-      setUserData(prev => ({...prev, address: addressData.address}));
+      setUserData(prev => ({
+        ...prev,
+        villaId:
+          addressData.bcode +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[0]
+            .padStart(4, '0') +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[1]
+            .padStart(4, '0'),
+        address: addressData.address,
+      }));
       // addressComp.current.text = addressData.address;
     }
   }, [addressData]);

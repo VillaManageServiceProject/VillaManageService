@@ -113,9 +113,10 @@ export const LoginScreen = ({route}) => {
         <CommonButton
           text="회원가입"
           onPress={() =>
-            route.params.nav.navigate('Join', {
-              nav: route.params.nav,
-            })
+            // route.params.nav.navigate('Join', {
+            //   nav: route.params.nav,
+            // })
+            navigation.navigate('Join')
           }
         />
       </View>
