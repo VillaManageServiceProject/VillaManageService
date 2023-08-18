@@ -9,11 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public class Post extends Timestamped {
+public class General extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long postId;
+    private long GeneralId;
+
+    private String postType;
 
     private String publisherId;
 
@@ -28,17 +29,17 @@ public class Post extends Timestamped {
     private String content;
 
     // requestDto 정보를 가져와서 entity 만들 때 사용
-    public Post(PostCreateForm postCreateForm, String publisherId) {
-        this.title = postCreateForm.getTitle();
-        this.notification = postCreateForm.getNotification();
-        this.content = postCreateForm.getContent();
+    public General(GeneralCreateForm generalCreateForm, String publisherId) {
         this.publisherId = publisherId;
-        this.address = postCreateForm.getAddress();
+        this.address = generalCreateForm.getAddress();
+        this.title = generalCreateForm.getTitle();
+        this.notification = generalCreateForm.getNotification();
+        this.content = generalCreateForm.getContent();
     }
 
     // 업데이트 메소드
-    public void update(PostCreateForm postCreateForm) {
-        this.title = postCreateForm.getTitle();
-        this.content = postCreateForm.getContent();
+    public void updateGeneral(GeneralCreateForm generalCreateForm) {
+        this.title = generalCreateForm.getTitle();
+        this.content = generalCreateForm.getContent();
     }
 }

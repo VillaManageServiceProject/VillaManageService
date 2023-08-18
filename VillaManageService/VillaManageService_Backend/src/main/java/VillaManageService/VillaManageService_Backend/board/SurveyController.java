@@ -24,7 +24,7 @@ public class SurveyController {
     // 전체 목록 조회
     @GetMapping("/surveys/board")
     public List<SurveyListResponseForm> getAllSurveys() {
-        return surveyService.findAllPost();
+        return surveyService.findAllSurvey();
     }
 
     // 글 하나 조회
@@ -40,7 +40,7 @@ public class SurveyController {
     }
 
     // 글 삭제
-    @DeleteMapping("/surveys/{id}")
+    @DeleteMapping("/surveys/{surveyId}")
     public Long deleteSurvey(@PathVariable Long surveyId) {
         return surveyService.deleteSurvey(surveyId);
     }

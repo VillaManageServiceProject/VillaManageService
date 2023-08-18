@@ -12,7 +12,9 @@ public class SurveyResponseForm {
 
     private String title;
 
-    private String content;
+    private String question;
+
+    private String options;
 
     private LocalDateTime createdAt;
 
@@ -22,7 +24,8 @@ public class SurveyResponseForm {
     public SurveyResponseForm(Survey survey) {
         this.surveyId = survey.getSurveyId();
         this.title = survey.getTitle();
-        this.content = survey.getContent();
+        this.question = survey.getQuestion();
+        this.options = survey.getOptions();
         this.createdAt = survey.getCreatedAt();
         this.modifiedAt = survey.getModifiedAt();
     }

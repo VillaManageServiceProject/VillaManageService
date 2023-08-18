@@ -14,35 +14,43 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Survey extends Post {
+public class Survey extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long surveyId;
 
-//    Post 상속 필요
-//    private String publisherId;
-//    private String address;
-//    private String title;
+    private boolean isFinished;
+
+    private String postType;
+
+    private String publisherId;
+
+    private String address;
+
+    private String title;
 
     private Date dateStart;
 
     private Date dateEnd;
 
+    private String question;
+
     private String options;
 
     // requestDto 정보를 가져와서 entity 만들 때 사용
     public Survey(SurveyCreateForm surveyCreateForm, String publisherId) {
-        super(postCreateForm, publisherId)
-        this.title = surveyCreateForm.getTitle();
-        this.notification = surveyCreateForm.getNotification();
-        this.content = surveyCreateForm.getContent();
         this.publisherId = publisherId;
         this.address = surveyCreateForm.getAddress();
+        this.title = surveyCreateForm.getTitle();
+        this.dateStart = surveyCreateForm.getDateStart();
+        this.dateEnd = surveyCreateForm.getDateEnd();
+        this.question = surveyCreateForm.getQuestion();
+        this.options = surveyCreateForm.getOptions();
     }
 
     // 업데이트 메소드
-    public void update(SurveyCreateForm surveyCreateForm) {
+    public void updateSurvey(SurveyCreateForm surveyCreateForm) {
         this.title = surveyCreateForm.getTitle();
-        this.content = surveyCreateForm.getContent();
+        this.question = surveyCreateForm.getQuestion();
     }
 }

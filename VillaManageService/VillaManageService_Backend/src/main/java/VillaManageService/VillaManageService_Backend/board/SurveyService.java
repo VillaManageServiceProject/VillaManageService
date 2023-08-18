@@ -1,9 +1,7 @@
 package VillaManageService.VillaManageService_Backend.board;
 
-import VillaManageService.VillaManageService_Backend.board.PostRepository;
 import VillaManageService.VillaManageService_Backend.user.*;
 import lombok.AllArgsConstructor;
-import org.springframework.cglib.beans.BulkBean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -68,11 +66,11 @@ public class SurveyService {
 
     // 글 수정
     @Transactional
-    public Long updatePost(Long surveyId, SurveyCreateForm requestForm) {
+    public Long updateSurvey(Long surveyId, SurveyCreateForm requestForm) {
         Survey survey = surveyRepository.findById(surveyId).orElseThrow(
                 () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
         );
-        survey.update(requestForm);
+        survey.updateSurvey(requestForm);
         return survey.getSurveyId();
     }
 
