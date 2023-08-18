@@ -5,7 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.*;
 
 @Getter
 @Setter
@@ -15,13 +16,13 @@ public class SurveyCreateForm {
     private String title;
 
     @NotNull(message = "정상적인 주소가 아닙니다.")
-    private String address;
+    private String villaId;
 
     @NotNull(message = "설문 시작 일자는 필수항목입니다.")
-    private Date dateStart;
+    private LocalDate dateStart;
 
     @NotNull(message = "설문 종료 일자는 필수항목입니다.")
-    private Date dateEnd;
+    private LocalDate dateEnd;
 
 //    private String relatedMemberId;
 
@@ -29,5 +30,5 @@ public class SurveyCreateForm {
     private String question;
 
     @NotNull(message = "선택지는 필수항목입니다.")
-    private String options;
+    private ArrayList<Map<String, Object>> options;
 }

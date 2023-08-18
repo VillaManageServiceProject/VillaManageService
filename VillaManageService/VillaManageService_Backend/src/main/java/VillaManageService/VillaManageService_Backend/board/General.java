@@ -12,7 +12,7 @@ import lombok.Setter;
 public class General extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long GeneralId;
+    private long generalId;
 
     private String postType;
 

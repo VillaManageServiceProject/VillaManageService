@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class SurveyListResponseForm {
+    private long surveyId;
+
     // 제목
     private String title;
 
@@ -22,6 +24,7 @@ public class SurveyListResponseForm {
 
     // Entity -> dto
     public SurveyListResponseForm(Survey survey) {
+        this.surveyId = survey.getSurveyId();
         this.publisherId = survey.getPublisherId();
         this.title = survey.getTitle();
         this.createdAt = survey.getCreatedAt();

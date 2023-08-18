@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,6 +53,30 @@ public class SurveyService {
         return null;
     }
 
+    public List<SurveyListResponseForm> readSurveyByExpired(String available) {
+        try {
+            List<Survey> SurveyList;
+
+            if(available.equals("valid")) SurveyList = surveyRepository.findByDateStartLessThanEqualAndDateEndGreaterThanEqualOrderByCreatedAtDesc(LocalDate.now(), LocalDate.now());
+            else {
+                LocalDate today = LocalDate.now();
+                SurveyList =surveyRepository.findSurveysOutsideDateRange(today);
+            }
+
+            List<SurveyListResponseForm> responseFormList = new ArrayList<>();
+
+            for (Survey Survey : SurveyList) {
+                responseFormList.add(
+                        new SurveyListResponseForm(Survey)
+                );
+            }
+            return responseFormList;
+        } catch (Exception e) {
+//            throw new DBEmptyDataException("a");
+        }
+        return null;
+    }
+
     // 글 하나 가져오기
     public SurveyResponseForm findOneSurvey(Long surveyId) {
 //        Post post = postRepository.findByPostId(postId).orElseThrow(
@@ -65,6 +90,15 @@ public class SurveyService {
     }
 
     // 글 수정
+    @Transactional
+    public SurveyResponseForm updateSurveyVoteCnt(Long surveyId, int optionIdx) {
+        Survey survey = surveyRepository.findById(surveyId).orElseThrow(
+                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+        );
+        survey.updateVoteCnt(optionIdx);
+        return new SurveyResponseForm(survey);
+    }
+
     @Transactional
     public Long updateSurvey(Long surveyId, SurveyCreateForm requestForm) {
         Survey survey = surveyRepository.findById(surveyId).orElseThrow(
