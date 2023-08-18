@@ -35,9 +35,10 @@ const CommonButton = props => {
       onPress={props.onPress}>
       <Text
         style={{
-          color: 'black',
+          color: props.color === undefined ? 'black' : props.color,
           fontSize: props.fontSize,
-          fontWeight: 'bold',
+          fontWeight:
+            props.fontWeight === undefined ? 'bold' : props.fontWeight,
         }}>
         {props.text}
       </Text>

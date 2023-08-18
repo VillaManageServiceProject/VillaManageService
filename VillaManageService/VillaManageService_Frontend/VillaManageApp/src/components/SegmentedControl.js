@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Animated,
   Dimensions,
@@ -22,9 +22,11 @@ const shadow = {
 
 // So that it stretches in landscape mode.
 // const width = Dimensions.get('screen').width - 32;
-const width = 200;
+// let width = 200;
+// const [width, setWidth] = useState(200);
 
 const SegmentedControl = props => {
+  const width = props.width === undefined ? 200 : props.width;
   const translateValue = (width - 4) / props?.tabs?.length;
   const [tabTranslate, setTabTranslate] = React.useState(new Animated.Value(0));
 
@@ -42,6 +44,8 @@ const SegmentedControl = props => {
       mass: 1,
       useNativeDriver: true,
     }).start();
+
+    // setWidth(props?.width === undefined ? 200 : props.width);
   }, [props?.currentIndex]);
 
   return (
@@ -54,6 +58,7 @@ const SegmentedControl = props => {
         {
           paddingVertical: props?.paddingVertical,
         },
+        {width: props?.width === undefined ? 200 : props.width},
       ]}>
       <Animated.View
         style={[
@@ -106,8 +111,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 30,
-    width: width,
-    marginVertical: 20,
+    // width: width,
+    marginVertical: 10,
   },
   textWrapper: {
     flex: 1,

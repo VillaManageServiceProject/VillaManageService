@@ -1,6 +1,13 @@
 import React, {useState, useContext} from 'react';
 import {UserContext} from '../context/UserProvider';
-import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  TextInput,
+  FlatList,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SpecificButton} from '../components/Button';
@@ -9,7 +16,7 @@ import {RadioButton} from 'react-native-paper';
 import {CommonButton} from '../components/Button';
 import {checkSession, requestPOST} from '../api';
 
-export const AddNoticeScreen = ({route}) => {
+export const AddGeneralScreen = ({route}) => {
   const navigation = useNavigation();
   const {userInfo} = useContext(UserContext);
 
@@ -274,6 +281,283 @@ export const AddNoticeScreen = ({route}) => {
                 }}
               />
             </View>
+            <Spacing height={20} />
+            <CommonButton
+              fontSize={15}
+              text="올리기"
+              onPress={handleFormSubmit}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export const AddSurveyScreen = ({route}) => {
+  const navigation = useNavigation();
+  const {userInfo} = useContext(UserContext);
+
+  const [dateStart, setDateStart] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(new Date());
+  const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
+  const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
+  const [noticeChecked, setNoticeChecked] = useState('Notice');
+  const [options, setOptions] = useState([]);
+
+  const [postData, setPostData] = useState({
+    // publisherId: userInfo.id,
+    // address: userInfo.address,
+    title: '',
+    // postDate: new Date().toISOString().substring(0, 10),
+    // notification: '',
+    // relatedMemberId: '',
+    content: '',
+    dateStart: new Date().toISOString().substring(0, 10),
+    dateEnd: new Date().toISOString().substring(0, 10),
+    options: '',
+  });
+
+  const handleFormSubmit = async () => {
+    try {
+      const response = await requestPOST(postData, '/posts');
+      // const response = await checkSession();
+      // Handle the response from the signup API
+      console.log(response);
+
+      if (response.status === 'success') {
+        navigation.navigate('NoticeBoard');
+      }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
+  };
+
+  const handleAddOption = () => {
+    setOptions(prevItems => [...prevItems, '옵션']);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.foreground}>
+        <View style={styles.header}>
+          <View style={styles.left} />
+          <View style={styles.center}>
+            <Text style={styles.headerTitle}>새로운 설문조사</Text>
+          </View>
+          <View style={styles.right} />
+        </View>
+        <ScrollView>
+          <View style={styles.body}>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text style={{marginRight: 20}}>제목</Text>
+              <TextInput
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, title: text}))
+                }
+                style={{
+                  width: '85%',
+                  height: 45,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                }}
+              />
+            </View>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+                // backgroundColor: 'blue',
+              }}>
+              <Text>기한</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <SpecificButton
+                  width={120}
+                  height={40}
+                  fontSize={14}
+                  text={dateStart.toISOString().substring(0, 10)}
+                  onPress={() => setDateStartPickerOpen(true)}
+                />
+                <DatePicker
+                  modal
+                  open={isDateStartPickerOpened}
+                  date={dateStart}
+                  onConfirm={dateStart => {
+                    setDateStartPickerOpen(false);
+                    setDateStart(dateStart);
+                    // setPostData(prev => ({
+                    //   ...prev,
+                    //   dateStart: date.toISOString().substring(0, 10),
+                    // }));
+                  }}
+                  onCancel={() => {
+                    setDateStartPickerOpen(false);
+                  }}
+                  mode="date"
+                  textColor="#9AA0A6"
+                />
+                <Text style={{marginHorizontal: 5}}>~</Text>
+                <SpecificButton
+                  width={120}
+                  height={40}
+                  fontSize={14}
+                  text={dateEnd.toISOString().substring(0, 10)}
+                  onPress={() => setDateEndPickerOpen(true)}
+                />
+                <DatePicker
+                  modal
+                  open={isDateEndPickerOpened}
+                  date={dateEnd}
+                  onConfirm={dateEnd => {
+                    setDateEndPickerOpen(false);
+                    setDateEnd(dateEnd);
+                    // setPostData(prev => ({
+                    //   ...prev,
+                    //   dateEnd: date.toISOString().substring(0, 10),
+                    // }));
+                  }}
+                  onCancel={() => {
+                    setDateEndPickerOpen(false);
+                  }}
+                  mode="date"
+                  textColor="#9AA0A6"
+                />
+              </View>
+            </View>
+            {/* <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text style={{marginRight: 20}}>알림</Text>
+              <TextInput
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, relatedMemberId: text}))
+                }
+                style={{
+                  width: '85%',
+                  height: 45,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                }}
+              />
+            </View> */}
+            <Spacing height={20} />
+            {/* <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text>알림</Text>
+            </View> */}
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <TextInput
+                multiline
+                placeholder="질문 입력"
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, content: text}))
+                }
+                style={{
+                  width: '100%',
+                  height: 150,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                  textAlignVertical: 'top',
+                }}
+              />
+            </View>
+            <View style={{width: '100%', maxHeight: 250}}>
+              <FlatList
+                // data={postData}
+                data={options}
+                renderItem={({item, index}) => (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      borderRadius: 10,
+                      borderWidth: 1,
+                      borderColor: '#e0e0e0',
+                      paddingHorizontal: 10,
+                      margin: 5,
+                    }}>
+                    <Text
+                      style={{
+                        marginRight: 10,
+                      }}>
+                      {index + 1}
+                    </Text>
+                    <TextInput
+                      placeholder={item}
+                      onChangeText={text =>
+                        setPostData(prev => ({
+                          ...prev,
+                          options: prev.options + text,
+                        }))
+                      }
+                    />
+                  </View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                showsVerticalScrollIndicator={false}
+                nestedScrollEnabled={true}
+                style={{width: '100%'}}
+              />
+            </View>
+            <CommonButton
+              fontSize={15}
+              height={30}
+              fontWeight=""
+              // color="#dfe1e5"
+              text="+ 옵션"
+              backgroundColor="#dfe1e5"
+              onPress={handleAddOption}
+            />
             <Spacing height={20} />
             <CommonButton
               fontSize={15}

@@ -12,15 +12,16 @@ import {CommunityCenterJoinScreen} from '../screens/CommunityCenterJoinScreen';
 import SearchAddressScreen from '../screens/SearchAddressScreen';
 import {AccountSettingScreen} from '../screens/AccountSettingScreen';
 import {VillaHomeScreen} from '../screens/VillaHomeScreen';
-import {NoticeBoardScreen} from '../screens/NoticeBoardScreen';
-import {AddNoticeScreen} from '../screens/AddNoticeScreen';
 import {ChatScreen} from '../screens/ChatScreen';
 import {AddChatScreen} from '../screens/AddChatScreen';
-<<<<<<< Updated upstream
 import {PostScreen} from '../screens/PostScreen';
-=======
 import {VillaInfoScreen} from '../screens/VillaInfoScreen';
->>>>>>> Stashed changes
+import {SurveyScreen} from '../screens/SurveyScreen';
+import {
+  GeneralBoardScreen,
+  SurveyBoardScreen,
+} from '../screens/PostBoardScreen';
+import {AddGeneralScreen, AddSurveyScreen} from '../screens/AddPostScreen';
 // import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Stack = createNativeStackNavigator();
@@ -79,11 +80,14 @@ export const RootStackNavigations = () => {
             name="AccountSetting"
             component={AccountSettingScreen}
           />
-          <Stack.Screen name="NoticeBoard" component={NoticeBoardScreen} /> */}
-          <Stack.Screen name="AddNotice" component={AddNoticeScreen} />
+          <Stack.Screen name="GeneralBoard" component={GeneralBoardScreen} /> */}
+          {/* <Stack.Screen name="AddGeneral" component={AddGeneralScreen} /> */}
           {/* <Stack.Screen name="Post" component={PostScreen} /> */}
           {/* <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="AddChat" component={AddChatScreen} /> */}
+          <Stack.Screen name="SurveyBoard" component={SurveyBoardScreen} />
+          <Stack.Screen name="Survey" component={SurveyScreen} />
+          <Stack.Screen name="AddSurvey" component={AddSurveyScreen} />
         </>
       ) : (
         <>
@@ -96,7 +100,7 @@ export const RootStackNavigations = () => {
           {/* <Stack.Screen name="Login" options={{unmountOnBlur: true}}>
             {props => <LoginScreen {...props} handleLogin={handleLogin} />}
           </Stack.Screen> */}
-          <Stack.Screen name="Login" component={LoginScreen} />
+          {/* <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Join" component={JoinScreen} />
           <Stack.Screen name="ResidentsJoin" component={ResidentsJoinScreen} />
           <Stack.Screen
@@ -109,7 +113,7 @@ export const RootStackNavigations = () => {
             component={CommunityCenterJoinScreen}
           />
           <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
-          <Stack.Screen name="villaInfo" component={VillaInfoScreen} />
+          <Stack.Screen name="villaInfo" component={VillaInfoScreen} /> */}
         </>
       )}
     </Stack.Navigator>
