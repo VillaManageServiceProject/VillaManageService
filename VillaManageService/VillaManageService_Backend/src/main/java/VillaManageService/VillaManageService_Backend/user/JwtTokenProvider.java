@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.SecureRandom;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
@@ -28,6 +25,8 @@ public class JwtTokenProvider {
 //    }
 
     private final UserDetailsService userDetailsService;
+
+    private final Set<String> blacklistedTokens = Collections.synchronizedSet(new HashSet<>());
 
     // 토큰 생성
     public String generateToken(UserDetails userDetails) {
@@ -93,5 +92,13 @@ public class JwtTokenProvider {
 
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    public void addBlacklistToken(String token) {
+        blacklistedTokens.add(token);
+    }
+
+    public boolean isTokenBlacklisted(String token) {
+        return blacklistedTokens.contains(token);
     }
 }

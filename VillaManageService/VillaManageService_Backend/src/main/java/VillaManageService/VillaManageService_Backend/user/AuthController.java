@@ -1,5 +1,6 @@
 package VillaManageService.VillaManageService_Backend.user;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -50,5 +51,17 @@ public class AuthController {
 //             throw new BadCredentialsException("Incorrect username or password");
             return null;
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String token = extractTokenFromRequest(request);
+        jwtTokenProvider.addBlacklistToken(token);
+        return ResponseEntity.ok("Logged out successfully");
+    }
+
+    private String extractTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        return bearerToken != null && bearerToken.startsWith("Bearer ") ? bearerToken.substring(7) : null;
     }
 }
