@@ -7,8 +7,8 @@ package VillaManageService.VillaManageService_Backend.board;
 
 @NoArgsConstructor
 @Getter
-public class PostResponseForm {
-    private Long postId;
+public class GeneralResponseForm {
+    private Long generalId;
 
     private String title;
 
@@ -19,11 +19,11 @@ public class PostResponseForm {
     private LocalDateTime modifiedAt;
 
     // post의 정보를 받아 postResponseDto 생성
-    public PostResponseForm(Post post) {
-        this.postId = post.getPostId();
-        this.title = post.getTitle();
-        this.content = post.getContent();
-        this.createdAt = post.getCreatedAt();
-        this.modifiedAt = post.getModifiedAt();
+    public GeneralResponseForm(General general) {
+        this.generalId = general.getGeneralId();
+        this.title = general.getTitle();
+        this.content = general.getContent();
+        this.createdAt = general.getCreatedAt();
+        this.modifiedAt = general.getModifiedAt();
     }
 }

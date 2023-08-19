@@ -5,12 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class PostListResponseForm {
+public class SurveyListResponseForm {
+    private long surveyId;
+
     // 제목
     private String title;
 
@@ -22,11 +23,12 @@ public class PostListResponseForm {
     private LocalDateTime modifiedAt;
 
     // Entity -> dto
-    public PostListResponseForm(Post post) {
-        this.title = post.getTitle();
-        this.createdAt = post.getCreatedAt();
-        this.modifiedAt = post.getModifiedAt();
-        this.publisherId = post.getPublisherId();
+    public SurveyListResponseForm(Survey survey) {
+        this.surveyId = survey.getSurveyId();
+        this.publisherId = survey.getPublisherId();
+        this.title = survey.getTitle();
+        this.createdAt = survey.getCreatedAt();
+        this.modifiedAt = survey.getModifiedAt();
     }
 
 //    public PostListResponseForm(Optional<Post> post) {
