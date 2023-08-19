@@ -67,9 +67,9 @@ export default VillaSideMenu = ({onClose}) => {
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        handleLogout();
-      }
+      // if (response.status === 'success') {
+      handleLogout();
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx

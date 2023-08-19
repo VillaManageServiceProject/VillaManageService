@@ -1,6 +1,6 @@
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {UnLoginedMapScreen, LoginedMapScreen} from '../screens/MapScreen';
 import {LoginScreen} from '../screens/LoginScreen';
 import {UserProvider, UserContext} from '../contexts/UserProvider';
@@ -73,7 +73,7 @@ export const RootStackNavigations = () => {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       {isLoggedIn ? (
         <>
-          {/* <Stack.Screen name="LoginedMap" component={LoginedMapScreen} />
+          <Stack.Screen name="LoginedMap" component={LoginedMapScreen} />
           <Stack.Screen
             name="Villa"
             component={VillaHomeScreen}
@@ -83,9 +83,9 @@ export const RootStackNavigations = () => {
             name="AccountSetting"
             component={AccountSettingScreen}
           />
-          <Stack.Screen name="GeneralBoard" component={GeneralBoardScreen} /> */}
-          {/* <Stack.Screen name="AddGeneral" component={AddGeneralScreen} /> */}
-          {/* <Stack.Screen name="Post" component={PostScreen} /> */}
+          <Stack.Screen name="GeneralBoard" component={GeneralBoardScreen} />
+          <Stack.Screen name="AddGeneral" component={AddGeneralScreen} />
+          <Stack.Screen name="Post" component={PostScreen} />
           {/* <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="AddChat" component={AddChatScreen} /> */}
           <Stack.Screen name="SurveyBoard" component={SurveyBoardScreen} />
