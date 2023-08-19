@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, ScrollView} from 'react-native';
 import styled from 'styled-components/native';
@@ -9,6 +9,7 @@ import {Calendar, LocaleConfig} from 'react-native-calendars';
 import TextButton from '../components/TextButton';
 import VillaSideMenu from '../fragments/VillaSideMenu';
 import {requestGET} from '../api';
+import {VillaContext} from '../contexts/VillaProvider';
 
 LocaleConfig.locales['fr'] = {
   monthNames: [
@@ -43,6 +44,7 @@ LocaleConfig.defaultLocale = 'fr';
 
 export const VillaHomeScreen = ({route}) => {
   // const navigation = useNavigation();
+  const {villaId, villaName, setVillaInfo} = useContext(VillaContext);
 
   const [selected, setSelected] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,6 +52,9 @@ export const VillaHomeScreen = ({route}) => {
   useFocusEffect(
     React.useCallback(() => {
       requestGetVillaInfo();
+
+      console.log('villaName: ', villaName);
+      console.log('villaId: ', villaId);
 
       return () => {
         console.log('ScreenOne is unfocused');
@@ -59,13 +64,9 @@ export const VillaHomeScreen = ({route}) => {
 
   const requestGetVillaInfo = async () => {
     try {
-      const response = await requestGET(`/villa/${route.params.villaId}`);
-      // Handle the response from the signup API
-      console.log('villaId: ' + response.body.items.item[0].archArea);
+      const response = await requestGET(`/villa/${villaId}`);
 
-      if (response.status === 'success') {
-        setPostData(response.data);
-      }
+      setVillaState(response.body.items.item[0]);
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -84,6 +85,12 @@ export const VillaHomeScreen = ({route}) => {
     }
   };
 
+  const setVillaState = currVillaInfo => {
+    console.log(currVillaInfo);
+    // setVillaId(currVillaId);
+    setVillaInfo(currVillaInfo);
+  };
+
   const selectVillaName = address => {
     const addressElements = address.split(' ');
     return addressElements[addressElements.length - 1];
@@ -100,9 +107,7 @@ export const VillaHomeScreen = ({route}) => {
         <View style={styles.header}>
           <View style={styles.left} />
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>
-              {/* {selectVillaName(route.params.address)} */}
-            </Text>
+            <Text style={styles.headerTitle}>{villaName}</Text>
           </View>
           <View style={styles.right}>
             <Icon

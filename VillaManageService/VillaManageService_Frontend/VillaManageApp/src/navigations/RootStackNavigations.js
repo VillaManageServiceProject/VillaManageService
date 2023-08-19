@@ -103,6 +103,11 @@ export const RootStackNavigations = () => {
           {/* <Stack.Screen name="Login" options={{unmountOnBlur: true}}>
             {props => <LoginScreen {...props} handleLogin={handleLogin} />}
           </Stack.Screen> */}
+          <Stack.Screen
+            name="Villa"
+            component={VillaHomeScreen}
+            // options={{headerShown: false}}
+          />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Join" component={JoinScreen} />
           <Stack.Screen name="ResidentsJoin" component={ResidentsJoinScreen} />

@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {UserContext} from '../context/UserProvider';
+import {UserContext} from '../contexts/UserProvider';
 import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
