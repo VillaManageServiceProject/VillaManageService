@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
@@ -10,6 +10,7 @@ import TextButton from '../components/TextButton';
 import VillaSideMenu from '../fragments/VillaSideMenu';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NoticeBoardItem from '../components/NoticeBoardItem';
+import SegmentedControl from '../components/SegmentedControl';
 
 const NoticeBoardData = [
   {
@@ -86,7 +87,7 @@ const NoticeBoardData = [
   },
 ];
 
-export const NoticeBoardScreen = ({route}) => {
+export const GeneralBoardScreen = ({route}) => {
   const navigation = useNavigation();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -156,7 +157,7 @@ export const NoticeBoardScreen = ({route}) => {
         <View style={styles.body}>
           <View style={{borderRadius: 3, marginBottom: 15}}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('AddNotice')}
+              onPress={() => navigation.navigate('AddGeneral')}
               style={{
                 paddingHorizontal: 5,
                 alignItems: 'center',
@@ -186,6 +187,153 @@ export const NoticeBoardScreen = ({route}) => {
                 createDate={item.createDate}
                 onPress={() => {
                   navigation.navigate('Post');
+                }}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={<EmptyListComponent />}
+            style={{width: '100%'}}
+          />
+        </View>
+      </View>
+      {isMenuOpen && <VillaSideMenu onClose={toggleSideMenu} />}
+    </SafeAreaView>
+  );
+};
+
+export const SurveyBoardScreen = ({route}) => {
+  const navigation = useNavigation();
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [postData, setPostData] = useState('');
+  const [tabIndex, setTabIndex] = useState(0);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      requestGetpost();
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
+
+  useEffect(() => {
+    requestGetpost();
+  }, [tabIndex]);
+
+  const toggleSideMenu = () => {
+    setIsMenuOpen(prev => !prev);
+  };
+
+  const requestGetpost = async () => {
+    try {
+      const response = await requestGET(
+        `/surveys/board/${tabIndex === 0 ? 'valid' : 'invalid'}`,
+      );
+      // Handle the response from the signup API
+      console.log(response);
+
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
+  };
+
+  const handleTabsChange = index => {
+    setTabIndex(index);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.foreground}>
+        <View style={styles.header}>
+          <View style={styles.left} />
+          <View style={styles.center}>
+            <Text style={styles.headerTitle}>설문게시판</Text>
+          </View>
+          <View style={styles.right}>
+            <Icon
+              IconType="Ionicons"
+              IconName="menu"
+              borderRadius={30}
+              onPress={toggleSideMenu}
+            />
+          </View>
+        </View>
+
+        <View style={styles.body}>
+          <View style={{borderRadius: 3, marginBottom: 15}}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AddSurvey')}
+              style={{
+                paddingHorizontal: 5,
+                alignItems: 'center',
+                flexDirection: 'row',
+                backgroundColor: '#1A73E840',
+                borderRadius: 4,
+              }}>
+              <Ionicons
+                name="add"
+                size={25}
+                color="#9AA0A6"
+                // style={{marginRight: 10}}
+              />
+              <Text color="#9AA0A6" style={{paddingBottom: 2}}>
+                새글
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              width: '100%',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              //   backgroundColor: 'red',
+            }}>
+            <SegmentedControl
+              tabs={['진행중', '만료']}
+              currentIndex={tabIndex}
+              onChange={handleTabsChange}
+              segmentedControlBackgroundColor="#F0F0F0"
+              activeSegmentBackgroundColor="#1A73E8"
+              activeTextColor="white"
+              textColor="#9AA0A6"
+              paddingVertical={10}
+              width={350}
+            />
+          </View>
+          {/* <Spacing height={20} /> */}
+          <FlatList
+            data={postData}
+            // data={NoticeBoardData}
+            renderItem={({item, index}) => (
+              <NoticeBoardItem
+                title={item.title}
+                // text={item.text}
+                createDate={item.createdAt}
+                onPress={() => {
+                  navigation.navigate('Survey', {surveyId: item.surveyId});
                 }}
               />
             )}
@@ -329,5 +477,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 20,
   },
 });

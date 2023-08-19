@@ -3,7 +3,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import React, {useContext} from 'react';
 import {UnLoginedMapScreen, LoginedMapScreen} from '../screens/MapScreen';
 import {LoginScreen} from '../screens/LoginScreen';
-import {UserContext, UserProvider} from '../context/UserProvider';
+import {UserProvider, UserContext} from '../contexts/UserProvider';
+import {VillaProvider} from '../contexts/VillaProvider';
 import {JoinScreen} from '../screens/JoinScreen';
 import {ResidentsJoinScreen} from '../screens/ResidentsJoinScreen';
 import {LandlordJoinScreen} from '../screens/LandlordJoinScreen';
@@ -12,15 +13,16 @@ import {CommunityCenterJoinScreen} from '../screens/CommunityCenterJoinScreen';
 import SearchAddressScreen from '../screens/SearchAddressScreen';
 import {AccountSettingScreen} from '../screens/AccountSettingScreen';
 import {VillaHomeScreen} from '../screens/VillaHomeScreen';
-import {NoticeBoardScreen} from '../screens/NoticeBoardScreen';
-import {AddNoticeScreen} from '../screens/AddNoticeScreen';
 import {ChatScreen} from '../screens/ChatScreen';
 import {AddChatScreen} from '../screens/AddChatScreen';
-<<<<<<< Updated upstream
 import {PostScreen} from '../screens/PostScreen';
-=======
 import {VillaInfoScreen} from '../screens/VillaInfoScreen';
->>>>>>> Stashed changes
+import {SurveyScreen} from '../screens/SurveyScreen';
+import {
+  GeneralBoardScreen,
+  SurveyBoardScreen,
+} from '../screens/PostBoardScreen';
+import {AddGeneralScreen, AddSurveyScreen} from '../screens/AddPostScreen';
 // import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Stack = createNativeStackNavigator();
@@ -46,10 +48,12 @@ export const AuthenticationProvider = () => {
 
   return (
     <UserProvider>
-      <NavigationContainer>
-        {/* <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} /> */}
-        <RootStackNavigations />
-      </NavigationContainer>
+      <VillaProvider>
+        <NavigationContainer>
+          {/* <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} /> */}
+          <RootStackNavigations />
+        </NavigationContainer>
+      </VillaProvider>
     </UserProvider>
   );
 };
@@ -79,11 +83,14 @@ export const RootStackNavigations = () => {
             name="AccountSetting"
             component={AccountSettingScreen}
           />
-          <Stack.Screen name="NoticeBoard" component={NoticeBoardScreen} /> */}
-          <Stack.Screen name="AddNotice" component={AddNoticeScreen} />
+          <Stack.Screen name="GeneralBoard" component={GeneralBoardScreen} /> */}
+          {/* <Stack.Screen name="AddGeneral" component={AddGeneralScreen} /> */}
           {/* <Stack.Screen name="Post" component={PostScreen} /> */}
           {/* <Stack.Screen name="Chat" component={ChatScreen} />
           <Stack.Screen name="AddChat" component={AddChatScreen} /> */}
+          <Stack.Screen name="SurveyBoard" component={SurveyBoardScreen} />
+          <Stack.Screen name="Survey" component={SurveyScreen} />
+          <Stack.Screen name="AddSurvey" component={AddSurveyScreen} />
         </>
       ) : (
         <>

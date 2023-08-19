@@ -102,8 +102,17 @@ export const checkSession = async () => {
 export const requestPOST = async (data, targetURL) => {
   try {
     console.log(data);
-    console.log(csrfToken);
+    // console.log(csrfToken);
     const response = await api.post(targetURL, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const requestPUT = async (targetURL, data) => {
+  try {
+    const response = await api.put(targetURL, data);
     return response.data;
   } catch (error) {
     throw error;

@@ -1,5 +1,5 @@
 import React, {useState, useContext} from 'react';
-import {UserContext} from '../context/UserProvider';
+import {UserContext} from '../contexts/UserProvider';
 import {useNavigation} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {View, Text} from 'react-native';
