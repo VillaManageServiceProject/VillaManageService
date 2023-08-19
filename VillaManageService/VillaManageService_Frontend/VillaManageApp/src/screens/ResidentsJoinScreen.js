@@ -30,7 +30,7 @@ import {signup} from '../api';
 
 export const ResidentsJoinScreen = ({route}) => {
   const navigation = useNavigation();
-  const {addressData} = route.params === undefined ? '' : route.params;
+  const addressData = route?.params?.addressData;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [tabIndex, setTabIndex] = React.useState(1);

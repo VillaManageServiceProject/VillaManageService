@@ -3,7 +3,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import React, {useContext} from 'react';
 import {UnLoginedMapScreen, LoginedMapScreen} from '../screens/MapScreen';
 import {LoginScreen} from '../screens/LoginScreen';
-import {UserContext, UserProvider} from '../context/UserProvider';
+import {UserProvider, UserContext} from '../contexts/UserProvider';
+import {VillaProvider} from '../contexts/VillaProvider';
 import {JoinScreen} from '../screens/JoinScreen';
 import {ResidentsJoinScreen} from '../screens/ResidentsJoinScreen';
 import {LandlordJoinScreen} from '../screens/LandlordJoinScreen';
@@ -47,10 +48,12 @@ export const AuthenticationProvider = () => {
 
   return (
     <UserProvider>
-      <NavigationContainer>
-        {/* <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} /> */}
-        <RootStackNavigations />
-      </NavigationContainer>
+      <VillaProvider>
+        <NavigationContainer>
+          {/* <RootStackNavigations handleLogin={handleLogin} isLoggedIn={isLoggedIn} /> */}
+          <RootStackNavigations />
+        </NavigationContainer>
+      </VillaProvider>
     </UserProvider>
   );
 };
@@ -100,7 +103,7 @@ export const RootStackNavigations = () => {
           {/* <Stack.Screen name="Login" options={{unmountOnBlur: true}}>
             {props => <LoginScreen {...props} handleLogin={handleLogin} />}
           </Stack.Screen> */}
-          {/* <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Join" component={JoinScreen} />
           <Stack.Screen name="ResidentsJoin" component={ResidentsJoinScreen} />
           <Stack.Screen
@@ -113,7 +116,7 @@ export const RootStackNavigations = () => {
             component={CommunityCenterJoinScreen}
           />
           <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
-          <Stack.Screen name="villaInfo" component={VillaInfoScreen} /> */}
+          <Stack.Screen name="villaInfo" component={VillaInfoScreen} />
         </>
       )}
     </Stack.Navigator>

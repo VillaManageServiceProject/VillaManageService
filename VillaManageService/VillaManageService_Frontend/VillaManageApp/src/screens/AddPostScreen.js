@@ -1,5 +1,6 @@
 import React, {useState, useContext} from 'react';
-import {UserContext} from '../context/UserProvider';
+import {VillaContext} from '../contexts/VillaProvider';
+import {UserContext} from '../contexts/UserProvider';
 import {
   StyleSheet,
   View,
@@ -18,7 +19,7 @@ import {checkSession, requestPOST} from '../api';
 
 export const AddGeneralScreen = ({route}) => {
   const navigation = useNavigation();
-  const {userInfo} = useContext(UserContext);
+  // const {userInfo} = useContext(UserContext);
 
   const [dateStart, setDateStart] = useState(new Date());
   const [dateEnd, setDateEnd] = useState(new Date());
@@ -296,7 +297,8 @@ export const AddGeneralScreen = ({route}) => {
 
 export const AddSurveyScreen = ({route}) => {
   const navigation = useNavigation();
-  const {userInfo} = useContext(UserContext);
+  // const {userInfo} = useContext(UserContext);
+  const {villaId} = useContext(VillaContext);
 
   const [dateStart, setDateStart] = useState(new Date());
   const [dateEnd, setDateEnd] = useState(new Date());
@@ -306,21 +308,17 @@ export const AddSurveyScreen = ({route}) => {
   const [options, setOptions] = useState([]);
 
   const [postData, setPostData] = useState({
-    // publisherId: userInfo.id,
-    // address: userInfo.address,
     title: '',
-    // postDate: new Date().toISOString().substring(0, 10),
-    // notification: '',
-    // relatedMemberId: '',
-    content: '',
+    villaId: villaId,
+    question: '',
     dateStart: new Date().toISOString().substring(0, 10),
     dateEnd: new Date().toISOString().substring(0, 10),
-    options: '',
+    options: [],
   });
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/posts');
+      const response = await requestPOST(postData, '/surveys');
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);
@@ -349,7 +347,11 @@ export const AddSurveyScreen = ({route}) => {
   };
 
   const handleAddOption = () => {
-    setOptions(prevItems => [...prevItems, '옵션']);
+    setOptions(prevItems => [...prevItems, '선택지']);
+    setPostData(prev => ({
+      ...prev,
+      options: [...prev.options, {option: '', voteCnt: 0}],
+    }));
   };
 
   return (
@@ -412,13 +414,13 @@ export const AddSurveyScreen = ({route}) => {
                   modal
                   open={isDateStartPickerOpened}
                   date={dateStart}
-                  onConfirm={dateStart => {
+                  onConfirm={date => {
                     setDateStartPickerOpen(false);
-                    setDateStart(dateStart);
-                    // setPostData(prev => ({
-                    //   ...prev,
-                    //   dateStart: date.toISOString().substring(0, 10),
-                    // }));
+                    setDateStart(date);
+                    setPostData(prev => ({
+                      ...prev,
+                      dateStart: date.toISOString().substring(0, 10),
+                    }));
                   }}
                   onCancel={() => {
                     setDateStartPickerOpen(false);
@@ -438,13 +440,13 @@ export const AddSurveyScreen = ({route}) => {
                   modal
                   open={isDateEndPickerOpened}
                   date={dateEnd}
-                  onConfirm={dateEnd => {
+                  onConfirm={date => {
                     setDateEndPickerOpen(false);
-                    setDateEnd(dateEnd);
-                    // setPostData(prev => ({
-                    //   ...prev,
-                    //   dateEnd: date.toISOString().substring(0, 10),
-                    // }));
+                    setDateEnd(date);
+                    setPostData(prev => ({
+                      ...prev,
+                      dateEnd: date.toISOString().substring(0, 10),
+                    }));
                   }}
                   onCancel={() => {
                     setDateEndPickerOpen(false);
@@ -499,7 +501,7 @@ export const AddSurveyScreen = ({route}) => {
                 multiline
                 placeholder="질문 입력"
                 onChangeText={text =>
-                  setPostData(prev => ({...prev, content: text}))
+                  setPostData(prev => ({...prev, question: text}))
                 }
                 style={{
                   width: '100%',
@@ -537,7 +539,9 @@ export const AddSurveyScreen = ({route}) => {
                       onChangeText={text =>
                         setPostData(prev => ({
                           ...prev,
-                          options: prev.options + text,
+                          options: prev.options.map((option, idx) =>
+                            idx === index ? {...option, option: text} : option,
+                          ),
                         }))
                       }
                     />
@@ -554,7 +558,7 @@ export const AddSurveyScreen = ({route}) => {
               height={30}
               fontWeight=""
               // color="#dfe1e5"
-              text="+ 옵션"
+              text="+ 선택지"
               backgroundColor="#dfe1e5"
               onPress={handleAddOption}
             />

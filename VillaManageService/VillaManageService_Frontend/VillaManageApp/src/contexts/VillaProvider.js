@@ -1,14 +1,14 @@
 import React, {createContext, useState} from 'react';
 
-export const villaContext = createContext();
+export const VillaContext = createContext();
 
 export const VillaProvider = ({children}) => {
-  const [villaId, setVillaId] = useState('');
+  const [villaId, setVillaId] = useState('000000000000000000');
   const [villaInfo, setVillaInfo] = useState(null);
 
   return (
-    <villaContext.Provider value={{setVillaId, setVillaInfo}}>
+    <VillaContext.Provider value={{villaId, setVillaId, setVillaInfo}}>
       {children}
-    </villaContext.Provider>
+    </VillaContext.Provider>
   );
 };

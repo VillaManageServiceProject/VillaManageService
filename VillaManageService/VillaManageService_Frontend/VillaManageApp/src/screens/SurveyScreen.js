@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -13,15 +13,25 @@ import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from '../components/Icon';
-import {requestGET, requestPOST} from '../api';
+import {requestGET, requestPOST, requestPUT} from '../api';
 // import {TouchableOpacity} from 'react-native-gesture-handler';
 
 export const SurveyScreen = ({route}) => {
   const navigation = useNavigation();
 
   const [postData, setPostData] = useState({
-    postId: '',
+    surveyId: '',
+    publisherId: '',
+    title: '',
+    question: '',
+    options: [],
+    createdAt: '',
+    modifiedAt: '',
+    dateStart: '',
+    dateEnd: '',
   });
+  const [isExpired, setIsExpired] = useState(false);
+  const [topVoteOpt, setTopVoteOpt] = useState({index: null, voteCnt: 0});
 
   useFocusEffect(
     React.useCallback(() => {
@@ -33,15 +43,60 @@ export const SurveyScreen = ({route}) => {
     }, []),
   );
 
+  useEffect(() => {
+    const today = new Date();
+    if (
+      new Date(postData.dateStart).getTime() > today ||
+      new Date(postData.dateEnd).getTime() < today
+    ) {
+      setIsExpired(true);
+    }
+  }, [postData]);
+
   const requestGetpost = async () => {
     try {
-      const response = await requestGET(`/posts/${route.params.postId}`);
+      const response = await requestGET(`/surveys/${route.params.surveyId}`);
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        setPostData(response.data);
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
       }
+    }
+
+    // const response = await checkSession();
+  };
+
+  const handlePressOption = async optionIdx => {
+    try {
+      // const updateData = {
+      //   surveyId: route.params.surveyId,
+      //   optionIdx: optionIdx,
+      // };
+      const response = await requestPUT(
+        `/surveys?surveyId=${route.params.surveyId}&optionIdx=${optionIdx}`,
+      );
+      // Handle the response from the signup API
+      console.log(response);
+
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -91,6 +146,55 @@ export const SurveyScreen = ({route}) => {
     // const response = await checkSession();
   };
 
+  const handleRenderOptions = (item, index) => {
+    if (topVoteOpt.voteCnt < item.voteCnt) {
+      setTopVoteOpt({index: index, voteCnt: item.voteCnt});
+    }
+
+    return (
+      <TouchableOpacity
+        disabled={isExpired}
+        onPress={() => handlePressOption(index)}
+        style={{
+          height: 40,
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderRadius: 10,
+          borderWidth: 1,
+          borderColor: '#e0e0e0',
+          paddingHorizontal: 10,
+          margin: 5,
+          backgroundColor:
+            item.voteCnt === topVoteOpt.voteCnt ? '#EAEAEA' : null,
+        }}>
+        <Text
+          style={{
+            marginRight: 10,
+          }}>
+          {index + 1}
+        </Text>
+        <View
+          style={{
+            width: '95%',
+            flexDirection: 'row',
+            // alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Text>{item.option}</Text>
+          <View
+            style={{
+              width: 20,
+              alignItems: 'center',
+              borderRadius: 30,
+              backgroundColor: '#e0e0e0',
+            }}>
+            <Text>{item.voteCnt}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
@@ -129,7 +233,10 @@ export const SurveyScreen = ({route}) => {
                 justifyContent: 'space-between',
                 margin: 5,
               }}>
-              <Text style={styles.title}>{route.params.postId}제목</Text>
+              <Text style={styles.title}>
+                {route.params.surveyId}
+                {postData.title}
+              </Text>
             </View>
             <View
               style={{
@@ -140,6 +247,7 @@ export const SurveyScreen = ({route}) => {
                 margin: 5,
               }}>
               <Text style={{marginRight: 20}}>게시자</Text>
+              <Text style={{marginRight: 20}}>{postData.publisherId}</Text>
             </View>
             <View
               style={{
@@ -150,6 +258,7 @@ export const SurveyScreen = ({route}) => {
                 margin: 5,
               }}>
               <Text style={{marginRight: 20}}>게시일</Text>
+              <Text style={{marginRight: 20}}>{postData.createdAt}</Text>
             </View>
             <View
               style={{
@@ -160,6 +269,9 @@ export const SurveyScreen = ({route}) => {
                 margin: 5,
               }}>
               <Text style={{marginRight: 20}}>진행기간</Text>
+              <Text style={{marginRight: 20}}>
+                {postData.dateStart} - {postData.dateEnd}
+              </Text>
             </View>
 
             <Spacing height={20} />
@@ -187,43 +299,30 @@ export const SurveyScreen = ({route}) => {
                   borderRadius: 10,
                   textAlignVertical: 'top',
                 }}>
-                <Text>
-                  내용dddddddddddddddddddddddddddddddddddddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ
-                </Text>
+                <Text>{postData.question}</Text>
               </View>
             </View>
             <Spacing height={20} />
             <FlatList
               // data={postData}
-              data={[
-                '옵션1',
-                '옵션2',
-                '옵션3',
-                '옵션4',
-                '옵션4',
-                '옵션4',
-                '옵션4',
-                '옵션4',
-                '옵션4',
-                '옵션4',
-                '옵션4',
-              ]}
-              renderItem={({item, index}) => (
-                <TouchableOpacity
-                  style={{
-                    borderRadius: 5,
-                    borderWidth: 1,
-                    borderColor: '#e0e0e0',
-                    padding: 10,
-                    margin: 5,
-                  }}>
-                  <Text>
-                    {index + 1}
-                    {'    '}
-                    {item}
-                  </Text>
-                </TouchableOpacity>
-              )}
+              data={postData.options}
+              renderItem={({item, index}) =>
+                // <TouchableOpacity
+                //   style={{
+                //     borderRadius: 5,
+                //     borderWidth: 1,
+                //     borderColor: '#e0e0e0',
+                //     padding: 10,
+                //     margin: 5,
+                //   }}>
+                //   <Text>
+                //     {index + 1}
+                //     {'    '}
+                //     {item}
+                //   </Text>
+                // </TouchableOpacity>
+                handleRenderOptions(item, index)
+              }
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
               nestedScrollEnabled={true}

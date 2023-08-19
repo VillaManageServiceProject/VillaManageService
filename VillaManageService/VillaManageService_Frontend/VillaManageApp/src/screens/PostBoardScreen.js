@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
 import styled from 'styled-components/native';
@@ -220,19 +220,25 @@ export const SurveyBoardScreen = ({route}) => {
     }, []),
   );
 
+  useEffect(() => {
+    requestGetpost();
+  }, [tabIndex]);
+
   const toggleSideMenu = () => {
     setIsMenuOpen(prev => !prev);
   };
 
   const requestGetpost = async () => {
     try {
-      const response = await requestGET('/posts/');
+      const response = await requestGET(
+        `/surveys/board/${tabIndex === 0 ? 'valid' : 'invalid'}`,
+      );
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        setPostData(response.data);
-      }
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -254,7 +260,6 @@ export const SurveyBoardScreen = ({route}) => {
   };
 
   const handleTabsChange = index => {
-    requestGetpost();
     setTabIndex(index);
   };
 
@@ -324,12 +329,11 @@ export const SurveyBoardScreen = ({route}) => {
             // data={NoticeBoardData}
             renderItem={({item, index}) => (
               <NoticeBoardItem
-                noticeType={item.noticeType}
                 title={item.title}
-                text={item.text}
-                createDate={item.createDate}
+                // text={item.text}
+                createDate={item.createdAt}
                 onPress={() => {
-                  navigation.navigate('Survey', {postId: index});
+                  navigation.navigate('Survey', {surveyId: item.surveyId});
                 }}
               />
             )}
