@@ -42,10 +42,10 @@ export const LoginScreen = ({route}) => {
       // Handle the response from the signup API
       console.log(response);
 
-      if (response === 200) {
+      if (response.status === 200) {
         console.log('hi3');
         handleLogin();
-        setUserInfo(response.data);
+        setUserInfo(response.data.member);
       }
     } catch (error) {
       if (error.response) {

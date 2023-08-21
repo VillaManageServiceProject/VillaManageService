@@ -382,13 +382,13 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 10,
     // backgroundColor: 'rgba(0, 0, 0, 0)',
-    backgroundColor: 'yellow',
+    // backgroundColor: 'yellow',
   },
   voteWrapper: {
     height: 250,
     borderRadius: 10,
     // backgroundColor: 'rgba(0, 0, 0, 0)',
-    backgroundColor: 'yellow',
+    // backgroundColor: 'yellow',
   },
   slide1: {
     flex: 1,
@@ -396,21 +396,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     padding: 20,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
   },
   slide2: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
   },
   slide3: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
   },
   text: {
     fontSize: 20,
@@ -430,6 +430,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
   },
 });

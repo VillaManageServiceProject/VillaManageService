@@ -21,16 +21,16 @@ public class SurveyController {
         return survey;
     }
 
-    @GetMapping("/surveys/board/{available}")
-    public List<SurveyListResponseForm> getSurveys(@PathVariable String available) {
-        return surveyService.readSurveyByExpired(available);
+    @GetMapping("/surveys/board")
+    public List<SurveyListResponseForm> getSurveys(@RequestParam String villaId, @RequestParam String available) {
+        return surveyService.readSurveyByExpired(villaId, available);
     }
 
     // 전체 목록 조회
-    @GetMapping("/surveys/board")
-    public List<SurveyListResponseForm> getAllSurveys() {
-        return surveyService.findAllSurvey();
-    }
+//    @GetMapping("/surveys/board")
+//    public List<SurveyListResponseForm> getAllSurveys() {
+//        return surveyService.findAllSurvey();
+//    }
 
     // 글 하나 조회
     @GetMapping("/surveys/{surveyId}")
@@ -40,8 +40,9 @@ public class SurveyController {
 
     // 글 수정
     @PutMapping("/surveys")
-    public SurveyResponseForm updateSurveyVoteCnt(@RequestParam Long surveyId, @RequestParam int optionIdx) {
-        return surveyService.updateSurveyVoteCnt(surveyId, optionIdx);
+    public SurveyResponseForm updateSurveyVote(@RequestParam Long surveyId, @RequestParam int optionIdx) {
+        surveyService.updateSurveyVote(surveyId, optionIdx);
+        return surveyService.findOneSurvey(surveyId);
     }
 
     @PutMapping("/surveys/{surveyId}")

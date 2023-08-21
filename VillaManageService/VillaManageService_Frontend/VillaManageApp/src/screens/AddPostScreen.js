@@ -19,7 +19,7 @@ import {checkSession, requestPOST} from '../api';
 
 export const AddGeneralScreen = ({route}) => {
   const navigation = useNavigation();
-  // const {userInfo} = useContext(UserContext);
+  const {villaId} = useContext(VillaContext);
 
   const [dateStart, setDateStart] = useState(new Date());
   const [dateEnd, setDateEnd] = useState(new Date());
@@ -28,11 +28,10 @@ export const AddGeneralScreen = ({route}) => {
   const [noticeChecked, setNoticeChecked] = useState('Notice');
 
   const [postData, setPostData] = useState({
-    // publisherId: userInfo.id,
-    // address: userInfo.address,
+    villaId: villaId,
     title: '',
     // postDate: new Date().toISOString().substring(0, 10),
-    notification: '',
+    noticeType: 'common',
     // relatedMemberId: '',
     content: '',
     // dateStart: new Date().toISOString().substring(0, 10),
@@ -41,14 +40,14 @@ export const AddGeneralScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/posts');
+      const response = await requestPOST(postData, '/generals');
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        navigation.navigate('NoticeBoard');
-      }
+      // if (response.status === 'success') {
+      navigation.navigate('GeneralBoard');
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -127,13 +126,16 @@ export const AddGeneralScreen = ({route}) => {
                   }}>
                   <Text style={{marginRight: 5}}>중요</Text>
                   <RadioButton
-                    value="Notice"
+                    value="common"
                     status={
                       noticeChecked === 'Notice' ? 'checked' : 'unchecked'
                     }
                     onPress={() => {
                       setNoticeChecked('Notice');
-                      setPostData(prev => ({...prev, notification: true}));
+                      setPostData(prev => ({
+                        ...prev,
+                        noticeType: 'important',
+                      }));
                     }}
                   />
                 </View>
@@ -151,7 +153,7 @@ export const AddGeneralScreen = ({route}) => {
                     }
                     onPress={() => {
                       setNoticeChecked('Common');
-                      setPostData(prev => ({...prev, notification: true}));
+                      setPostData(prev => ({...prev, noticeType: 'common'}));
                     }}
                   />
                 </View>
@@ -323,9 +325,9 @@ export const AddSurveyScreen = ({route}) => {
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        navigation.navigate('NoticeBoard');
-      }
+      // if (response.status === 'success') {
+      navigation.navigate('SurveyBoard');
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -350,7 +352,7 @@ export const AddSurveyScreen = ({route}) => {
     setOptions(prevItems => [...prevItems, '선택지']);
     setPostData(prev => ({
       ...prev,
-      options: [...prev.options, {option: '', voteCnt: 0}],
+      options: [...prev.options, {option: '', voteCnt: 0, voters: ''}],
     }));
   };
 

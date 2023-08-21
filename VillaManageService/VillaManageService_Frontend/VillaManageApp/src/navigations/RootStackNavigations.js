@@ -121,9 +121,10 @@ export const RootStackNavigations = () => {
             component={CommunityCenterJoinScreen}
           />
           <Stack.Screen name="SearchAddress" component={SearchAddressScreen} />
-          <Stack.Screen name="villaInfo" component={VillaInfoScreen} />
+          {/* <Stack.Screen name="villaInfo" component={VillaInfoScreen} /> */}
         </>
       )}
+      <Stack.Screen name="villaInfo" component={VillaInfoScreen} />
     </Stack.Navigator>
   );
 };

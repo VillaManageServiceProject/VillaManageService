@@ -9,5 +9,5 @@ public interface GeneralRepository extends JpaRepository<General, Long> {
 //    General findByAddress(String address);
 //    General findByTitle(String title);
 //    General findByContent(String content);
-//    List<GeneralListResponseForm> findAllByOrderByModifiedAtDesc();
+    List<General> findByVillaIdOrderByModifiedAtDesc(String villaId);
 }

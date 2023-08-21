@@ -34,9 +34,9 @@ public class GeneralService {
     }
 
     // 모든 글 가져오기
-    public List<GeneralListResponseForm> findAllGeneral() {
+    public List<GeneralListResponseForm> findAllGeneral(String villaId) {
         try {
-            List<General> generalList = generalRepository.findAll();
+            List<General> generalList = generalRepository.findByVillaIdOrderByModifiedAtDesc(villaId);
 
             List<GeneralListResponseForm> responseFormList = new ArrayList<>();
 

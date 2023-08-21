@@ -65,7 +65,7 @@ export const login = async ({credentials}) => {
     console.log(newJwtToken);
     api.defaults.headers['Authorization'] = `Bearer ${newJwtToken}`;
 
-    return response.status;
+    return response;
   } catch (error) {
     throw error;
   }
@@ -81,9 +81,10 @@ export const logout = async () => {
   }
 };
 
-export const requestGET = async targetURL => {
+export const requestGET = async (targetURL, requestParams) => {
   try {
-    const response = await api.get(targetURL);
+    console.log('targetURL: ', targetURL);
+    const response = await api.get(targetURL, {params: requestParams});
     return response.data;
   } catch (error) {
     throw error;

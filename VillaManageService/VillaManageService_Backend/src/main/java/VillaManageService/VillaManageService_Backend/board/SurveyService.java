@@ -1,6 +1,9 @@
 package VillaManageService.VillaManageService_Backend.board;
 
 import VillaManageService.VillaManageService_Backend.user.*;
+import VillaManageService.VillaManageService_Backend.villa.Villa;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,14 +23,18 @@ public class SurveyService {
 
     private final MemberRepository memberRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     // 글 생성
     public SurveyResponseForm createSurvey(SurveyCreateForm surveyCreateForm) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.isAuthenticated()) {
             String publisherId = authentication.getName();
-            Optional<Member> _member = memberRepository.findById(publisherId);
-            Member member = _member.get();
-            Survey survey = new Survey(surveyCreateForm, publisherId);
+//            Optional<Member> _member = memberRepository.findById(publisherId);
+//            Member member = _member.get();
+            Villa villaReference = entityManager.getReference(Villa.class, surveyCreateForm.getVillaId());
+            Survey survey = new Survey(surveyCreateForm, publisherId, villaReference);
             surveyRepository.save(survey);
             return new SurveyResponseForm(survey);
         }
@@ -53,14 +60,14 @@ public class SurveyService {
         return null;
     }
 
-    public List<SurveyListResponseForm> readSurveyByExpired(String available) {
+    public List<SurveyListResponseForm> readSurveyByExpired(String villaId, String available) {
         try {
             List<Survey> SurveyList;
 
-            if(available.equals("valid")) SurveyList = surveyRepository.findByDateStartLessThanEqualAndDateEndGreaterThanEqualOrderByCreatedAtDesc(LocalDate.now(), LocalDate.now());
+            if(available.equals("valid")) SurveyList = surveyRepository.findByVillaIdAndDateStartLessThanEqualAndDateEndGreaterThanEqualOrderByCreatedAtDesc(villaId, LocalDate.now(), LocalDate.now());
             else {
                 LocalDate today = LocalDate.now();
-                SurveyList =surveyRepository.findSurveysOutsideDateRange(today);
+                SurveyList =surveyRepository.findSurveysOutsideDateRange(villaId, today);
             }
 
             List<SurveyListResponseForm> responseFormList = new ArrayList<>();
@@ -91,12 +98,18 @@ public class SurveyService {
 
     // 글 수정
     @Transactional
-    public SurveyResponseForm updateSurveyVoteCnt(Long surveyId, int optionIdx) {
-        Survey survey = surveyRepository.findById(surveyId).orElseThrow(
-                () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
-        );
-        survey.updateVoteCnt(optionIdx);
-        return new SurveyResponseForm(survey);
+    public SurveyResponseForm updateSurveyVote(Long surveyId, int optionIdx) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication.isAuthenticated()) {
+            String publisherId = authentication.getName();
+            Survey survey = surveyRepository.findById(surveyId).orElseThrow(
+                    () -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다.")
+            );
+            survey.updateVoteCnt(optionIdx);
+            survey.updateVoteMember(optionIdx, publisherId);
+            return new SurveyResponseForm(survey);
+        }
+        return null;
     }
 
     @Transactional

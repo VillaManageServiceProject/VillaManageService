@@ -22,13 +22,13 @@ public class GeneralController {
     }
 
     // 전체 목록 조회
-    @GetMapping("/generals/board")
-    public List<GeneralListResponseForm> getAllGenerals() {
-        return generalService.findAllGeneral();
+    @GetMapping("/generals/board/{villaId}")
+    public List<GeneralListResponseForm> getAllGenerals(@PathVariable String villaId) {
+        return generalService.findAllGeneral(villaId);
     }
 
     // 글 하나 조회
-    @GetMapping("/generals/{postId}")
+    @GetMapping("/generals/{generalId}")
     public GeneralResponseForm getOneGeneral(@PathVariable Long generalId) {
         return generalService.findOneGeneral(generalId);
     }

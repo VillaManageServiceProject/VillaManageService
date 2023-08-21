@@ -14,15 +14,15 @@ public class General extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long generalId;
 
+    private String villaId;
+
     private String postType;
 
     private String publisherId;
 
-    private String address;
-
     private String title;
 
-    private String notification;
+    private String noticeType;
 
 //    private String relatedMemberId;
 
@@ -31,9 +31,9 @@ public class General extends Timestamped {
     // requestDto 정보를 가져와서 entity 만들 때 사용
     public General(GeneralCreateForm generalCreateForm, String publisherId) {
         this.publisherId = publisherId;
-        this.address = generalCreateForm.getAddress();
+        this.villaId = generalCreateForm.getVillaId();
         this.title = generalCreateForm.getTitle();
-        this.notification = generalCreateForm.getNotification();
+        this.noticeType = generalCreateForm.getNoticeType();
         this.content = generalCreateForm.getContent();
     }
 

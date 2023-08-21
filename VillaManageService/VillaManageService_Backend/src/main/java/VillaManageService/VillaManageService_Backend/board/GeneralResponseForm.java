@@ -14,6 +14,8 @@ public class GeneralResponseForm {
 
     private String content;
 
+    private String noticeType;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime modifiedAt;
@@ -23,6 +25,7 @@ public class GeneralResponseForm {
         this.generalId = general.getGeneralId();
         this.title = general.getTitle();
         this.content = general.getContent();
+        this.noticeType = general.getNoticeType();
         this.createdAt = general.getCreatedAt();
         this.modifiedAt = general.getModifiedAt();
     }

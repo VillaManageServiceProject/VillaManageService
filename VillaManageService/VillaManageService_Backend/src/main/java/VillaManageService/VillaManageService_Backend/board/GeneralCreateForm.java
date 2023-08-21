@@ -9,10 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class GeneralCreateForm {
+    private String villaId;
+
     @NotNull(message = "제목은 필수항목입니다.")
     private String title;
 
-    private String notification;
+    private String noticeType;
 
     @NotNull(message = "정상적인 주소가 아닙니다.")
     private String address;

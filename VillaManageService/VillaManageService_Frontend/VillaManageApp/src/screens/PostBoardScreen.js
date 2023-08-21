@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
-import styled from 'styled-components/native';
+import {VillaContext} from '../contexts/VillaProvider';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from '../components/Icon';
 import {requestGET} from '../api';
@@ -89,9 +89,20 @@ const NoticeBoardData = [
 
 export const GeneralBoardScreen = ({route}) => {
   const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [postData, setPostData] = useState('');
+  const [postData, setPostData] = useState({
+    generalId: '',
+    publisherId: '',
+    title: '',
+    context: '',
+    notification: '',
+    createdAt: '',
+    modifiedAt: '',
+    // dateStart: '',
+    // dateEnd: '',
+  });
 
   useFocusEffect(
     React.useCallback(() => {
@@ -109,13 +120,13 @@ export const GeneralBoardScreen = ({route}) => {
 
   const requestGetpost = async () => {
     try {
-      const response = await requestGET('post', '/');
+      const response = await requestGET(`/generals/board/${villaId}`);
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        setPostData(response.data);
-      }
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -177,16 +188,16 @@ export const GeneralBoardScreen = ({route}) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            // data={postData}
-            data={NoticeBoardData}
+            data={postData}
+            // data={NoticeBoardData}
             renderItem={({item}) => (
               <NoticeBoardItem
                 noticeType={item.noticeType}
                 title={item.title}
-                text={item.text}
-                createDate={item.createDate}
+                text={item.context}
+                createDate={item.createdAt}
                 onPress={() => {
-                  navigation.navigate('Post');
+                  navigation.navigate('Post', {generalId: item.generalId});
                 }}
               />
             )}
@@ -205,6 +216,8 @@ export const GeneralBoardScreen = ({route}) => {
 
 export const SurveyBoardScreen = ({route}) => {
   const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
+  const segmentedControlRef = useRef(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [postData, setPostData] = useState('');
@@ -212,7 +225,12 @@ export const SurveyBoardScreen = ({route}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      requestGetpost();
+      // handleTabsChange(
+      //   segmentedControlRef?.current?.currentIndex === null
+      //     ? 0
+      //     : segmentedControlRef?.current?.currentIndex,
+      // );
+      handleTabsChange(tabIndex);
 
       return () => {
         console.log('ScreenOne is unfocused');
@@ -230,9 +248,12 @@ export const SurveyBoardScreen = ({route}) => {
 
   const requestGetpost = async () => {
     try {
-      const response = await requestGET(
-        `/surveys/board/${tabIndex === 0 ? 'valid' : 'invalid'}`,
-      );
+      console.log('villaId : ', villaId);
+      const requestParams = {
+        villaId: villaId,
+        available: tabIndex === 0 ? 'valid' : 'invalid',
+      };
+      const response = await requestGET('/surveys/board', requestParams);
       // Handle the response from the signup API
       console.log(response);
 
@@ -260,6 +281,7 @@ export const SurveyBoardScreen = ({route}) => {
   };
 
   const handleTabsChange = index => {
+    console.log(index);
     setTabIndex(index);
   };
 
@@ -312,9 +334,10 @@ export const SurveyBoardScreen = ({route}) => {
               //   backgroundColor: 'red',
             }}>
             <SegmentedControl
+              ref={segmentedControlRef}
               tabs={['진행중', '만료']}
               currentIndex={tabIndex}
-              onChange={handleTabsChange}
+              onChange={index => handleTabsChange(index)}
               segmentedControlBackgroundColor="#F0F0F0"
               activeSegmentBackgroundColor="#1A73E8"
               activeTextColor="white"

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -14,10 +14,12 @@ import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from '../components/Icon';
 import {requestGET, requestPOST, requestPUT} from '../api';
+import {UserContext} from '../contexts/UserProvider';
 // import {TouchableOpacity} from 'react-native-gesture-handler';
 
 export const SurveyScreen = ({route}) => {
   const navigation = useNavigation();
+  const {userInfo} = useContext(UserContext);
 
   const [postData, setPostData] = useState({
     surveyId: '',
@@ -45,13 +47,39 @@ export const SurveyScreen = ({route}) => {
 
   useEffect(() => {
     const today = new Date();
+    console.log('hi1');
     if (
-      new Date(postData.dateStart).getTime() > today ||
-      new Date(postData.dateEnd).getTime() < today
+      postData.dateStart !== '' &&
+      postData.dateEnd !== '' &&
+      (formatDate(new Date(postData.dateStart)) > formatDate(today) ||
+        formatDate(new Date(postData.dateEnd)) < formatDate(today))
     ) {
+      console.log('hi2');
+      setIsExpired(true);
+    }
+
+    console.log(
+      'postData.options: ',
+      postData.options.some(option =>
+        option.voters.split(',').some(voter => console.log(option)),
+      ),
+    );
+    if (
+      postData.options.some(option =>
+        option.voters.split(',').some(voter => voter.includes(userInfo.id)),
+      )
+    ) {
+      console.log('hi2');
       setIsExpired(true);
     }
   }, [postData]);
+
+  const formatDate = date => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+      2,
+      '0',
+    )}-${String(date.getDate()).padStart(2, '0')}`;
+  };
 
   const requestGetpost = async () => {
     try {
