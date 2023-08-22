@@ -11,13 +11,16 @@ class NaverMap extends Component {
     this.state = {
       markers: [],
       markerLegalcodes: [],
+      forceRender: true,
     };
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.searchQuery !== this.props.searchQuery) {
-      console.log('hi2');
+    if (prevProps.reRender !== this.props.reRender) {
+      console.log('navermap: ', this.props.searchQuery);
       this.handleSearch(this.props.searchQuery);
+      this.setState({markers: []});
+      console.log('forceRender: ', this.state.forceRender);
     }
   }
 
@@ -37,7 +40,9 @@ class NaverMap extends Component {
 
     // 검색 결과를 marker 상태에 저장
     if (dataAddress.status === 'OK') {
+      console.log(this.state.markers);
       this.setState({markers: dataAddress.addresses});
+      // this.setState({searchQuery: ''});
     } else {
       console.log('검색 실패');
     }
@@ -80,7 +85,7 @@ class NaverMap extends Component {
   };
 
   render() {
-    const {markers} = this.state;
+    const {markers, forceRender} = this.state;
 
     return (
       <NaverMapView

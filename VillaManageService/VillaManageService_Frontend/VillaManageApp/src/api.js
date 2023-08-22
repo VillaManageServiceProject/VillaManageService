@@ -75,7 +75,7 @@ export const logout = async () => {
   try {
     const response = await api.post('/logout');
     api.defaults.headers['Authorization'] = null;
-    return response.data;
+    return response;
   } catch (error) {
     throw error;
   }
@@ -114,6 +114,15 @@ export const requestPOST = async (data, targetURL) => {
 export const requestPUT = async (targetURL, data) => {
   try {
     const response = await api.put(targetURL, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const requestDelete = async targetURL => {
+  try {
+    const response = await api.delete(targetURL);
     return response.data;
   } catch (error) {
     throw error;

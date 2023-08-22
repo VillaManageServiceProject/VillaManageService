@@ -43,9 +43,12 @@ export const LoginScreen = ({route}) => {
       console.log(response);
 
       if (response.status === 200) {
-        console.log('hi3');
         handleLogin();
         setUserInfo(response.data.member);
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'LoginedMap'}],
+        });
       }
     } catch (error) {
       if (error.response) {

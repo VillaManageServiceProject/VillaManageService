@@ -1,6 +1,7 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect, useContext} from 'react';
 import styled from 'styled-components/native';
 import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
+import {VillaContext} from '../contexts/VillaProvider';
 import IconInput from '../components/IconInput';
 import {CommonButton, SpecificButton} from '../components/Button';
 import TextButton from '../components/TextButton';
@@ -14,6 +15,7 @@ import {signup} from '../api';
 
 export const LandlordJoinScreen = ({route}) => {
   const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
   const addressData = route?.params?.addressData;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -27,6 +29,7 @@ export const LandlordJoinScreen = ({route}) => {
 
   const [userData, setUserData] = useState({
     id: '',
+    villaId: villaId,
     password1: '',
     password2: '',
     name: '',
@@ -44,7 +47,22 @@ export const LandlordJoinScreen = ({route}) => {
     console.log(addressData);
     if (addressData && addressData.address) {
       console.log(addressData.address);
-      setUserData(prev => ({...prev, ownedAddress: addressData.address}));
+      setUserData(prev => ({
+        ...prev,
+        villaId:
+          addressData.bcode +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[0]
+            .padStart(4, '0') +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[1]
+            .padStart(4, '0'),
+        ownedAddress: addressData.address,
+      }));
       // addressComp.current.text = addressData.address;
     }
   }, [addressData]);
@@ -65,6 +83,7 @@ export const LandlordJoinScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
+      console.log(userData);
       const userType = 'landlord';
       const response = await signup({userType: userType, userData: userData});
       // Handle the response from the signup API
@@ -136,9 +155,7 @@ export const LandlordJoinScreen = ({route}) => {
         <IconInput
           Icon="none"
           placeholder="E-mail"
-          onChangeText={text =>
-            setUserData(prev => ({...prev, password1: text}))
-          }
+          onChangeText={text => setUserData(prev => ({...prev, email: text}))}
         />
         <View
           style={{

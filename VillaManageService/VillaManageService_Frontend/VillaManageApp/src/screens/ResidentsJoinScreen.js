@@ -49,7 +49,7 @@ export const ResidentsJoinScreen = ({route}) => {
     name: '',
     contactNumber: '',
     contactNumberSub: '',
-    villaId: '112901330001090030',
+    villaId: '',
     address: '서울 성북구 정릉동 109-30',
     addressDetail: 101,
     email: '',

@@ -34,7 +34,7 @@ public class GeneralListResponseForm {
         this.context = general.getContent();
         this.noticeType = general.getNoticeType();
         this.modifiedAt = general.getModifiedAt();
-        this.publisherId = general.getPublisherId();
+        this.publisherId = general.getPublisher().getId();
     }
 
 //    public PostListResponseForm(Optional<Post> post) {

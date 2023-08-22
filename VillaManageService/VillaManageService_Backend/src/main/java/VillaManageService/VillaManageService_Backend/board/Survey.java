@@ -64,6 +64,9 @@ public class Survey extends Timestamped {
     public void updateSurvey(SurveyCreateForm surveyCreateForm) {
         this.title = surveyCreateForm.getTitle();
         this.question = surveyCreateForm.getQuestion();
+        this.dateStart = surveyCreateForm.getDateStart();
+        this.dateEnd = surveyCreateForm.getDateEnd();
+        this.options = surveyCreateForm.getOptions();
     }
 
     public void updateVoteCnt(int optionIdx) {

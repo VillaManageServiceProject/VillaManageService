@@ -7,9 +7,9 @@ import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from '../components/Icon';
-import {requestPOST, requestGET} from '../api';
+import {requestDelete, requestGET} from '../api';
 
-export const PostScreen = ({route}) => {
+export const GeneralScreen = ({route}) => {
   const navigation = useNavigation();
   const {userInfo} = useContext(UserContext);
 
@@ -70,14 +70,27 @@ export const PostScreen = ({route}) => {
     // const response = await checkSession();
   };
 
+  const handlePressUpdate = () => {
+    if (userInfo.id === postData.publisherId) {
+      navigation.navigate('EditGeneral', {
+        generalId: route.params.generalId,
+        postData,
+      });
+    }
+  };
+
   const handlePressDelete = async () => {
     try {
-      const response = await requestPOST(postData, '/');
-      // Handle the response from the signup API
-      console.log(response);
+      if (userInfo.id === postData.publisherId) {
+        const response = await requestDelete(
+          `/generals/${route.params.generalId}`,
+        );
+        // Handle the response from the signup API
+        console.log(response);
 
-      // if (response.status === 'success') {
-      navigation.navigate('GeneralBoard');
+        // if (response.status === 'success') {
+        navigation.goBack();
+      }
       // }
     } catch (error) {
       if (error.response) {
@@ -115,7 +128,7 @@ export const PostScreen = ({route}) => {
               size={20}
               borderRadius={30}
               borderWidth={0}
-              //   onPress={this.handleTouchFavorite}
+              onPress={handlePressUpdate}
             />
             <Icon
               IconType="MaterialCommunityIcons"

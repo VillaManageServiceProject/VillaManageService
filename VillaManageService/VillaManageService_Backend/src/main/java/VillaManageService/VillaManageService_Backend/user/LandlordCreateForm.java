@@ -41,7 +41,7 @@ public class LandlordCreateForm {
     @NotBlank
     private String villaId;
 
-    @NotBlank(message = "소유지 주소는 필수항목입니다.")
+    @NotNull(message = "소유지 주소는 필수항목입니다.")
     private String ownedAddress;
 
     @NotNull(message = "소유지 상세 주소는 필수항목입니다.")

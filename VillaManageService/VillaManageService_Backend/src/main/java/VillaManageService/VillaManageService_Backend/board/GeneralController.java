@@ -3,6 +3,7 @@ package VillaManageService.VillaManageService_Backend.board;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,16 @@ public class GeneralController {
     @GetMapping("/generals/board/{villaId}")
     public List<GeneralListResponseForm> getAllGenerals(@PathVariable String villaId) {
         return generalService.findAllGeneral(villaId);
+    }
+
+    @GetMapping("/generals/board/role/{villaId}")
+    public HashMap<String, List> getAllGeneralsByRole(@PathVariable String villaId, @RequestParam List<String> roles) {
+        return generalService.findAllGeneralByRole(villaId, roles);
+    }
+
+    @GetMapping("/generals/board/role/announce/{villaId}")
+    public HashMap<String, List> getAllAnnouncesByRole(@PathVariable String villaId, @RequestParam List<String> roles) {
+        return generalService.findAllAnnounceByRole(villaId, roles);
     }
 
     // 글 하나 조회

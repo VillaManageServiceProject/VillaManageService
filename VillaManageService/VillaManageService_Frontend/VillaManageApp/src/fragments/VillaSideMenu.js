@@ -1,5 +1,6 @@
 import React, {useContext} from 'react';
 import {UserContext} from '../contexts/UserProvider';
+import {useNavigation} from '@react-navigation/native';
 import {
   StyleSheet,
   View,
@@ -40,8 +41,9 @@ import {logout} from '../api';
 //   // );
 // };
 
-export default VillaSideMenu = ({onClose}) => {
-  const {userInfo, handleLogout} = useContext(UserContext);
+export default VillaSideMenu = ({onClose, navigationReset}) => {
+  const {navigation} = useNavigation();
+  const {isLoggedIn, userInfo, handleLogout} = useContext(UserContext);
 
   const menuAnimation = new Animated.Value(0);
 
@@ -67,8 +69,13 @@ export default VillaSideMenu = ({onClose}) => {
       // Handle the response from the signup API
       console.log(response);
 
-      // if (response.status === 'success') {
+      // if (response.status === 200) {
       handleLogout();
+      navigationReset();
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{name: 'UnLoginedMap'}],
+      // });
       // }
     } catch (error) {
       if (error.response) {
@@ -125,7 +132,7 @@ export default VillaSideMenu = ({onClose}) => {
             title="공용메뉴"
             IconName="home"
             childMenuList={{
-              공지사항: '',
+              공지사항: 'AnnounceBoard',
               일정관리: '',
               '설문조사/투표': 'SurveyBoard',
               게시판: 'GeneralBoard',

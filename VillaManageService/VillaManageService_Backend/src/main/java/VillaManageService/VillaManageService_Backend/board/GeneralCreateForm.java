@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,4 +25,8 @@ public class GeneralCreateForm {
 
     @NotNull(message = "본문 내용은 필수항목입니다.")
     private String content;
+
+    private LocalDate dateStart;
+
+    private LocalDate dateEnd;
 }

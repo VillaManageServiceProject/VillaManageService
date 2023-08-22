@@ -15,9 +15,9 @@ import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import {CommonButton} from '../components/Button';
-import {checkSession, requestPOST} from '../api';
+import {requestPUT, requestPOST} from '../api';
 
-export const AddGeneralScreen = ({route}) => {
+export const EditGeneralScreen = ({route}) => {
   const navigation = useNavigation();
   const {villaId} = useContext(VillaContext);
 
@@ -25,30 +25,33 @@ export const AddGeneralScreen = ({route}) => {
   const [dateEnd, setDateEnd] = useState(new Date());
   const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
   const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
-  const [noticeChecked, setNoticeChecked] = useState('common');
 
-  const [postData, setPostData] = useState({
-    villaId: villaId,
-    title: '',
-    // postDate: new Date().toISOString().substring(0, 10),
-    noticeType: 'common',
-    // relatedMemberId: '',
-    content: '',
-    dateStart: new Date().toISOString().substring(0, 10),
-    dateEnd: new Date().toISOString().substring(0, 10),
-  });
+  const [postData, setPostData] = useState(route.params.postData);
+  const [noticeChecked, setNoticeChecked] = useState(postData.noticeType);
+
+  // const [postData, setPostData] = useState({
+  //   villaId: villaId,
+  //   title: '',
+  //   // postDate: new Date().toISOString().substring(0, 10),
+  //   noticeType: 'common',
+  //   // relatedMemberId: '',
+  //   content: '',
+  //   dateStart: new Date().toISOString().substring(0, 10),
+  //   dateEnd: new Date().toISOString().substring(0, 10),
+  // });
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/generals');
+      const response = await requestPUT(
+        `/generals/${route.params.generalId}`,
+        postData,
+      );
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);
 
       // if (response.status === 'success') {
       navigation.goBack();
-      // .navigate('GeneralBoard');
-      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -75,7 +78,7 @@ export const AddGeneralScreen = ({route}) => {
         <View style={styles.header}>
           <View style={styles.left} />
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>새로운 게시글</Text>
+            <Text style={styles.headerTitle}>게시글 수정</Text>
           </View>
           <View style={styles.right} />
         </View>
@@ -91,6 +94,7 @@ export const AddGeneralScreen = ({route}) => {
               }}>
               <Text style={{marginRight: 20}}>제목</Text>
               <TextInput
+                value={postData.title}
                 onChangeText={text =>
                   setPostData(prev => ({...prev, title: text}))
                 }
@@ -179,13 +183,15 @@ export const AddGeneralScreen = ({route}) => {
                   width={120}
                   height={40}
                   fontSize={14}
-                  text={dateStart.toISOString().substring(0, 10)}
+                  text={new Date(postData.dateStart)
+                    .toISOString()
+                    .substring(0, 10)}
                   onPress={() => setDateStartPickerOpen(true)}
                 />
                 <DatePicker
                   modal
                   open={isDateStartPickerOpened}
-                  date={dateStart}
+                  date={new Date(postData.dateStart)}
                   onConfirm={date => {
                     setDateStartPickerOpen(false);
                     setDateStart(date);
@@ -205,13 +211,15 @@ export const AddGeneralScreen = ({route}) => {
                   width={120}
                   height={40}
                   fontSize={14}
-                  text={dateEnd.toISOString().substring(0, 10)}
+                  text={new Date(postData.dateEnd)
+                    .toISOString()
+                    .substring(0, 10)}
                   onPress={() => setDateEndPickerOpen(true)}
                 />
                 <DatePicker
                   modal
                   open={isDateEndPickerOpened}
-                  date={dateEnd}
+                  date={new Date(postData.dateEnd)}
                   onConfirm={date => {
                     setDateEndPickerOpen(false);
                     setDateEnd(date);
@@ -271,6 +279,7 @@ export const AddGeneralScreen = ({route}) => {
               }}>
               <TextInput
                 multiline
+                value={postData.content}
                 placeholder="내용 입력"
                 onChangeText={text =>
                   setPostData(prev => ({...prev, content: text}))
@@ -298,7 +307,7 @@ export const AddGeneralScreen = ({route}) => {
   );
 };
 
-export const AddSurveyScreen = ({route}) => {
+export const EditSurveyScreen = ({route}) => {
   const navigation = useNavigation();
   // const {userInfo} = useContext(UserContext);
   const {villaId} = useContext(VillaContext);
@@ -307,21 +316,20 @@ export const AddSurveyScreen = ({route}) => {
   const [dateEnd, setDateEnd] = useState(new Date());
   const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
   const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
-  const [noticeChecked, setNoticeChecked] = useState('Notice');
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState(
+    route.params.postData.options.map(item => item.option),
+  );
 
-  const [postData, setPostData] = useState({
-    title: '',
-    villaId: villaId,
-    question: '',
-    dateStart: new Date().toISOString().substring(0, 10),
-    dateEnd: new Date().toISOString().substring(0, 10),
-    options: [],
-  });
+  const [postData, setPostData] = useState(route.params.postData);
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/surveys');
+      console.log(route.params.surveyId);
+      console.log(postData);
+      const response = await requestPUT(
+        `/surveys/${route.params.surveyId}`,
+        postData,
+      );
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);
@@ -357,13 +365,27 @@ export const AddSurveyScreen = ({route}) => {
     }));
   };
 
+  const handleOptionChange = (text, index) => {
+    setPostData(prev => ({
+      ...prev,
+      options: prev.options.map((option, idx) =>
+        idx === index ? {...option, option: text} : option,
+      ),
+    }));
+    setOptions(prev =>
+      prev.map((option, idx) =>
+        idx === index ? {...option, option: text} : option,
+      ),
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
         <View style={styles.header}>
           <View style={styles.left} />
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>새로운 설문조사</Text>
+            <Text style={styles.headerTitle}>설문조사 수정</Text>
           </View>
           <View style={styles.right} />
         </View>
@@ -379,6 +401,7 @@ export const AddSurveyScreen = ({route}) => {
               }}>
               <Text style={{marginRight: 20}}>제목</Text>
               <TextInput
+                value={postData.title}
                 onChangeText={text =>
                   setPostData(prev => ({...prev, title: text}))
                 }
@@ -410,13 +433,15 @@ export const AddSurveyScreen = ({route}) => {
                   width={120}
                   height={40}
                   fontSize={14}
-                  text={dateStart.toISOString().substring(0, 10)}
+                  text={new Date(postData.dateStart)
+                    .toISOString()
+                    .substring(0, 10)}
                   onPress={() => setDateStartPickerOpen(true)}
                 />
                 <DatePicker
                   modal
                   open={isDateStartPickerOpened}
-                  date={dateStart}
+                  date={new Date(postData.dateStart)}
                   onConfirm={date => {
                     setDateStartPickerOpen(false);
                     setDateStart(date);
@@ -436,13 +461,15 @@ export const AddSurveyScreen = ({route}) => {
                   width={120}
                   height={40}
                   fontSize={14}
-                  text={dateEnd.toISOString().substring(0, 10)}
+                  text={new Date(postData.dateEnd)
+                    .toISOString()
+                    .substring(0, 10)}
                   onPress={() => setDateEndPickerOpen(true)}
                 />
                 <DatePicker
                   modal
                   open={isDateEndPickerOpened}
-                  date={dateEnd}
+                  date={new Date(postData.dateEnd)}
                   onConfirm={date => {
                     setDateEndPickerOpen(false);
                     setDateEnd(date);
@@ -502,6 +529,7 @@ export const AddSurveyScreen = ({route}) => {
               }}>
               <TextInput
                 multiline
+                value={postData.question}
                 placeholder="질문 입력"
                 onChangeText={text =>
                   setPostData(prev => ({...prev, question: text}))
@@ -538,15 +566,9 @@ export const AddSurveyScreen = ({route}) => {
                       {index + 1}
                     </Text>
                     <TextInput
-                      placeholder={item}
-                      onChangeText={text =>
-                        setPostData(prev => ({
-                          ...prev,
-                          options: prev.options.map((option, idx) =>
-                            idx === index ? {...option, option: text} : option,
-                          ),
-                        }))
-                      }
+                      value={item}
+                      // placeholder={item}
+                      onChangeText={text => handleOptionChange(text, index)}
                     />
                   </View>
                 )}
@@ -559,7 +581,7 @@ export const AddSurveyScreen = ({route}) => {
             <CommonButton
               fontSize={15}
               height={30}
-              fontWeight=""
+              fontWeight="normal"
               // color="#dfe1e5"
               text="+ 선택지"
               backgroundColor="#dfe1e5"

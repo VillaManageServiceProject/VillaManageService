@@ -85,6 +85,7 @@ public class SurveyService {
     }
 
     // 글 하나 가져오기
+
     public SurveyResponseForm findOneSurvey(Long surveyId) {
 //        Post post = postRepository.findByPostId(postId).orElseThrow(
 //                () -> new IllegalArgumentException("조회 실패")
