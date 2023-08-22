@@ -1,15 +1,15 @@
 import React, {useState, useContext} from 'react';
-import {UserContext} from '../context/UserProvider';
+import {UserContext} from '../contexts/UserProvider';
 import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from '../components/Icon';
-import {requestPOST} from '../api';
+import {requestDelete, requestGET} from '../api';
 
-export const PostScreen = ({route}) => {
+export const GeneralScreen = ({route}) => {
   const navigation = useNavigation();
   const {userInfo} = useContext(UserContext);
 
@@ -20,18 +20,78 @@ export const PostScreen = ({route}) => {
   const [noticeChecked, setNoticeChecked] = useState('Notice');
 
   const [postData, setPostData] = useState({
-    postId: '',
+    generalId: '',
+    publisherId: '',
+    title: '',
+    content: '',
+    notification: '',
+    createdAt: '',
+    modifiedAt: '',
+    dateStart: '',
+    dateEnd: '',
   });
 
-  const handlePressDelete = async () => {
+  useFocusEffect(
+    React.useCallback(() => {
+      requestGetpost();
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
+
+  const requestGetpost = async () => {
     try {
-      const response = await requestPOST(postData, '/');
+      const response = await requestGET(`/generals/${route.params.generalId}`);
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        navigation.navigate('NoticeBoard');
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
       }
+    }
+
+    // const response = await checkSession();
+  };
+
+  const handlePressUpdate = () => {
+    if (userInfo.id === postData.publisherId) {
+      navigation.navigate('EditGeneral', {
+        generalId: route.params.generalId,
+        postData,
+      });
+    }
+  };
+
+  const handlePressDelete = async () => {
+    try {
+      if (userInfo.id === postData.publisherId) {
+        const response = await requestDelete(
+          `/generals/${route.params.generalId}`,
+        );
+        // Handle the response from the signup API
+        console.log(response);
+
+        // if (response.status === 'success') {
+        navigation.goBack();
+      }
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -68,7 +128,7 @@ export const PostScreen = ({route}) => {
               size={20}
               borderRadius={30}
               borderWidth={0}
-              //   onPress={this.handleTouchFavorite}
+              onPress={handlePressUpdate}
             />
             <Icon
               IconType="MaterialCommunityIcons"
@@ -90,7 +150,7 @@ export const PostScreen = ({route}) => {
                 justifyContent: 'space-between',
                 margin: 5,
               }}>
-              <Text style={styles.title}>제목</Text>
+              <Text style={styles.title}>{postData.title}</Text>
             </View>
             <View
               style={{
@@ -101,6 +161,7 @@ export const PostScreen = ({route}) => {
                 margin: 5,
               }}>
               <Text style={{marginRight: 20}}>게시자</Text>
+              <Text style={{marginRight: 20}}>{postData.publisherId}</Text>
             </View>
             <View
               style={{
@@ -111,6 +172,7 @@ export const PostScreen = ({route}) => {
                 margin: 5,
               }}>
               <Text style={{marginRight: 20}}>게시일</Text>
+              <Text style={{marginRight: 20}}>{postData.createdAt}</Text>
             </View>
 
             <Spacing height={20} />
@@ -138,9 +200,7 @@ export const PostScreen = ({route}) => {
                   borderRadius: 10,
                   textAlignVertical: 'top',
                 }}>
-                <Text>
-                  내용ddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
-                </Text>
+                <Text>{postData.content}</Text>
               </View>
             </View>
           </View>

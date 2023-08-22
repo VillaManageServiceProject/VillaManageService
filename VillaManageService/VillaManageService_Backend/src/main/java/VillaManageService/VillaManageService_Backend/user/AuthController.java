@@ -27,6 +27,9 @@ public class AuthController {
     @Autowired
     private MemberUserDetailsService userDetailsService;
 
+    @Autowired
+    private MemberRepository memberRepository;
+
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticate(@RequestBody LoginDto request, HttpServletResponse response) throws IOException {
         // about user who hasn't JWT token(=not signed in)
@@ -41,9 +44,10 @@ public class AuthController {
             // generate token
             final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getId());
             final String jwt = jwtTokenProvider.generateToken(userDetails);
+            final Member member = memberRepository.findById(request.getId()).get();
 
             // response token
-            return ResponseEntity.ok(new AuthenticationResponse(jwt));
+            return ResponseEntity.ok(new AuthenticationResponse(jwt, member));
         } catch (Exception e) {
             // failed login by incorrect username or password
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

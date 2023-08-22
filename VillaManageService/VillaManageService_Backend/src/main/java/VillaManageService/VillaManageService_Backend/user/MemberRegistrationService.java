@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -29,6 +30,7 @@ public class MemberRegistrationService {
         buildingManager.setContactNumber(contactNumber);
         buildingManager.setDepartment(department);
         buildingManager.setManageAddress(manageAddress);
+        buildingManager.setRoles(Set.of(MemberRole.BUILDING_MANAGER));
         this.buildingManagerRepository.save(buildingManager);
         return buildingManager;
     }
@@ -42,6 +44,7 @@ public class MemberRegistrationService {
         communityCenter.setContactNumber(contactNumber);
         communityCenter.setDepartment(department);
         communityCenter.setCenterAddress(centerAddress);
+        communityCenter.setRoles(Set.of(MemberRole.COMMUNITY_CENTER));
         this.communityCenterRepository.save(communityCenter);
         return communityCenter;
     }
@@ -61,6 +64,7 @@ public class MemberRegistrationService {
         landlord.setOwnedAddress(ownedAddress);
         landlord.setOwnedAddressDetail(ownedAddressDetail);
         landlord.setCoOwnerId(coOwnerId);
+        landlord.setRoles(Set.of(MemberRole.LANDLORD));
         this.landlordRepository.save(landlord);
         return landlord;
     }
@@ -83,6 +87,7 @@ public class MemberRegistrationService {
         resident.setIsContractor(isContractor);
         resident.setIsMaster(isMaster);
         resident.setIsOwner(isOwner);
+        resident.setRoles(Set.of(MemberRole.RESIDENT));
         this.residentRepository.save(resident);
         return resident;
     }

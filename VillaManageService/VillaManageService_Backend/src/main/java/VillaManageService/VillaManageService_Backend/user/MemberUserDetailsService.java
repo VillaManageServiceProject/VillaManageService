@@ -27,11 +27,20 @@ public class MemberUserDetailsService implements UserDetailsService {
         }
         Member member = _member.get();
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if ("admin".equals(id)) {
-            authorities.add(new SimpleGrantedAuthority(MemberRole.ADMIN.getValue()));
-        } else {
-            authorities.add(new SimpleGrantedAuthority(MemberRole.USER.getValue()));
+        for (MemberRole role : member.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority(role.getValue()));
         }
+//        if (member.getRole().equals(MemberRole.ADMIN)) {
+//            authorities.add(new SimpleGrantedAuthority(MemberRole.ADMIN.getValue()));
+//        } else if (member.getRole().equals(MemberRole.RESIDENT)){
+//            authorities.add(new SimpleGrantedAuthority(MemberRole.RESIDENT.getValue()));
+//        } else if (member.getRole().equals(MemberRole.LANDLORD)){
+//            authorities.add(new SimpleGrantedAuthority(MemberRole.LANDLORD.getValue()));
+//        } else if (member.getRole().equals(MemberRole.BUILDING_MANAGER)){
+//            authorities.add(new SimpleGrantedAuthority(MemberRole.BUILDING_MANAGER.getValue()));
+//        } else if (member.getRole().equals(MemberRole.COMMUNITY_CENTER)){
+//            authorities.add(new SimpleGrantedAuthority(MemberRole.COMMUNITY_CENTER.getValue()));
+//        }
         return new User(member.getId(), member.getPassword(), authorities);
     }
 

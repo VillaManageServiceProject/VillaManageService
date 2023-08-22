@@ -10,11 +10,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class GeneralListResponseForm {
+    private Long generalId;
+
     // 제목
     private String title;
 
     // 작성자명
     private String publisherId;
+
+    private String noticeType;
+
+    private String context;
 
     private LocalDateTime createdAt;
 
@@ -22,10 +28,13 @@ public class GeneralListResponseForm {
 
     // Entity -> dto
     public GeneralListResponseForm(General general) {
+        this.generalId = general.getGeneralId();
         this.title = general.getTitle();
         this.createdAt = general.getCreatedAt();
+        this.context = general.getContent();
+        this.noticeType = general.getNoticeType();
         this.modifiedAt = general.getModifiedAt();
-        this.publisherId = general.getPublisherId();
+        this.publisherId = general.getPublisher().getId();
     }
 
 //    public PostListResponseForm(Optional<Post> post) {

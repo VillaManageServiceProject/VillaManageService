@@ -18,11 +18,14 @@ class UnLoginedMapScreen extends React.Component {
     super(props);
     this.state = {
       searchQuery: '',
-      // isTouched: false
+      reRender: false,
     };
   }
 
   handleSearch = query => {
+    console.log('query: ', query);
+    console.log('searchQuery: ', this.state.searchQuery);
+    this.setState({reRender: !this.state.reRender});
     this.setState({searchQuery: query});
   };
 
@@ -31,7 +34,7 @@ class UnLoginedMapScreen extends React.Component {
   // };
 
   render() {
-    const {searchQuery} = this.state;
+    const {searchQuery, reRender} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -60,6 +63,7 @@ class UnLoginedMapScreen extends React.Component {
         <View style={styles.background}>
           <NaverMap
             searchQuery={searchQuery}
+            reRender={reRender}
             // onPress={() => this.props.navigation.navigate('Villa')}
             nav={this.props.navigation}
             style={{flex: 1}}
@@ -78,6 +82,7 @@ class LoginedMapScreen extends React.Component {
       isFavoriteTouched: false,
       favoriteRecords: [],
       isChatListOpen: false,
+      reRender: false,
     };
   }
 
@@ -87,6 +92,9 @@ class LoginedMapScreen extends React.Component {
   };
 
   handleSearch = query => {
+    console.log('searchQuery handleSearch: ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ', query);
+    console.log(this.props.navigation.getState());
+    this.setState({reRender: !this.state.reRender});
     this.setState({searchQuery: query});
   };
 
@@ -122,8 +130,13 @@ class LoginedMapScreen extends React.Component {
   };
 
   render() {
-    const {searchQuery, isFavoriteTouched, favoriteRecords, isChatListOpen} =
-      this.state;
+    const {
+      searchQuery,
+      isFavoriteTouched,
+      favoriteRecords,
+      isChatListOpen,
+      reRender,
+    } = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -198,6 +211,7 @@ class LoginedMapScreen extends React.Component {
         <View style={styles.background}>
           <NaverMap
             searchQuery={searchQuery}
+            reRender={reRender}
             // onPress={() => this.props.navigation.navigate('Villa')}
             nav={this.props.navigation}
             style={{flex: 1}}
