@@ -1,4 +1,5 @@
-import React, {useState, useNavigation} from 'react';
+import React, {useState, useContext} from 'react';
+import {VillaContext} from '../contexts/VillaProvider';
 import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
 import styled from 'styled-components/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -16,18 +17,25 @@ export const VillaInfoScreen = ({route}) => {
   const [selectManagerChecked, setSelectManagerChecked] = useState('');
   const [selectCCChecked, setSelectCCChecked] = useState('');
 
+  const {villaInfo} = useContext(VillaContext);
+
+  const textData = Object.entries(villaInfo)
+    .map(([key, value]) => `${key}: ${value}`)
+    .join('\n');
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
         <View style={styles.header}>
           <View style={styles.left} />
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>새로운 소통방</Text>
+            <Text style={styles.headerTitle}>빌라정보</Text>
           </View>
           <View style={styles.right} />
         </View>
         <ScrollView>
-          <View style={styles.body}>
+          <Text>{textData}</Text>
+          {/* <View style={styles.body}>
             <View
               style={{
                 width: '100%',
@@ -319,7 +327,7 @@ export const VillaInfoScreen = ({route}) => {
             </View>
             <Spacing height={50} />
             <CommonButton fontSize={15} text="확인" />
-          </View>
+          </View> */}
         </ScrollView>
       </View>
     </SafeAreaView>

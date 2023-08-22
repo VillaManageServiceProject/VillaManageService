@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
-import styled from 'styled-components/native';
+import {VillaContext} from '../contexts/VillaProvider';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from '../components/Icon';
 import {requestGET} from '../api';
@@ -11,28 +11,29 @@ import VillaSideMenu from '../fragments/VillaSideMenu';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NoticeBoardItem from '../components/NoticeBoardItem';
 import SegmentedControl from '../components/SegmentedControl';
+import {formatDate} from '../utils/formatters';
 
 const NoticeBoardData = [
   {
-    noticeType: 'important',
+    noticeType: 'cc',
     title: '공지1',
     text: '내용..',
     createDate: '2023-07-21',
   },
   {
-    noticeType: 'common',
+    noticeType: 'bm',
     title: '게시글1',
     text: '내용..',
     createDate: '2023-07-21',
   },
   {
-    noticeType: 'common',
+    noticeType: 'vi',
     title: '게시글1',
     text: '내용..',
     createDate: '2023-07-21',
   },
   {
-    noticeType: 'common',
+    noticeType: 'bm',
     title: '게시글1',
     text: '내용..',
     createDate: '2023-07-21',
@@ -89,9 +90,21 @@ const NoticeBoardData = [
 
 export const GeneralBoardScreen = ({route}) => {
   const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [postData, setPostData] = useState('');
+  const [postData, setPostData] = useState([]);
+  // const [postData, setPostData] = useState([{
+  //   generalId: '',
+  //   publisherId: '',
+  //   title: '',
+  //   context: '',
+  //   notification: '',
+  //   createdAt: '',
+  //   modifiedAt: '',
+  //   // dateStart: '',
+  //   // dateEnd: '',
+  // }]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -109,13 +122,13 @@ export const GeneralBoardScreen = ({route}) => {
 
   const requestGetpost = async () => {
     try {
-      const response = await requestGET('post', '/');
+      const response = await requestGET(`/generals/board/${villaId}`);
       // Handle the response from the signup API
       console.log(response);
 
-      if (response.status === 'success') {
-        setPostData(response.data);
-      }
+      // if (response.status === 'success') {
+      setPostData(response);
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -177,16 +190,16 @@ export const GeneralBoardScreen = ({route}) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            // data={postData}
-            data={NoticeBoardData}
+            data={postData}
+            // data={NoticeBoardData}
             renderItem={({item}) => (
               <NoticeBoardItem
                 noticeType={item.noticeType}
                 title={item.title}
-                text={item.text}
-                createDate={item.createDate}
+                text={item.context}
+                createDate={formatDate(new Date(item.createdAt))}
                 onPress={() => {
-                  navigation.navigate('Post');
+                  navigation.navigate('General', {generalId: item.generalId});
                 }}
               />
             )}
@@ -205,6 +218,8 @@ export const GeneralBoardScreen = ({route}) => {
 
 export const SurveyBoardScreen = ({route}) => {
   const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
+  const segmentedControlRef = useRef(null);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [postData, setPostData] = useState('');
@@ -212,7 +227,12 @@ export const SurveyBoardScreen = ({route}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      requestGetpost();
+      // handleTabsChange(
+      //   segmentedControlRef?.current?.currentIndex === null
+      //     ? 0
+      //     : segmentedControlRef?.current?.currentIndex,
+      // );
+      handleTabsChange(tabIndex);
 
       return () => {
         console.log('ScreenOne is unfocused');
@@ -230,9 +250,12 @@ export const SurveyBoardScreen = ({route}) => {
 
   const requestGetpost = async () => {
     try {
-      const response = await requestGET(
-        `/surveys/board/${tabIndex === 0 ? 'valid' : 'invalid'}`,
-      );
+      console.log('villaId : ', villaId);
+      const requestParams = {
+        villaId: villaId,
+        available: tabIndex === 0 ? 'valid' : 'invalid',
+      };
+      const response = await requestGET('/surveys/board', requestParams);
       // Handle the response from the signup API
       console.log(response);
 
@@ -260,6 +283,7 @@ export const SurveyBoardScreen = ({route}) => {
   };
 
   const handleTabsChange = index => {
+    console.log(index);
     setTabIndex(index);
   };
 
@@ -312,9 +336,10 @@ export const SurveyBoardScreen = ({route}) => {
               //   backgroundColor: 'red',
             }}>
             <SegmentedControl
+              ref={segmentedControlRef}
               tabs={['진행중', '만료']}
               currentIndex={tabIndex}
-              onChange={handleTabsChange}
+              onChange={index => handleTabsChange(index)}
               segmentedControlBackgroundColor="#F0F0F0"
               activeSegmentBackgroundColor="#1A73E8"
               activeTextColor="white"
@@ -331,7 +356,7 @@ export const SurveyBoardScreen = ({route}) => {
               <NoticeBoardItem
                 title={item.title}
                 // text={item.text}
-                createDate={item.createdAt}
+                createDate={formatDate(new Date(item.createdAt))}
                 onPress={() => {
                   navigation.navigate('Survey', {surveyId: item.surveyId});
                 }}
@@ -343,6 +368,225 @@ export const SurveyBoardScreen = ({route}) => {
             ListEmptyComponent={<EmptyListComponent />}
             style={{width: '100%'}}
           />
+        </View>
+      </View>
+      {isMenuOpen && <VillaSideMenu onClose={toggleSideMenu} />}
+    </SafeAreaView>
+  );
+};
+
+export const AnnounceBoardScreen = ({route}) => {
+  const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const [CCPostData, setCCPostData] = useState([]);
+  // const [BMPostData, setBMPostData] = useState([]);
+  const [postData, setPostData] = useState({
+    COMMUNITY_CENTER: [],
+    BUILDING_MANAGER: [],
+  });
+  // const [postData, setPostData] = useState([{
+  //   generalId: '',
+  //   publisherId: '',
+  //   title: '',
+  //   context: '',
+  //   notification: '',
+  //   createdAt: '',
+  //   modifiedAt: '',
+  //   // dateStart: '',
+  //   // dateEnd: '',
+  // }]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      requestGetpost();
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
+
+  const toggleSideMenu = () => {
+    setIsMenuOpen(prev => !prev);
+  };
+
+  const requestGetpost = async () => {
+    try {
+      const roles = Object.keys(postData).join(',');
+      console.log(roles);
+      const response = await requestGET(`/generals/board/role/${villaId}`, {
+        roles,
+      });
+      // Handle the response from the signup API
+      console.log(response);
+
+      // if (response.status === 'success') {
+
+      setPostData(response);
+      // }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.foreground}>
+        <View style={styles.header}>
+          <View style={styles.left} />
+          <View style={styles.center}>
+            <Text style={styles.headerTitle}>공지사항</Text>
+          </View>
+          <View style={styles.right}>
+            <Icon
+              IconType="Ionicons"
+              IconName="menu"
+              borderRadius={30}
+              onPress={toggleSideMenu}
+            />
+          </View>
+        </View>
+
+        <View style={styles.body}>
+          <View style={{borderRadius: 3, marginBottom: 15}}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('AddGeneral')}
+              style={{
+                paddingHorizontal: 5,
+                alignItems: 'center',
+                flexDirection: 'row',
+                backgroundColor: '#1A73E840',
+                borderRadius: 4,
+              }}>
+              <Ionicons
+                name="add"
+                size={25}
+                color="#9AA0A6"
+                // style={{marginRight: 10}}
+              />
+              <Text color="#9AA0A6" style={{paddingBottom: 2}}>
+                새글
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              flex: 0.8,
+              width: '100%',
+              // height: '30%',
+              flexDirection: 'column',
+              // backgroundColor: 'red',
+            }}>
+            <Text style={{fontSize: 18, color: 'black'}}>주민센터 공지</Text>
+            <View style={styles.separator} />
+            <Spacing height={10} />
+            <FlatList
+              data={postData.COMMUNITY_CENTER}
+              // data={NoticeBoardData.filter(post => post.noticeType === 'cc')}
+              renderItem={({item}) => (
+                <NoticeBoardItem
+                  noticeType={item.noticeType}
+                  title={item.title}
+                  text={item.context}
+                  createDate={formatDate(new Date(item.createdAt))}
+                  backgroundColor="#F5F5F5"
+                  onPress={() => {
+                    navigation.navigate('General', {generalId: item.generalId});
+                  }}
+                />
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <Spacing height={5} />}
+              showsVerticalScrollIndicator={true}
+              ListEmptyComponent={<EmptyListComponent />}
+              style={{width: '100%'}}
+            />
+          </View>
+          <Spacing height={30} />
+          <View
+            style={{
+              flex: 0.8,
+              width: '100%',
+              // height: '30%',
+              flexDirection: 'column',
+              // backgroundColor: 'red',
+            }}>
+            <Text style={{fontSize: 18, color: 'black'}}>건물관리자 공지</Text>
+            <View style={styles.separator} />
+            <Spacing height={10} />
+            <FlatList
+              data={postData.BUILDING_MANAGER}
+              // data={NoticeBoardData.filter(post => post.noticeType === 'bm')}
+              renderItem={({item}) => (
+                <NoticeBoardItem
+                  noticeType={item.noticeType}
+                  title={item.title}
+                  text={item.context}
+                  createDate={formatDate(new Date(item.createdAt))}
+                  backgroundColor="#F5F5F5"
+                  onPress={() => {
+                    navigation.navigate('General', {generalId: item.generalId});
+                  }}
+                />
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <Spacing height={5} />}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={<EmptyListComponent />}
+              style={{width: '100%'}}
+            />
+          </View>
+          {/* <Spacing height={30} />
+          <View
+            style={{
+              flex: 0.8,
+              width: '100%',
+              // height: '30%',
+              flexDirection: 'column',
+              // backgroundColor: 'red',
+            }}>
+            <Text style={{fontSize: 18, color: 'black'}}>빌라 공지</Text>
+            <View style={styles.separator} />
+            <Spacing height={10} />
+            <FlatList
+              // data={postData}
+              data={NoticeBoardData.filter(post => post.noticeType === 'vi')}
+              renderItem={({item}) => (
+                <NoticeBoardItem
+                  noticeType={item.noticeType}
+                  title={item.title}
+                  text={item.context}
+                  createDate={formatDate(new Date(item.createdAt))}
+                  backgroundColor="#F5F5F5"
+                  onPress={() => {
+                    navigation.navigate('Post', {generalId: item.generalId});
+                  }}
+                />
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <Spacing height={5} />}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={<EmptyListComponent />}
+              style={{width: '100%'}}
+            />
+          </View> */}
         </View>
       </View>
       {isMenuOpen && <VillaSideMenu onClose={toggleSideMenu} />}

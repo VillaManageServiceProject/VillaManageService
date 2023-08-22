@@ -81,7 +81,7 @@ public class JwtTokenProvider {
     public Boolean validateToken(String token) {
         final String username = extractUsername(token);
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token) && !isTokenBlacklisted(token));
     }
 
     public UserDetails getUserDetailsFromToken(String token) {

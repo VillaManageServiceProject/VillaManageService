@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {
   StyleSheet,
   View,
@@ -13,11 +13,13 @@ import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from '../components/Icon';
-import {requestGET, requestPOST, requestPUT} from '../api';
-// import {TouchableOpacity} from 'react-native-gesture-handler';
+import {requestGET, requestDelete, requestPUT} from '../api';
+import {UserContext} from '../contexts/UserProvider';
+import {formatDate} from '../utils/formatters';
 
 export const SurveyScreen = ({route}) => {
   const navigation = useNavigation();
+  const {userInfo} = useContext(UserContext);
 
   const [postData, setPostData] = useState({
     surveyId: '',
@@ -46,8 +48,24 @@ export const SurveyScreen = ({route}) => {
   useEffect(() => {
     const today = new Date();
     if (
-      new Date(postData.dateStart).getTime() > today ||
-      new Date(postData.dateEnd).getTime() < today
+      postData.dateStart !== '' &&
+      postData.dateEnd !== '' &&
+      (formatDate(new Date(postData.dateStart)) > formatDate(today) ||
+        formatDate(new Date(postData.dateEnd)) < formatDate(today))
+    ) {
+      setIsExpired(true);
+    }
+
+    console.log(
+      'postData.options: ',
+      postData.options.some(option =>
+        option.voters.split(',').some(voter => console.log(option)),
+      ),
+    );
+    if (
+      postData.options.some(option =>
+        option.voters.split(',').some(voter => voter.includes(userInfo.id)),
+      )
     ) {
       setIsExpired(true);
     }
@@ -88,15 +106,17 @@ export const SurveyScreen = ({route}) => {
       //   surveyId: route.params.surveyId,
       //   optionIdx: optionIdx,
       // };
-      const response = await requestPUT(
-        `/surveys?surveyId=${route.params.surveyId}&optionIdx=${optionIdx}`,
-      );
-      // Handle the response from the signup API
-      console.log(response);
+      if (!isExpired) {
+        const response = await requestPUT(
+          `/surveys?surveyId=${route.params.surveyId}&optionIdx=${optionIdx}`,
+        );
+        // Handle the response from the signup API
+        console.log(response);
 
-      // if (response.status === 'success') {
-      setPostData(response);
-      // }
+        // if (response.status === 'success') {
+        setPostData(response);
+        // }
+      }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -117,15 +137,29 @@ export const SurveyScreen = ({route}) => {
     // const response = await checkSession();
   };
 
+  const handlePressUpdate = () => {
+    if (userInfo.id === postData.publisherId) {
+      navigation.navigate('EditSurvey', {
+        surveyId: route.params.surveyId,
+        postData,
+      });
+    }
+  };
+
   const handlePressDelete = async () => {
     try {
-      const response = await requestPOST(postData, '/');
-      // Handle the response from the signup API
-      console.log(response);
+      console.log('userInfo: ', userInfo.id);
+      if (userInfo.id === postData.publisherId) {
+        const response = await requestDelete(
+          `/surveys/${route.params.surveyId}`,
+        );
+        // Handle the response from the signup API
+        console.log(response);
 
-      if (response.status === 'success') {
-        navigation.navigate('NoticeBoard');
+        // if (response.status === 'success') {
+        navigation.goBack();
       }
+      // }
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -211,7 +245,7 @@ export const SurveyScreen = ({route}) => {
               size={20}
               borderRadius={30}
               borderWidth={0}
-              //   onPress={this.handleTouchFavorite}
+              onPress={handlePressUpdate}
             />
             <Icon
               IconType="MaterialCommunityIcons"

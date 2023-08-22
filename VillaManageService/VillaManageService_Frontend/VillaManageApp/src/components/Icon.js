@@ -11,7 +11,8 @@ const IconButton = styled.TouchableOpacity`
   border-width: ${props =>
     props.borderWidth === undefined ? 1 : props.borderWidth}px;
   border-color: #dfe1e5;
-  border-radius: ${props => props.borderRadius}px;
+  border-radius: ${props =>
+    props.borderRadius === undefined ? 30 : props.borderRadius}px;
   justify-content: center;
   align-items: center;
   background-color: white;

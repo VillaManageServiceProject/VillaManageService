@@ -1,20 +1,26 @@
 import React, {Component} from 'react';
 
 import NaverMapView, {Marker} from 'react-native-nmap';
+import {VillaContext} from '../contexts/VillaProvider';
 
 class NaverMap extends Component {
+  static contextType = VillaContext;
+
   constructor(props) {
     super(props);
     this.state = {
       markers: [],
       markerLegalcodes: [],
+      forceRender: true,
     };
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.searchQuery !== this.props.searchQuery) {
-      console.log('hi2');
+    if (prevProps.reRender !== this.props.reRender) {
+      console.log('navermap: ', this.props.searchQuery);
       this.handleSearch(this.props.searchQuery);
+      this.setState({markers: []});
+      console.log('forceRender: ', this.state.forceRender);
     }
   }
 
@@ -34,7 +40,9 @@ class NaverMap extends Component {
 
     // 검색 결과를 marker 상태에 저장
     if (dataAddress.status === 'OK') {
+      console.log(this.state.markers);
       this.setState({markers: dataAddress.addresses});
+      // this.setState({searchQuery: ''});
     } else {
       console.log('검색 실패');
     }
@@ -51,7 +59,7 @@ class NaverMap extends Component {
       },
     );
     const dataLegalcode = await responseLegalcode.json();
-    console.log(dataLegalcode);
+    // console.log('land:  ', dataLegalcode.results[0].land);
 
     // 검색 결과를 marker 상태에 저장
     if (dataLegalcode.status.name === 'ok') {
@@ -62,22 +70,22 @@ class NaverMap extends Component {
       //   ],
       // }));
 
-      console.log('marker: ' + marker.jibunAddress);
-      console.log(
-        this.props.nav.navigate('Villa', {
-          villaId:
-            dataLegalcode.results[0].code.id +
-            marker.jibunAddress.split(' ')[3].split('-')[0].padStart(4, '0') +
-            marker.jibunAddress.split(' ')[3].split('-')[1].padStart(4, '0'),
-        }),
+      // console.log('marker: ' + marker.jibunAddress.split(' ').reverse()[0]);
+      this.context.setVillaName(marker.jibunAddress.split(' ').reverse()[0]);
+      this.context.setVillaId(
+        dataLegalcode.results[0].code.id +
+          marker.jibunAddress.split(' ')[3].split('-')[0].padStart(4, '0') +
+          marker.jibunAddress.split(' ')[3].split('-')[1].padStart(4, '0'),
       );
+
+      this.props.nav.navigate('Villa');
     } else {
       console.log('검색 실패');
     }
   };
 
   render() {
-    const {markers} = this.state;
+    const {markers, forceRender} = this.state;
 
     return (
       <NaverMapView

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StyleSheet, View, Text, ScrollView} from 'react-native';
 import styled from 'styled-components/native';
@@ -9,6 +9,8 @@ import {Calendar, LocaleConfig} from 'react-native-calendars';
 import TextButton from '../components/TextButton';
 import VillaSideMenu from '../fragments/VillaSideMenu';
 import {requestGET} from '../api';
+import {VillaContext} from '../contexts/VillaProvider';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 LocaleConfig.locales['fr'] = {
   monthNames: [
@@ -42,14 +44,25 @@ LocaleConfig.defaultLocale = 'fr';
 // }
 
 export const VillaHomeScreen = ({route}) => {
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
+  const {villaId, villaName, setVillaInfo} = useContext(VillaContext);
 
   const [selected, setSelected] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [announcePostData, setAnnouncePostData] = useState({
+    COMMUNITY_CENTER: [],
+    BUILDING_MANAGER: [],
+    RESIDENT: [],
+  });
+  const [combinedPosts, setCombinedPosts] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
       requestGetVillaInfo();
+      requestGetpost();
+
+      console.log('villaName: ', villaName);
+      console.log('villaId: ', villaId);
 
       return () => {
         console.log('ScreenOne is unfocused');
@@ -59,13 +72,9 @@ export const VillaHomeScreen = ({route}) => {
 
   const requestGetVillaInfo = async () => {
     try {
-      const response = await requestGET(`/villa/${route.params.villaId}`);
-      // Handle the response from the signup API
-      console.log('villaId: ' + response.body.items.item[0].archArea);
+      const response = await requestGET(`/villa/${villaId}`);
 
-      if (response.status === 'success') {
-        setPostData(response.data);
-      }
+      setVillaState(response.body.items.item[0]);
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -84,14 +93,75 @@ export const VillaHomeScreen = ({route}) => {
     }
   };
 
+  const requestGetpost = async () => {
+    try {
+      const roles = Object.keys(announcePostData).join(',');
+      console.log(roles);
+      const response = await requestGET(
+        `/generals/board/role/announce/${villaId}`,
+        {
+          roles,
+        },
+      );
+      // Handle the response from the signup API
+      console.log(response);
+
+      // if (response.status === 'success') {
+
+      setAnnouncePostData(response);
+      setCombinedPosts(
+        Object.values(response).reduce((acc, val) => acc.concat(val), []),
+      );
+      console.log(
+        'combined: ',
+        Object.values(announcePostData).reduce(
+          (acc, val) => acc.concat(val),
+          [],
+        ),
+      );
+      // }
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
+  };
+
+  const setVillaState = currVillaInfo => {
+    console.log(currVillaInfo);
+    // setVillaId(currVillaId);
+    setVillaInfo(currVillaInfo);
+  };
+
   const selectVillaName = address => {
     const addressElements = address.split(' ');
     return addressElements[addressElements.length - 1];
   };
 
   const toggleSideMenu = () => {
-    // navigation.openDrawer();
+    console.log(navigation.getState());
     setIsMenuOpen(prev => !prev);
+  };
+
+  const navigationReset = () => {
+    console.log('navigationReset');
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'UnLoginedMap'}],
+    });
   };
 
   return (
@@ -100,9 +170,7 @@ export const VillaHomeScreen = ({route}) => {
         <View style={styles.header}>
           <View style={styles.left} />
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>
-              {/* {selectVillaName(route.params.address)} */}
-            </Text>
+            <Text style={styles.headerTitle}>{villaName}</Text>
           </View>
           <View style={styles.right}>
             <Icon
@@ -156,15 +224,17 @@ export const VillaHomeScreen = ({route}) => {
                   // right: 10,
                 }}
                 loop>
-                <View style={styles.slide1}>
-                  <Text style={styles.text}>Hello Swiper</Text>
-                </View>
-                <View style={styles.slide2}>
-                  <Text style={styles.text}>Beautiful</Text>
-                </View>
-                <View style={styles.slide3}>
-                  <Text style={styles.text}>And simple</Text>
-                </View>
+                {combinedPosts.map((item, index) => (
+                  <View key={index} style={styles.slide2}>
+                    <AntDesign
+                      name="exclamationcircle"
+                      size={15}
+                      color="#FF383890"
+                      style={{marginRight: 15}}
+                    />
+                    <Text style={styles.text}>{item.title}</Text>
+                  </View>
+                ))}
               </Swiper>
             </View>
             <Spacing height={15} />
@@ -312,7 +382,12 @@ export const VillaHomeScreen = ({route}) => {
           </View>
         </ScrollView>
       </View>
-      {isMenuOpen && <VillaSideMenu onClose={toggleSideMenu} />}
+      {isMenuOpen && (
+        <VillaSideMenu
+          onClose={toggleSideMenu}
+          navigationReset={navigationReset}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -377,13 +452,13 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 10,
     // backgroundColor: 'rgba(0, 0, 0, 0)',
-    backgroundColor: 'yellow',
+    // backgroundColor: 'yellow',
   },
   voteWrapper: {
     height: 250,
     borderRadius: 10,
     // backgroundColor: 'rgba(0, 0, 0, 0)',
-    backgroundColor: 'yellow',
+    // backgroundColor: 'yellow',
   },
   slide1: {
     flex: 1,
@@ -391,21 +466,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
     padding: 20,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
   },
   slide2: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     borderRadius: 30,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
+    paddingHorizontal: 30,
+    flexDirection: 'row',
   },
   slide3: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
   },
   text: {
     fontSize: 20,
@@ -425,6 +502,6 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     flexDirection: 'column',
     alignItems: 'flex-start',
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
   },
 });

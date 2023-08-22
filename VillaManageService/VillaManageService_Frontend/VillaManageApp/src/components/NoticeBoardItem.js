@@ -13,12 +13,13 @@ const TextButton = styled.TouchableOpacity`
   justify-content: space-between;
   flex-direction: row;
   padding-horizontal: 10px;
-  background-color: white;
+  background-color: ${props =>
+    props.backgroundColor === undefined ? 'white' : props.backgroundColor};
 `;
 
 export default props => {
   return (
-    <TextButton onPress={props.onPress}>
+    <TextButton onPress={props.onPress} backgroundColor={props.backgroundColor}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         {props.noticeType === 'important' && (
           <View>

@@ -39,11 +39,11 @@ export default SideMenu = props => {
       {isParentMenuPressed && (
         <View style={styles.childMenuSection}>
           <Spacing height={15} />
-          {props.childMenuList.map((value, index) => (
+          {Object.entries(props.childMenuList).map(([key, value]) => (
             <View>
               <TextButton
-                text={value}
-                onPress={() => navigation.navigate('NoticeBoard')}
+                text={key}
+                onPress={() => navigation.navigate(value)}
               />
               <Spacing height={10} />
             </View>

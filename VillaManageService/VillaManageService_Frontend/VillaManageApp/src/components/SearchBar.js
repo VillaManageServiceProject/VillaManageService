@@ -93,6 +93,10 @@ class SearchBar extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.searchQuery !== this.props.searchQuery) {
+      console.log(
+        'searchQuery componentDidUpdate: ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ',
+        this.state.searchQuery,
+      );
       this.handleItemPress(this.props.searchQuery);
     }
   }
@@ -120,6 +124,10 @@ class SearchBar extends Component {
 
   handleItemPress = item => {
     // this.textInputRef.current.value = item;
+    console.log(
+      'searchQuery handleItemPress: ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ',
+      this.state.searchQuery,
+    );
     if (this.textInputRef.current) {
       this.textInputRef.current.setNativeProps({text: item});
     }
@@ -130,6 +138,10 @@ class SearchBar extends Component {
   };
 
   handleSearch = () => {
+    console.log(
+      'searchQuery SearchBarhandleSearch: ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ',
+      this.state.searchQuery,
+    );
     const {searchQuery, searchRecords} = this.state;
     this.props.onSearch(searchQuery);
     Keyboard.dismiss();
