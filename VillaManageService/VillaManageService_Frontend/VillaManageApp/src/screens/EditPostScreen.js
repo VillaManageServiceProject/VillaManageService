@@ -16,6 +16,7 @@ import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import {CommonButton} from '../components/Button';
 import {requestPUT, requestPOST} from '../api';
+import Icon from '../components/Icon';
 
 export const EditGeneralScreen = ({route}) => {
   const navigation = useNavigation();
@@ -379,6 +380,18 @@ export const EditSurveyScreen = ({route}) => {
     );
   };
 
+  const handleDeleteOption = removeIdx => {
+    console.log(postData.options);
+    console.log(options);
+    setOptions(prevItems =>
+      prevItems.filter((_, index) => index !== removeIdx),
+    );
+    setPostData(prev => ({
+      ...prev,
+      options: prev.options.filter((_, index) => index !== removeIdx),
+    }));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
@@ -546,8 +559,8 @@ export const EditSurveyScreen = ({route}) => {
             </View>
             <View style={{width: '100%', maxHeight: 250}}>
               <FlatList
-                // data={postData}
-                data={options}
+                data={postData.options}
+                // data={options}
                 renderItem={({item, index}) => (
                   <View
                     style={{
@@ -566,10 +579,21 @@ export const EditSurveyScreen = ({route}) => {
                       {index + 1}
                     </Text>
                     <TextInput
-                      value={item}
+                      value={item.option}
+                      style={{flex: 11}}
                       // placeholder={item}
                       onChangeText={text => handleOptionChange(text, index)}
                     />
+                    <View style={{flex: 1}}>
+                      <Icon
+                        IconName="closecircle"
+                        IconType="AntDesign"
+                        IconColor="#FF383890"
+                        size={15}
+                        borderWidth={0}
+                        onPress={() => handleDeleteOption(index)}
+                      />
+                    </View>
                   </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}

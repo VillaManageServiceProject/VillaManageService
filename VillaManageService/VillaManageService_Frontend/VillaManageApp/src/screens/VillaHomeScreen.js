@@ -588,33 +588,31 @@ export const VillaHomeScreen = ({route}) => {
                 }}
                 loop>
                 {combinedPosts.length !== 0 ? (
-                  combinedPosts.map((item, index) =>
-                    item(
-                      <View key={index} style={styles.slide2}>
-                        <TextButton
-                          IconType="AntDesign"
-                          IconName="exclamationcircle"
-                          IconSize={15}
-                          IconColor="#FF383890"
-                          width={320}
-                          justifyContent="flex-start"
-                          text={item.title}
-                          onPress={() => {
-                            navigation.navigate('Announce', {
-                              announceId: item.announceId,
-                            });
-                          }}
-                        />
-                        {/* <AntDesign
+                  combinedPosts.map((item, index) => (
+                    <View key={index} style={styles.slide2}>
+                      <TextButton
+                        IconType="AntDesign"
+                        IconName="exclamationcircle"
+                        IconSize={15}
+                        IconColor="#FF383890"
+                        width={320}
+                        justifyContent="flex-start"
+                        text={item.title}
+                        onPress={() => {
+                          navigation.navigate('Announce', {
+                            announceId: item.announceId,
+                          });
+                        }}
+                      />
+                      {/* <AntDesign
                       name="exclamationcircle"
                       size={15}
                       color="#FF383890"
                       style={{marginRight: 15}}
                     />
                     <Text style={styles.text}>{item.title}</Text> */}
-                      </View>,
-                    ),
-                  )
+                    </View>
+                  ))
                 ) : (
                   <View style={{alignItems: 'center'}}>
                     <Text>※ 공지사항이 없습니다.</Text>
