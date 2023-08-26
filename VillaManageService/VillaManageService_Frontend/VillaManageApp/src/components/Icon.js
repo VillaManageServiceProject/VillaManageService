@@ -15,7 +15,8 @@ const IconButton = styled.TouchableOpacity`
     props.borderRadius === undefined ? 30 : props.borderRadius}px;
   justify-content: center;
   align-items: center;
-  background-color: white;
+  background-color: ${props =>
+    props.backgroundColor === undefined ? null : props.backgroundColor};
 `;
 // ${(props) => props.borderRadius}
 
@@ -25,26 +26,27 @@ export default props => {
       width={props.size}
       borderWidth={props.borderWidth}
       borderRadius={props.borderRadius}
+      backgroundColor={props.backgroundColor}
       onPress={props.onPress}>
       {props.IconType === 'Ionicons' && (
         <Ionicons
           name={props.IconName}
           size={props.size === undefined ? 25 : props.size}
-          color="#4F4F4F"
+          color={props.IconColor === undefined ? '#4F4F4F' : props.IconColor}
         />
       )}
       {props.IconType === 'AntDesign' && (
         <AntDesign
           name={props.IconName}
           size={props.size === undefined ? 25 : props.size}
-          color="#4F4F4F"
+          color={props.IconColor === undefined ? '#4F4F4F' : props.IconColor}
         />
       )}
       {props.IconType === 'MaterialCommunityIcons' && (
         <MaterialCommunityIcons
           name={props.IconName}
           size={props.size === undefined ? 25 : props.size}
-          color="#4F4F4F"
+          color={props.IconColor === undefined ? '#4F4F4F' : props.IconColor}
         />
       )}
     </IconButton>

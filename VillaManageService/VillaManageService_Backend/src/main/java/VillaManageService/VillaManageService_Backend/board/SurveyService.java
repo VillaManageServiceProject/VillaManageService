@@ -84,6 +84,43 @@ public class SurveyService {
         return null;
     }
 
+    public List<SurveyVoteResponseForm> readSurveyVote(String villaId) {
+        try {
+            List<Survey> SurveyList = surveyRepository.findByVillaIdAndDateStartLessThanEqualAndDateEndGreaterThanEqualOrderByCreatedAtDesc(villaId, LocalDate.now(), LocalDate.now());
+
+            List<SurveyVoteResponseForm> responseFormList = new ArrayList<>();
+
+            for (Survey Survey : SurveyList) {
+                responseFormList.add(
+                        new SurveyVoteResponseForm(Survey)
+                );
+            }
+            return responseFormList;
+        } catch (Exception e) {
+//            throw new DBEmptyDataException("a");
+        }
+        return null;
+    }
+
+    public List<SurveyPeriodResponseForm> readSurveyPeriod(String villaId) {
+        try {
+            List<Survey> surveyList = surveyRepository.findByVillaIdOrderByModifiedAtDesc(villaId);
+
+            List<SurveyPeriodResponseForm> responseFormList = new ArrayList<>();
+
+            for (Survey survey : surveyList) {
+                responseFormList.add(
+                        new SurveyPeriodResponseForm(survey)
+                );
+            }
+
+            return responseFormList;
+        } catch (Exception e) {
+//            throw new DBEmptyDataException("a");
+        }
+        return null;
+    }
+
     // 글 하나 가져오기
 
     public SurveyResponseForm findOneSurvey(Long surveyId) {
