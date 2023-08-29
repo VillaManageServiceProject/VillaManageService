@@ -32,7 +32,7 @@ export const BuildingManagerJoinScreen = ({route}) => {
     password2: '',
     name: '',
     contactNumber: '',
-    manageAddress: '',
+    manageVillaId: '',
     department: '',
   });
 
@@ -40,7 +40,21 @@ export const BuildingManagerJoinScreen = ({route}) => {
     console.log(addressData);
     if (addressData && addressData.address) {
       console.log(addressData.address);
-      setUserData(prev => ({...prev, manageAddress: addressData.address}));
+      setUserData(prev => ({
+        ...prev,
+        manageVillaId:
+          addressData.bcode +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[0]
+            .padStart(4, '0') +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[1]
+            .padStart(4, '0'),
+      }));
       // addressComp.current.text = addressData.address;
     }
   }, [addressData]);

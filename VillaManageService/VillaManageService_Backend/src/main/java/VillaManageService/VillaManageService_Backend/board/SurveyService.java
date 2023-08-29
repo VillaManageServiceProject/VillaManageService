@@ -1,7 +1,7 @@
 package VillaManageService.VillaManageService_Backend.board;
 
 import VillaManageService.VillaManageService_Backend.user.*;
-import VillaManageService.VillaManageService_Backend.villa.Villa;
+import VillaManageService.VillaManageService_Backend.building.Villa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor

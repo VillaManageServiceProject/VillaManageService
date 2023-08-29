@@ -1,0 +1,371 @@
+[33mcommit 2963cc08975b94b82ddfb6d0d113d911e57b2caa[m[33m ([m[1;36mHEAD -> [m[1;32mINTEG_villaPost_feature[m[33m, [m[1;31morigin/INTEG_villaPost_feature[m[33m)[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 26 15:26:09 2023 +0900
+
+    [feat] edit survey option
+    
+    Resolves
+    > delete option on edit survey
+    
+    Memo
+    >
+
+[33mcommit 480bc26aaeb7ddcca60031c680c002a01376c561[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 26 15:07:26 2023 +0900
+
+    [feat] villa home
+    
+    Resolves
+    > villa announce preview
+    > villa calendar
+    > villa survey preview
+    > delete option on add survey
+    
+    Memo
+    > require delete option on edit survey
+    > require increase size of post texts
+
+[33mcommit 48f7a331b787d54c1fcf05afb30ec5c50d547a27[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Tue Aug 22 22:51:25 2023 +0900
+
+    [feat] post update, delete and announce menu and villa home announce
+    [fix] screen change
+    
+    Resolves
+    > post update by publisher
+    > post delete by publisher
+    > announce board with general posts and separated with role
+    > villa home announce with announce menu
+    > fix: no active naver map marker when same search or screen changed
+    
+    Memo
+    >
+
+[33mcommit 6016c39880231a0b9ad01b158d79f5d070234360[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Mon Aug 21 13:51:14 2023 +0900
+
+    [feat] runnable villa post menu
+    
+    Resolves
+    > villa general post menu
+    > villa survey post menu
+    > villa info
+    
+    Memo
+    >
+
+[33mcommit 1133d61f8132d731fb54961aa0db0d98948bb50e[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 19 17:56:29 2023 +0900
+
+    [feat] villa home in
+    
+    Resolves
+    > fix villa data
+    > fix logic that happens when villa marker is clicked
+    
+    Memo
+    >
+
+[33mcommit d99a0c6fb830e74eeba6ff34cd1937bb4214d954[m
+Merge: 15273bf d0a8f55
+Author: cshiz9206 <64184518+cshiz9206@users.noreply.github.com>
+Date:   Sat Aug 19 05:43:42 2023 +0000
+
+    Merge pull request #4 from VillaManageServiceProject/INTEG_logout_feature
+    
+    Integrate[BE <> FE] logout feature
+
+[33mcommit d0a8f55ec47b0743732987fce371b94c2214d539[m[33m ([m[1;31morigin/INTEG_logout_feature[m[33m, [m[1;32mINTEG_logout_feature[m[33m)[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 19 11:30:03 2023 +0900
+
+    [feat] logout
+    
+    Resolves
+    > expire/delete jwt token
+    > set userContext
+    
+    Memo
+    >
+
+[33mcommit d9b948e7ef0ed45c4117e9cff8a8442524ade1dc[m
+Merge: e221a31 15273bf
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 19 10:27:54 2023 +0900
+
+    Merge branch 'develop' of https://github.com/VillaManageServiceProject/VillaManageService into develop
+
+[33mcommit 15273bf4f0314b45acbec338130cdff487006f77[m
+Merge: b9d6f18 cca2a38
+Author: cshiz9206 <64184518+cshiz9206@users.noreply.github.com>
+Date:   Sat Aug 19 01:24:26 2023 +0000
+
+    Merge pull request #3 from VillaManageServiceProject/BE_survey_board_feature
+    
+    BE survey board feature
+
+[33mcommit e221a31f42b548e9008dcf919d723596d5f87c4d[m
+Merge: b9d6f18 cca2a38
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 19 10:13:27 2023 +0900
+
+    Merge branch 'BE_survey_board_feature' into develop
+
+[33mcommit b9d6f183b51f66e5c6c7c31548e178ea89c59b5a[m
+Author: cshiz9206 <64184518+cshiz9206@users.noreply.github.com>
+Date:   Sat Aug 19 10:08:49 2023 +0900
+
+    FE survey screen feature (#2)
+    
+    * [feat] survey screen
+    
+    Resolves
+    > create survey screen file
+    
+    Memo
+    > branch test
+    
+    * [feat] survey board, post, add screen
+    
+    Resolves
+    > implement UI
+    > change data name Post>General
+    
+    Memo
+    > require request logic
+    
+    * [feat] survey creation page, board load, survey load
+    
+    Resolves
+    > board load: dateStart < today < dateEnd, dateStart > today or dateEnd
+    < today
+    > survey load: distribute by availability and possible vote
+    
+    Memo
+    > require using villaId
+
+[33mcommit cca2a38c0a5629e064f1c6ab04e0b5d39877a382[m[33m ([m[1;31morigin/BE_survey_board_feature[m[33m, [m[1;32mBE_survey_board_feature[m[33m)[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Sat Aug 19 08:54:36 2023 +0900
+
+    [feat] survey create, read
+    
+    Resolves
+    > create survey without vote user
+    > read survey by surveyId, time
+    
+    Memo
+    > require using villaId
+    > require saving vote user
+
+[33mcommit c3f97ca291f9eb8ac438af2b74373c261de92370[m
+Author: Machinity <machinity@gmail.com>
+Date:   Fri Aug 18 11:34:16 2023 +0900
+
+    [feat] BE survey controller developing
+    
+    Resolved
+    > changed Post -> General
+    
+    Memo
+    > survey controller, service developing
+
+[33mcommit c9dd8fd1305d6aa1b00b40826fa05b663218282c[m
+Author: cshiz9206 <64184518+cshiz9206@users.noreply.github.com>
+Date:   Thu Aug 17 13:43:27 2023 +0900
+
+    [feat] villa entity (#1)
+    
+    Resolves
+    > modify memberCreateForms and registrationController: save villa entity
+    on join
+    > villa MVC
+    
+    Memo
+    > warn conflict securityConfig, application.properties, build.gradle
+
+[33mcommit 7be8d500fe6498d033031c03fba0d44e45f03545[m
+Merge: cf82ad5 5ae4262
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Thu Aug 17 10:40:16 2023 +0900
+
+    Merge branch 'FE_villaAPI_feature' into develop
+
+[33mcommit 5ae4262b92ff5d68cf2193678e6fbc1297155c1a[m[33m ([m[1;31morigin/FE_villaAPI_feature[m[33m, [m[1;32mFE_villaAPI_feature[m[33m)[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Thu Aug 17 10:24:57 2023 +0900
+
+    [fix] api code crash
+    
+    Resolves
+    > stash code vs origin code
+    
+    Memo
+    >
+
+[33mcommit 5b500c6441abefe68459c002d0eeb72a5660e29a[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Thu Aug 17 10:09:11 2023 +0900
+
+    [feat] villa openAPI connect
+    
+    Resolves
+    > openAPI connect
+    > introduce villa id
+    > fix screen transform login <-> join
+    
+    Memo
+    >
+
+[33mcommit cf82ad5d9e793a3c2434551740eca04b11a55d2c[m[33m ([m[1;31morigin/post_board_feature[m[33m, [m[1;32mpost_board_feature[m[33m)[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Wed Aug 16 23:08:04 2023 +0900
+
+    [feat] render post list
+    
+    Resolves
+    > request and render when clicked post menu
+    
+    Memo
+    > not excutable
+    > modify branch issue
+
+[33mcommit 798c30ff20b4310644156a072b56ba2afdfa56ca[m
+Author: Machinity <machinity@gmail.com>
+Date:   Wed Aug 16 22:56:33 2023 +0900
+
+    [feat] BE survey feature developing
+    
+    Resolves
+    > survey feature is developing
+    
+    Memo
+    > table must be seperated !!
+
+[33mcommit 1005ce376dd7adad2a02e48bccef04b1b48858d8[m
+Author: Machinity <machinity@gmail.com>
+Date:   Mon Aug 14 20:13:21 2023 +0900
+
+    [feat] basic post create & read feature test complete
+    
+    Resolves
+    > loaded publisherId and address to create post instance
+    > modified URL
+    
+    Memo
+    > postTime must be changed to createdAt !!
+    > modifiedAt must be generated !!
+
+[33mcommit 5fe20304f37b35ef58dfa367f6cd60b02224d445[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Thu Aug 10 15:11:28 2023 +0900
+
+    [feat] JWT Token Login
+    Resolved
+    > BE: create JWT Auth Filter, Controller
+    > BE: set securityConfig
+    > FE: modify getting post board, creating post
+    > FE: create saving userContext
+    > FE: modify login API for JWT Token
+    
+    Memo
+    > require test create post. get post board
+    > require logout, delete post, enter post
+
+[33mcommit c7472823ae97dccdd7a886c4dd615e9b6bb062b4[m
+Author: Machinity <machinity@gmail.com>
+Date:   Fri Aug 4 22:26:34 2023 +0900
+
+    [feat] post board BE modifying..
+    
+    Resolved
+    >
+    
+    Memo
+    > CRUD modifying..
+
+[33mcommit 579898682c6a3197883512df4cc6d8cc59fc7f09[m[33m ([m[1;31morigin/signup_feature[m[33m, [m[1;32msurvey_board_feature[m[33m, [m[1;32msignup_feature[m[33m)[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Tue Aug 1 15:32:36 2023 +0900
+
+    [feat] implement signup, login / FE<>BE test success
+    Resolves
+    > implement screen change after signup, login
+    
+    Memo
+    > logout sequence must be edited!
+
+[33mcommit 8e178862138733d2d6bb32f5934c5538ef2701ff[m
+Author: Machinity <machinity@gmail.com>
+Date:   Tue Aug 1 15:13:01 2023 +0900
+
+    [feat] implement signup, login / FE<>BE test success
+    Resolves
+    > create member entity
+    > entities extend member
+    > implement json login
+    
+    Memo
+    > logout sequence must be edited!
+
+[33mcommit 75107b95a7e3614f6e28b3b0fabcdf6d17c6e731[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Thu Jul 27 13:35:27 2023 +0900
+
+    [feat] implements signup frontend connection success
+    
+    Resolves
+    > signup post request
+    > receive response about signup post request
+    > rename data models field
+    
+    Memo
+    > improving signup UI
+    > require implementation the screen after signup success
+
+[33mcommit b73c45f3ea9c1a2d714248768e6af7c2988046b1[m
+Author: Machinity <machinity@gmail.com>
+Date:   Wed Jul 26 18:34:10 2023 +0900
+
+    [feat] implements signup backend connection success
+    
+    Resolves
+    > connection test success
+    
+    Memo
+    > need frontend field name synchronization!
+
+[33mcommit fccfdeadde7565fa2114293b16a160e2a6461e9c[m
+Author: cshiz9206 <cshiz9206@gmail.com>
+Date:   Tue Jul 25 15:10:15 2023 +0900
+
+    [feat] implements signup frontend
+    
+    Resolves
+    > done wireframe v.1
+    
+    Memo
+    > trying signup post
+
+[33mcommit fdf664f4d7079c6bc10a308f564c16c0170919a3[m
+Author: Machinity <machinity@gmail.com>
+Date:   Tue Jul 25 13:55:41 2023 +0900
+
+    [feat] implement signup backend
+    
+    Resolves
+    > create entites
+    > implement signup
+    
+    Memo
+    require frontend connection!
+
+[33mcommit c91af8d949757b42e7227f5575b6e6fcc036ed40[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: SG <80019221+Machinity@users.noreply.github.com>
+Date:   Sat Jul 8 04:00:55 2023 +0900
+
+    Initial commit

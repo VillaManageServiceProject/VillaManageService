@@ -1,5 +1,10 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {useNavigation, useIsFocused} from '@react-navigation/native';
+import {TextEncoder, TextDecoder} from 'text-encoding';
+import {
+  useNavigation,
+  useIsFocused,
+  useFocusEffect,
+} from '@react-navigation/native';
 import {
   StyleSheet,
   View,
@@ -8,6 +13,8 @@ import {
   Keyboard,
   TextInput,
 } from 'react-native';
+import {Stomp} from '@stomp/stompjs';
+import {BehaviorSubject} from 'rxjs';
 import styled from 'styled-components/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from '../components/Icon';
@@ -130,6 +137,19 @@ export const ChatScreen = ({route}) => {
 
   const flatListRef = useRef();
 
+  const options = {
+    debug: true,
+    // protocols: webstomp.VERSIONS.supportedProtocols(),
+  };
+
+  const stompClient = Stomp.client(
+    'ws://172.30.1.69:8080/chatSession',
+    options,
+  );
+
+  // BehaviorSubject를 사용하여 채팅 메시지를 저장합니다.
+  const otherMessagesSubject = new BehaviorSubject([]);
+  const myMessagesSubject = new BehaviorSubject([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user1ChatData, setUser1ChatData] = useState(User1ChatData);
   const [user2ChatData, setUser2ChatData] = useState(User2ChatData);
@@ -139,6 +159,58 @@ export const ChatScreen = ({route}) => {
     ),
   );
   const [currentInputChat, setCurrentInputChat] = useState('');
+
+  // 연결 설정
+  stompClient.onConnect = frame => {
+    try {
+      console.log('Connected: ' + frame);
+
+      // 채팅방에 가입
+      stompClient.subscribe('/topic/chat/' + route.params.roomId, message => {
+        if (message.body) {
+          const newMessage = JSON.parse(message.body);
+          otherMessagesSubject.next([
+            ...otherMessagesSubject.value,
+            newMessage,
+          ]);
+          setCombinedChats(otherMessagesSubject);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // 연결 에러 처리
+  stompClient.onStompError = frame => {
+    console.error('Broker reported error: ' + frame.headers['message']);
+    console.error('Additional details: ' + frame.body);
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      //       const socket = new SockJS('http://localhost:8080/chat');
+      // const stompClient = Stomp.over(socket);
+      // stompClient.connect({}, function(frame) {
+      //     stompClient.subscribe('/topic/messages', function(messageOutput) {
+      //         // Handle real-time messages
+      //     });
+      // });
+
+      console.log(route.params.roomId);
+
+      try {
+        // 연결 시작
+        stompClient.activate();
+      } catch (error) {
+        console.log(error);
+      }
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
 
   useEffect(() => {
     // const keyboardDidShowListener = Keyboard.addListener(
@@ -168,15 +240,29 @@ export const ChatScreen = ({route}) => {
     );
   }, [isFocused, user1ChatData]);
 
-  const handleSendChat = () => {
-    setUser1ChatData(prev => [
-      ...prev,
-      {
-        writer: 'user1',
-        text: currentInputChat,
-        createTime: new Date(),
-      },
-    ]);
+  // const handleSendChat = () => {
+  //   setUser1ChatData(prev => [
+  //     ...prev,
+  //     {
+  //       writer: 'user1',
+  //       text: currentInputChat,
+  //       createTime: new Date(),
+  //     },
+  //   ]);
+  // };
+
+  // 채팅 메시지를 보냅니다.
+  const handleSendChat = messageContent => {
+    const message = {
+      content: messageContent,
+      sender: userInfo.id,
+      // type: 'CHAT',
+    };
+    stompClient.publish({
+      destination: '/app/chat/' + route.params.roomId + '/sendMessage',
+      body: JSON.stringify(message),
+    });
+    myMessagesSubject.next([...myMessagesSubject.value, message]);
   };
 
   const scrollToBottom = () => {

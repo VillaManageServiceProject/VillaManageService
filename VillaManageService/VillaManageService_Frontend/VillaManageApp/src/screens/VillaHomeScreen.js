@@ -45,7 +45,16 @@ LocaleConfig.defaultLocale = 'fr';
 
 export const VillaHomeScreen = ({route}) => {
   const navigation = useNavigation();
-  const {villaId, villaName, setVillaInfo} = useContext(VillaContext);
+  const {
+    villaId,
+    villaName,
+    setVillaId,
+    setVillaHouses,
+    setVillaAddress,
+    setVillaDetail,
+    setVillaLocalCC,
+    setVillaBM,
+  } = useContext(VillaContext);
 
   const [selected, setSelected] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,7 +83,7 @@ export const VillaHomeScreen = ({route}) => {
     try {
       const response = await requestGET(`/villa/${villaId}`);
 
-      setVillaState(response.body.items.item[0]);
+      setVillaState(response.body);
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -140,10 +149,14 @@ export const VillaHomeScreen = ({route}) => {
     // const response = await checkSession();
   };
 
-  const setVillaState = currVillaInfo => {
-    console.log(currVillaInfo);
-    // setVillaId(currVillaId);
-    setVillaInfo(currVillaInfo);
+  const setVillaState = currVilla => {
+    console.log(currVilla);
+    setVillaId(currVilla.id);
+    setVillaAddress(currVilla.address);
+    setVillaDetail(currVilla.villaInfo.items.item[0]);
+    setVillaHouses(currVilla.houses);
+    setVillaLocalCC(currVilla.localCC);
+    setVillaBM(currVilla.buildingManagers);
   };
 
   const selectVillaName = address => {
