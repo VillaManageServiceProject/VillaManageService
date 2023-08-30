@@ -116,7 +116,16 @@ export const GeneralScreen = ({route}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
         <View style={styles.header}>
-          <View style={styles.left} />
+          <View style={styles.left}>
+            <Icon
+              IconType="AntDesign"
+              IconName="left"
+              size={20}
+              borderRadius={30}
+              borderWidth={0}
+              onPress={handlePressBack}
+            />
+          </View>
 
           <View style={styles.center}>
             <Text style={styles.headerTitle}>게시글</Text>

@@ -47,8 +47,6 @@ export const ChatScreen = ({route}) => {
   const otherMessagesSubject = new BehaviorSubject([]);
   const myMessagesSubject = new BehaviorSubject([]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [user1ChatData, setUser1ChatData] = useState(User1ChatData);
-  const [user2ChatData, setUser2ChatData] = useState(User2ChatData);
   // const [combinedChats, setCombinedChats] = useState(
   //   [...user1ChatData, ...user2ChatData].sort(
   //     (a, b) => a.createTime - b.createTime,
@@ -140,58 +138,6 @@ export const ChatScreen = ({route}) => {
         if (stompClient) {
           stompClient.disconnect();
         }
-      };
-    }, []),
-  );
-
-  // 연결 설정
-  stompClient.onConnect = frame => {
-    try {
-      console.log('Connected: ' + frame);
-
-      // 채팅방에 가입
-      stompClient.subscribe('/topic/chat/' + route.params.roomId, message => {
-        if (message.body) {
-          const newMessage = JSON.parse(message.body);
-          otherMessagesSubject.next([
-            ...otherMessagesSubject.value,
-            newMessage,
-          ]);
-          setCombinedChats(otherMessagesSubject);
-        }
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // 연결 에러 처리
-  stompClient.onStompError = frame => {
-    console.error('Broker reported error: ' + frame.headers['message']);
-    console.error('Additional details: ' + frame.body);
-  };
-
-  useFocusEffect(
-    React.useCallback(() => {
-      //       const socket = new SockJS('http://localhost:8080/chat');
-      // const stompClient = Stomp.over(socket);
-      // stompClient.connect({}, function(frame) {
-      //     stompClient.subscribe('/topic/messages', function(messageOutput) {
-      //         // Handle real-time messages
-      //     });
-      // });
-
-      console.log(route.params.roomId);
-
-      try {
-        // 연결 시작
-        stompClient.activate();
-      } catch (error) {
-        console.log(error);
-      }
-
-      return () => {
-        console.log('ScreenOne is unfocused');
       };
     }, []),
   );

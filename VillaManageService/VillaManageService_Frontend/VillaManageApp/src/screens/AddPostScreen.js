@@ -41,7 +41,7 @@ export const AddGeneralScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/generals');
+      const response = await requestPOST('/generals', postData);
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);
@@ -322,7 +322,7 @@ export const AddSurveyScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/surveys');
+      const response = await requestPOST('/surveys', postData);
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);
@@ -642,7 +642,7 @@ export const AddAnnounceScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await requestPOST(postData, '/announces');
+      const response = await requestPOST('/announces', postData);
       // const response = await checkSession();
       // Handle the response from the signup API
       console.log(response);

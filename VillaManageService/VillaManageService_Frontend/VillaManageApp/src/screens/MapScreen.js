@@ -177,6 +177,7 @@ class LoginedMapScreen extends React.Component {
               IconType="Ionicons"
               IconName="chatbubbles"
               borderRadius={30}
+              backgroundColor="white"
               onPress={this.handleToggleChatList}
             />
           </View>
