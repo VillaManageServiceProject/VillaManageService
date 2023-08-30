@@ -1,12 +1,14 @@
 import React, {useState, useContext} from 'react';
 import {VillaContext} from '../contexts/VillaProvider';
 import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import styled from 'styled-components/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import {CommonButton} from '../components/Button';
+import {Card, Title, Paragraph} from 'react-native-paper';
 
 export const VillaInfoScreen = ({route}) => {
   const [startDate, setStartDate] = useState(new Date());
@@ -17,11 +19,37 @@ export const VillaInfoScreen = ({route}) => {
   const [selectManagerChecked, setSelectManagerChecked] = useState('');
   const [selectCCChecked, setSelectCCChecked] = useState('');
 
-  const {villaInfo} = useContext(VillaContext);
+  const {villaDetail} = useContext(VillaContext);
 
-  const textData = Object.entries(villaInfo)
-    .map(([key, value]) => `${key}: ${value}`)
-    .join('\n');
+  // const textData = Object.entries()
+  //   .map(([key, value]) => `${key}: ${value}`)
+  //   .join('\n');
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log('villaDetail: ', villaDetail);
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
+
+  const fields = [
+    {title: '세대수', value: villaDetail.hhldCnt},
+    {title: '가구수', value: villaDetail.fmlyCnt},
+    {title: '지상층수', value: villaDetail.grndFlrCnt},
+    {title: '지하층수', value: villaDetail.ugrndFlrCnt},
+    {title: '호수', value: villaDetail.hoCnt},
+    {title: '사용승인일', value: villaDetail.useAprDay},
+    {title: '대지위치', value: villaDetail.platPlc},
+    {title: '시군구코드', value: villaDetail.sigunguCd},
+    {title: '법정동코드', value: villaDetail.bjdongCd},
+    {title: '번', value: villaDetail.bun},
+    {title: '지', value: villaDetail.ji},
+    {title: '건물명', value: villaDetail.bldNm},
+    {title: '건축면적', value: villaDetail.archArea},
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,7 +62,20 @@ export const VillaInfoScreen = ({route}) => {
           <View style={styles.right} />
         </View>
         <ScrollView>
-          <Text>{textData}</Text>
+          {fields.map((field, index) => (
+            <Card key={index} style={{margin: 16, backgroundColor: 'white'}}>
+              <Card.Content
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'baseline',
+                  justifyContent: 'space-between',
+                }}>
+                <Title>{field.title}</Title>
+                <Paragraph>{field.value}</Paragraph>
+              </Card.Content>
+            </Card>
+          ))}
+          {/* <Text>{textData}</Text> */}
           {/* <View style={styles.body}>
             <View
               style={{
@@ -440,5 +481,16 @@ const styles = StyleSheet.create({
     marginRight: 20,
     width: 1,
     height: 55,
+  },
+  infoBlock: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  label: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  value: {
+    fontSize: 16,
   },
 });

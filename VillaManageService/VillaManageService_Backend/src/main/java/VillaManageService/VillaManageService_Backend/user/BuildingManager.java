@@ -17,7 +17,7 @@ public class BuildingManager extends Member {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "villa_id")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "villa_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private Villa manageVilla;
 }

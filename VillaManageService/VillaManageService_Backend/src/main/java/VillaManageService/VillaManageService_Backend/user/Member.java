@@ -37,7 +37,7 @@ public class Member {
     @Column(name = "role")
     private Set<MemberRole> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "creator", fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private List<ChatRoom> chatRooms = new ArrayList<>();

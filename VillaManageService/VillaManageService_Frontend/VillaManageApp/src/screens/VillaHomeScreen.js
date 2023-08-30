@@ -294,7 +294,7 @@ export const VillaHomeScreen = ({route}) => {
     try {
       const response = await requestGET(`/villa/${villaId}`);
 
-      setVillaState(response.body);
+      setVillaState(response);
     } catch (error) {
       if (error.response) {
         // The server responded with a status other than 2xx
@@ -438,10 +438,10 @@ export const VillaHomeScreen = ({route}) => {
   };
 
   const setVillaState = currVilla => {
-    console.log(currVilla);
+    console.log('currVilla: ', currVilla);
     setVillaId(currVilla.id);
     setVillaAddress(currVilla.address);
-    setVillaDetail(currVilla.villaInfo.items.item[0]);
+    setVillaDetail(JSON.parse(currVilla.villaInfo).body.items.item[0]);
     setVillaHouses(currVilla.houses);
     setVillaLocalCC(currVilla.localCC);
     setVillaBM(currVilla.buildingManagers);

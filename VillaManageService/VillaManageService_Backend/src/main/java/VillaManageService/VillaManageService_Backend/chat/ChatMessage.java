@@ -1,5 +1,6 @@
 package VillaManageService.VillaManageService_Backend.chat;
 
+import VillaManageService.VillaManageService_Backend.board.Timestamped;
 import VillaManageService.VillaManageService_Backend.user.Member;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
@@ -13,22 +14,22 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class ChatMessage {
+public class ChatMessage extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long  id;
     private String content;
-    private String sender;
+//    private String sender;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id")
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "chat_room_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private ChatRoom chatRoom;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "member_id")
-//    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "member_id")
-//    @JsonIdentityReference(alwaysAsId = true)
-//    private Member sender;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
+    private Member sender;
     // getters and setters
 }
 
