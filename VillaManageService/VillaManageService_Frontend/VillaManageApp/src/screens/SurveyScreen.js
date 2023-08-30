@@ -180,6 +180,10 @@ export const SurveyScreen = ({route}) => {
     // const response = await checkSession();
   };
 
+  const handlePressBack = () => {
+    navigation.goBack();
+  };
+
   const handleRenderOptions = (item, index) => {
     if (topVoteOpt.voteCnt < item.voteCnt) {
       setTopVoteOpt({index: index, voteCnt: item.voteCnt});
@@ -233,7 +237,16 @@ export const SurveyScreen = ({route}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
         <View style={styles.header}>
-          <View style={styles.left} />
+          <View style={styles.left}>
+            <Icon
+              IconType="AntDesign"
+              IconName="left"
+              size={20}
+              borderRadius={30}
+              borderWidth={0}
+              onPress={handlePressBack}
+            />
+          </View>
 
           <View style={styles.center}>
             <Text style={styles.headerTitle}>설문조사</Text>
@@ -267,10 +280,7 @@ export const SurveyScreen = ({route}) => {
                 justifyContent: 'space-between',
                 margin: 5,
               }}>
-              <Text style={styles.title}>
-                {route.params.surveyId}
-                {postData.title}
-              </Text>
+              <Text style={styles.title}>{postData.title}</Text>
             </View>
             <View
               style={{

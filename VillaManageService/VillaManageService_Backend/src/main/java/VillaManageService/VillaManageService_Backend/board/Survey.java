@@ -1,8 +1,7 @@
 package VillaManageService.VillaManageService_Backend.board;
 
-import VillaManageService.VillaManageService_Backend.user.Member;
 import VillaManageService.VillaManageService_Backend.util.ListMapConverter;
-import VillaManageService.VillaManageService_Backend.villa.Villa;
+import VillaManageService.VillaManageService_Backend.building.Villa;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,6 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -30,18 +27,21 @@ public class Survey extends Timestamped {
 
     private String villaId;
 
+    @Column(columnDefinition = "TEXT")
     private String title;
 
     private LocalDate dateStart;
 
     private LocalDate dateEnd;
 
+    @Column(columnDefinition = "TEXT")
     private String question;
 
 //    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "survey")
 //    private VoteOption voteOption;
 
     @Convert(converter = ListMapConverter.class)
+    @Column(columnDefinition = "TEXT")
     private ArrayList<Map<String, Object>> options;
 
 //    @ManyToOne

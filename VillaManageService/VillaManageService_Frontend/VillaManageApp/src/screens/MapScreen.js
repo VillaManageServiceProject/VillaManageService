@@ -49,6 +49,7 @@ class UnLoginedMapScreen extends React.Component {
                 IconType="Ionicons"
                 IconName="key-outline"
                 borderRadius={30}
+                backgroundColor="white"
                 onPress={() =>
                   // console.log(this.props.navigation)
                   this.props.navigation.navigate('Login', {
@@ -146,6 +147,7 @@ class LoginedMapScreen extends React.Component {
               <Icon
                 IconType="MaterialCommunityIcons"
                 IconName="star-box-multiple-outline"
+                backgroundColor="white"
                 borderRadius={30}
                 onPress={this.handleTouchFavorite}
               />
@@ -160,6 +162,7 @@ class LoginedMapScreen extends React.Component {
               <Icon
                 IconType="MaterialCommunityIcons"
                 IconName="account-cog-outline"
+                backgroundColor="white"
                 borderRadius={30}
                 onPress={() =>
                   // console.log(this.props.navigation)

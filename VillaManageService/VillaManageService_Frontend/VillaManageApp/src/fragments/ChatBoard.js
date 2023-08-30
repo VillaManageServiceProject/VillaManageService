@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -12,7 +12,8 @@ import SideMenu from '../components/SideMenu';
 import TextButton from '../components/TextButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ChatBoardItem from '../components/ChatBoardItem';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {requestGET} from '../api';
 
 const NoticeBoardData = [
   {
@@ -80,6 +81,42 @@ const NoticeBoardData = [
 export default ChatBoard = ({onClose}) => {
   const menuAnimation = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+
+  const [chatBoardItems, setChatBoardItems] = useState([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      requestGetChatBoards();
+
+      return () => {
+        console.log('ScreenOne is unfocused');
+      };
+    }, []),
+  );
+
+  const requestGetChatBoards = async () => {
+    try {
+      const response = await requestGET('/chat/board');
+
+      console.log(response);
+      setChatBoardItems(response);
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+  };
 
   const slideIn = () => {
     Animated.timing(menuAnimation, {
@@ -166,14 +203,20 @@ export default ChatBoard = ({onClose}) => {
         </View>
         <View style={styles.body}>
           <FlatList
-            data={NoticeBoardData}
+            data={chatBoardItems}
             renderItem={({item}) => (
               <ChatBoardItem
-                noticeType={item.noticeType}
-                title={item.title}
-                text={item.text}
-                newMessageCount={item.newMessageCount}
-                onPress={() => navigation.navigate('Chat')}
+                // noticeType={item.noticeType}
+                title={item.name}
+                text={
+                  item.recentChatMessage !== null
+                    ? item.recentChatMessage.content
+                    : ''
+                }
+                // newMessageCount={item.newMessageCount}
+                onPress={() =>
+                  navigation.navigate('Chat', {roomId: chatBoardItems.id})
+                }
               />
             )}
             keyExtractor={(item, index) => index.toString()}

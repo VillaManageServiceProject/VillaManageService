@@ -113,9 +113,9 @@ export default VillaSideMenu = ({onClose, navigationReset}) => {
           // backgroundColor: 'red',
         }}>
         <View style={{flex: 1, flexDirection: 'column'}}>
-          <View style={{flexDirection: 'column', backgroundColor: 'yellow'}}>
-            {/* <Text>{userInfo.name}</Text>
-            <Text>{userInfo.id}</Text> */}
+          <View style={{flexDirection: 'column'}}>
+            <Text>{userInfo.name}</Text>
+            <Text>{userInfo.id}</Text>
           </View>
         </View>
         <View

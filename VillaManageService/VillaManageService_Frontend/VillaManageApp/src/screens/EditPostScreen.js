@@ -16,6 +16,7 @@ import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import {CommonButton} from '../components/Button';
 import {requestPUT, requestPOST} from '../api';
+import Icon from '../components/Icon';
 
 export const EditGeneralScreen = ({route}) => {
   const navigation = useNavigation();
@@ -379,6 +380,18 @@ export const EditSurveyScreen = ({route}) => {
     );
   };
 
+  const handleDeleteOption = removeIdx => {
+    console.log(postData.options);
+    console.log(options);
+    setOptions(prevItems =>
+      prevItems.filter((_, index) => index !== removeIdx),
+    );
+    setPostData(prev => ({
+      ...prev,
+      options: prev.options.filter((_, index) => index !== removeIdx),
+    }));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
@@ -546,8 +559,8 @@ export const EditSurveyScreen = ({route}) => {
             </View>
             <View style={{width: '100%', maxHeight: 250}}>
               <FlatList
-                // data={postData}
-                data={options}
+                data={postData.options}
+                // data={options}
                 renderItem={({item, index}) => (
                   <View
                     style={{
@@ -566,10 +579,21 @@ export const EditSurveyScreen = ({route}) => {
                       {index + 1}
                     </Text>
                     <TextInput
-                      value={item}
+                      value={item.option}
+                      style={{flex: 11}}
                       // placeholder={item}
                       onChangeText={text => handleOptionChange(text, index)}
                     />
+                    <View style={{flex: 1}}>
+                      <Icon
+                        IconName="closecircle"
+                        IconType="AntDesign"
+                        IconColor="#FF383890"
+                        size={15}
+                        borderWidth={0}
+                        onPress={() => handleDeleteOption(index)}
+                      />
+                    </View>
                   </View>
                 )}
                 keyExtractor={(item, index) => index.toString()}
@@ -587,6 +611,296 @@ export const EditSurveyScreen = ({route}) => {
               backgroundColor="#dfe1e5"
               onPress={handleAddOption}
             />
+            <Spacing height={20} />
+            <CommonButton
+              fontSize={15}
+              text="올리기"
+              onPress={handleFormSubmit}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export const EditAnnounceScreen = ({route}) => {
+  const navigation = useNavigation();
+  const {villaId} = useContext(VillaContext);
+
+  const [dateStart, setDateStart] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(new Date());
+  const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
+  const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
+
+  const [postData, setPostData] = useState(route.params.postData);
+  const [noticeChecked, setNoticeChecked] = useState(postData.noticeType);
+
+  // const [postData, setPostData] = useState({
+  //   villaId: villaId,
+  //   title: '',
+  //   // postDate: new Date().toISOString().substring(0, 10),
+  //   noticeType: 'common',
+  //   // relatedMemberId: '',
+  //   content: '',
+  //   dateStart: new Date().toISOString().substring(0, 10),
+  //   dateEnd: new Date().toISOString().substring(0, 10),
+  // });
+
+  const handleFormSubmit = async () => {
+    try {
+      const response = await requestPUT(
+        `/announces/${route.params.announceId}`,
+        postData,
+      );
+      // const response = await checkSession();
+      // Handle the response from the signup API
+      console.log(response);
+
+      // if (response.status === 'success') {
+      navigation.goBack();
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+
+    // const response = await checkSession();
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.foreground}>
+        <View style={styles.header}>
+          <View style={styles.left} />
+          <View style={styles.center}>
+            <Text style={styles.headerTitle}>공지사항 수정</Text>
+          </View>
+          <View style={styles.right} />
+        </View>
+        <ScrollView>
+          <View style={styles.body}>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text style={{marginRight: 20}}>제목</Text>
+              <TextInput
+                value={postData.title}
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, title: text}))
+                }
+                style={{
+                  width: '85%',
+                  height: 45,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                }}
+              />
+            </View>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                // justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text style={{marginRight: 20}}>공지</Text>
+              <View style={styles.separator} />
+              <View
+                style={{
+                  flexDirection: 'column',
+                  // backgroundColor: 'blue',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginRight: 20,
+                    // backgroundColor: 'red',
+                  }}>
+                  <Text style={{marginRight: 5}}>중요</Text>
+                  <RadioButton
+                    value="important"
+                    status={
+                      noticeChecked === 'important' ? 'checked' : 'unchecked'
+                    }
+                    onPress={() => {
+                      setNoticeChecked('important');
+                      setPostData(prev => ({
+                        ...prev,
+                        noticeType: 'important',
+                      }));
+                    }}
+                  />
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginRight: 20,
+                  }}>
+                  <Text style={{marginRight: 5}}>일반</Text>
+                  <RadioButton
+                    value="common"
+                    status={
+                      noticeChecked === 'common' ? 'checked' : 'unchecked'
+                    }
+                    onPress={() => {
+                      setNoticeChecked('common');
+                      setPostData(prev => ({...prev, noticeType: 'common'}));
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+                // backgroundColor: 'blue',
+              }}>
+              <Text>일정</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}>
+                <SpecificButton
+                  width={120}
+                  height={40}
+                  fontSize={14}
+                  text={new Date(postData.dateStart)
+                    .toISOString()
+                    .substring(0, 10)}
+                  onPress={() => setDateStartPickerOpen(true)}
+                />
+                <DatePicker
+                  modal
+                  open={isDateStartPickerOpened}
+                  date={new Date(postData.dateStart)}
+                  onConfirm={date => {
+                    setDateStartPickerOpen(false);
+                    setDateStart(date);
+                    setPostData(prev => ({
+                      ...prev,
+                      dateStart: date.toISOString().substring(0, 10),
+                    }));
+                  }}
+                  onCancel={() => {
+                    setDateStartPickerOpen(false);
+                  }}
+                  mode="date"
+                  textColor="#9AA0A6"
+                />
+                <Text style={{marginHorizontal: 5}}>~</Text>
+                <SpecificButton
+                  width={120}
+                  height={40}
+                  fontSize={14}
+                  text={new Date(postData.dateEnd)
+                    .toISOString()
+                    .substring(0, 10)}
+                  onPress={() => setDateEndPickerOpen(true)}
+                />
+                <DatePicker
+                  modal
+                  open={isDateEndPickerOpened}
+                  date={new Date(postData.dateEnd)}
+                  onConfirm={date => {
+                    setDateEndPickerOpen(false);
+                    setDateEnd(date);
+                    setPostData(prev => ({
+                      ...prev,
+                      dateEnd: date.toISOString().substring(0, 10),
+                    }));
+                  }}
+                  onCancel={() => {
+                    setDateEndPickerOpen(false);
+                  }}
+                  mode="date"
+                  textColor="#9AA0A6"
+                />
+              </View>
+            </View>
+            {/* <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text style={{marginRight: 20}}>알림</Text>
+              <TextInput
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, relatedMemberId: text}))
+                }
+                style={{
+                  width: '85%',
+                  height: 45,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                }}
+              />
+            </View> */}
+            <Spacing height={20} />
+            {/* <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <Text>알림</Text>
+            </View> */}
+            <View
+              style={{
+                width: '100%',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: 5,
+              }}>
+              <TextInput
+                multiline
+                value={postData.content}
+                placeholder="내용 입력"
+                onChangeText={text =>
+                  setPostData(prev => ({...prev, content: text}))
+                }
+                style={{
+                  width: '100%',
+                  height: 300,
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#DFE1E5',
+                  textAlignVertical: 'top',
+                }}
+              />
+            </View>
             <Spacing height={20} />
             <CommonButton
               fontSize={15}

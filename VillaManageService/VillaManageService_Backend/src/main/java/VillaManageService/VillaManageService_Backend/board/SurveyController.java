@@ -3,7 +3,9 @@ package VillaManageService.VillaManageService_Backend.board;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @AllArgsConstructor
@@ -24,6 +26,16 @@ public class SurveyController {
     @GetMapping("/surveys/board")
     public List<SurveyListResponseForm> getSurveys(@RequestParam String villaId, @RequestParam String available) {
         return surveyService.readSurveyByExpired(villaId, available);
+    }
+
+    @GetMapping("/surveys/board/vote/{villaId}")
+    public List<SurveyVoteResponseForm> getSurveysVote(@PathVariable String villaId) {
+        return surveyService.readSurveyVote(villaId);
+    }
+
+    @GetMapping("/surveys/board/period/{villaId}")
+    public List<SurveyPeriodResponseForm> getSurveysPeriod(@PathVariable String villaId) {
+        return surveyService.readSurveyPeriod(villaId);
     }
 
     // 전체 목록 조회

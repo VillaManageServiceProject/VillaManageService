@@ -1,4 +1,4 @@
-package VillaManageService.VillaManageService_Backend.villa;
+package VillaManageService.VillaManageService_Backend.building;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

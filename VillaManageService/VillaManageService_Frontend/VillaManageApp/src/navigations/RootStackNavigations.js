@@ -18,13 +18,22 @@ import {AddChatScreen} from '../screens/AddChatScreen';
 import {GeneralScreen} from '../screens/GeneralScreen';
 import {VillaInfoScreen} from '../screens/VillaInfoScreen';
 import {SurveyScreen} from '../screens/SurveyScreen';
+import {AnnounceScreen} from '../screens/AnnounceScreen';
 import {
   GeneralBoardScreen,
   SurveyBoardScreen,
   AnnounceBoardScreen,
 } from '../screens/PostBoardScreen';
-import {AddGeneralScreen, AddSurveyScreen} from '../screens/AddPostScreen';
-import {EditGeneralScreen, EditSurveyScreen} from '../screens/EditPostScreen';
+import {
+  AddGeneralScreen,
+  AddSurveyScreen,
+  AddAnnounceScreen,
+} from '../screens/AddPostScreen';
+import {
+  EditGeneralScreen,
+  EditSurveyScreen,
+  EditAnnounceScreen,
+} from '../screens/EditPostScreen';
 // import {createDrawerNavigator} from '@react-navigation/drawer';
 
 const Stack = createNativeStackNavigator();
@@ -91,6 +100,9 @@ export const RootStackNavigations = () => {
             component={AccountSettingScreen}
           />
           <Stack.Screen name="AnnounceBoard" component={AnnounceBoardScreen} />
+          <Stack.Screen name="Announce" component={AnnounceScreen} />
+          <Stack.Screen name="AddAnnounce" component={AddAnnounceScreen} />
+          <Stack.Screen name="EditAnnounce" component={EditAnnounceScreen} />
           <Stack.Screen name="GeneralBoard" component={GeneralBoardScreen} />
           <Stack.Screen name="AddGeneral" component={AddGeneralScreen} />
           <Stack.Screen name="General" component={GeneralScreen} />
