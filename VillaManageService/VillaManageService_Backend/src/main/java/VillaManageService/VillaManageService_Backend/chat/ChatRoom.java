@@ -16,7 +16,6 @@ import java.util.Set;
 public class ChatRoom {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "chat_room_id")
     private Long id;
     @NotNull
     private String name;

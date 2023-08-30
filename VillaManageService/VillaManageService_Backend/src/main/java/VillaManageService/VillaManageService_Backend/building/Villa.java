@@ -33,14 +33,12 @@ public class Villa {
     private String villaInfo;
 
     @OneToMany(mappedBy = "villa", cascade = CascadeType.ALL)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "house_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private Set<House> houses = new HashSet<>();
 
     @OneToMany(mappedBy = "manageVilla", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "member_id")
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private List<BuildingManager> buildingManagers = new ArrayList<>();
 }
-
-

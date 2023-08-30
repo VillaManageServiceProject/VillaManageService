@@ -20,12 +20,21 @@ export default props => {
   return (
     <TextButton onPress={props.onPress}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <View>
+        <View
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 15,
+            borderWidth: 1,
+            marginRight: 15,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderColor: '#1A73E840',
+          }}>
           <MaterialCommunityIcons
-            name="account"
+            name={props.IconName}
             size={25}
             color="black"
-            style={{marginRight: 15}}
           />
         </View>
         <View style={{flexDirection: 'column'}}>

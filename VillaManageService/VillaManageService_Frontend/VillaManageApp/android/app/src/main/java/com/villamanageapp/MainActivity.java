@@ -4,6 +4,9 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 
+import android.os.Bundle;
+import org.devio.rn.splashscreen.SplashScreen;
+
 public class MainActivity extends ReactActivity {
 
   /**
@@ -37,4 +40,11 @@ public class MainActivity extends ReactActivity {
       return reactRootView;
     }
   }
+
+  @Override // 추가!
+    protected void onCreate(Bundle savedInstanceState) {
+        // SplashScreen.show(this, R.style.SplashTheme, true); // 이런식으로 스타일 적용하고 싶으면 Manifest 수정 필요
+        SplashScreen.show(this);
+        super.onCreate(savedInstanceState);
+    }
 }
