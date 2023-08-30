@@ -13,6 +13,8 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
     Survey findByTitle(String title);
 //    Survey findByContent(String content);
 //    List<SurveyListResponseForm> findAllByOrderByModifiedAtDesc();
+
+    List<Survey> findByVillaIdOrderByModifiedAtDesc(String villaId);
     List<Survey> findByVillaIdAndDateStartLessThanEqualAndDateEndGreaterThanEqualOrderByCreatedAtDesc(String villaId, LocalDate startDate, LocalDate endDate);
     @Query("SELECT sv FROM Survey sv WHERE sv.villaId = :villaId AND (sv.dateEnd < :today OR sv.dateStart > :today) ORDER BY sv.createdAt DESC")
     List<Survey> findSurveysOutsideDateRange(@Param("villaId") String villaId, @Param("today") LocalDate today);

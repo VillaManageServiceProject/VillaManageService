@@ -1,39 +1,35 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  FlatList,
-  TouchableOpacity,
-} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {UserContext} from '../contexts/UserProvider';
+import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SpecificButton} from '../components/Button';
 import DatePicker from 'react-native-date-picker';
 import {RadioButton} from 'react-native-paper';
 import Icon from '../components/Icon';
-import {requestGET, requestDelete, requestPUT} from '../api';
-import {UserContext} from '../contexts/UserProvider';
-import {formatDate} from '../utils/formatters';
+import {requestDelete, requestGET} from '../api';
 
-export const SurveyScreen = ({route}) => {
+export const AnnounceScreen = ({route}) => {
   const navigation = useNavigation();
   const {userInfo} = useContext(UserContext);
 
+  const [dateStart, setDateStart] = useState(new Date());
+  const [dateEnd, setDateEnd] = useState(new Date());
+  const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
+  const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
+  const [noticeChecked, setNoticeChecked] = useState('Notice');
+
   const [postData, setPostData] = useState({
-    surveyId: '',
+    announceId: '',
     publisherId: '',
     title: '',
-    question: '',
-    options: [],
+    content: '',
+    notification: '',
     createdAt: '',
     modifiedAt: '',
     dateStart: '',
     dateEnd: '',
   });
-  const [isExpired, setIsExpired] = useState(false);
-  const [topVoteOpt, setTopVoteOpt] = useState({index: null, voteCnt: 0});
 
   useFocusEffect(
     React.useCallback(() => {
@@ -45,35 +41,11 @@ export const SurveyScreen = ({route}) => {
     }, []),
   );
 
-  useEffect(() => {
-    const today = new Date();
-    if (
-      postData.dateStart !== '' &&
-      postData.dateEnd !== '' &&
-      (formatDate(new Date(postData.dateStart)) > formatDate(today) ||
-        formatDate(new Date(postData.dateEnd)) < formatDate(today))
-    ) {
-      setIsExpired(true);
-    }
-
-    console.log(
-      'postData.options: ',
-      postData.options.some(option =>
-        option.voters.split(',').some(voter => console.log(option)),
-      ),
-    );
-    if (
-      postData.options.some(option =>
-        option.voters.split(',').some(voter => voter.includes(userInfo.id)),
-      )
-    ) {
-      setIsExpired(true);
-    }
-  }, [postData]);
-
   const requestGetpost = async () => {
     try {
-      const response = await requestGET(`/surveys/${route.params.surveyId}`);
+      const response = await requestGET(
+        `/announces/${route.params.announceId}`,
+      );
       // Handle the response from the signup API
       console.log(response);
 
@@ -100,47 +72,10 @@ export const SurveyScreen = ({route}) => {
     // const response = await checkSession();
   };
 
-  const handlePressOption = async optionIdx => {
-    try {
-      // const updateData = {
-      //   surveyId: route.params.surveyId,
-      //   optionIdx: optionIdx,
-      // };
-      if (!isExpired) {
-        const response = await requestPUT(
-          `/surveys?surveyId=${route.params.surveyId}&optionIdx=${optionIdx}`,
-        );
-        // Handle the response from the signup API
-        console.log(response);
-
-        // if (response.status === 'success') {
-        setPostData(response);
-        // }
-      }
-    } catch (error) {
-      if (error.response) {
-        // The server responded with a status other than 2xx
-        console.log('Response Data:', error.response.data);
-        console.log('Response Status:', error.response.status);
-        console.log('Response Headers:', error.response.headers);
-
-        setSubmitError(error.response.data);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.log('Request:', error.request);
-      } else {
-        // Something happened in setting up the request
-        console.log('Error:', error.message);
-      }
-    }
-
-    // const response = await checkSession();
-  };
-
   const handlePressUpdate = () => {
     if (userInfo.id === postData.publisherId) {
-      navigation.navigate('EditSurvey', {
-        surveyId: route.params.surveyId,
+      navigation.navigate('EditAnnounce', {
+        announceId: route.params.announceId,
         postData,
       });
     }
@@ -148,10 +83,9 @@ export const SurveyScreen = ({route}) => {
 
   const handlePressDelete = async () => {
     try {
-      console.log('userInfo: ', userInfo.id);
       if (userInfo.id === postData.publisherId) {
         const response = await requestDelete(
-          `/surveys/${route.params.surveyId}`,
+          `/announces/${route.params.announceId}`,
         );
         // Handle the response from the signup API
         console.log(response);
@@ -180,76 +114,14 @@ export const SurveyScreen = ({route}) => {
     // const response = await checkSession();
   };
 
-  const handlePressBack = () => {
-    navigation.goBack();
-  };
-
-  const handleRenderOptions = (item, index) => {
-    if (topVoteOpt.voteCnt < item.voteCnt) {
-      setTopVoteOpt({index: index, voteCnt: item.voteCnt});
-    }
-
-    return (
-      <TouchableOpacity
-        disabled={isExpired}
-        onPress={() => handlePressOption(index)}
-        style={{
-          height: 40,
-          flexDirection: 'row',
-          alignItems: 'center',
-          borderRadius: 10,
-          borderWidth: 1,
-          borderColor: '#e0e0e0',
-          paddingHorizontal: 10,
-          margin: 5,
-          backgroundColor:
-            item.voteCnt === topVoteOpt.voteCnt ? '#EAEAEA' : null,
-        }}>
-        <Text
-          style={{
-            marginRight: 10,
-          }}>
-          {index + 1}
-        </Text>
-        <View
-          style={{
-            width: '95%',
-            flexDirection: 'row',
-            // alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text>{item.option}</Text>
-          <View
-            style={{
-              width: 20,
-              alignItems: 'center',
-              borderRadius: 30,
-              backgroundColor: '#e0e0e0',
-            }}>
-            <Text>{item.voteCnt}</Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.foreground}>
         <View style={styles.header}>
-          <View style={styles.left}>
-            <Icon
-              IconType="AntDesign"
-              IconName="left"
-              size={20}
-              borderRadius={30}
-              borderWidth={0}
-              onPress={handlePressBack}
-            />
-          </View>
+          <View style={styles.left} />
 
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>설문조사</Text>
+            <Text style={styles.headerTitle}>게시글</Text>
           </View>
           <View style={styles.right}>
             <Icon
@@ -304,19 +176,6 @@ export const SurveyScreen = ({route}) => {
               <Text style={{marginRight: 20}}>게시일</Text>
               <Text style={{marginRight: 20}}>{postData.createdAt}</Text>
             </View>
-            <View
-              style={{
-                width: '100%',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                margin: 5,
-              }}>
-              <Text style={{marginRight: 20}}>진행기간</Text>
-              <Text style={{marginRight: 20}}>
-                {postData.dateStart} - {postData.dateEnd}
-              </Text>
-            </View>
 
             <Spacing height={20} />
             {/* <View
@@ -343,35 +202,9 @@ export const SurveyScreen = ({route}) => {
                   borderRadius: 10,
                   textAlignVertical: 'top',
                 }}>
-                <Text>{postData.question}</Text>
+                <Text>{postData.content}</Text>
               </View>
             </View>
-            <Spacing height={20} />
-            <FlatList
-              // data={postData}
-              data={postData.options}
-              renderItem={({item, index}) =>
-                // <TouchableOpacity
-                //   style={{
-                //     borderRadius: 5,
-                //     borderWidth: 1,
-                //     borderColor: '#e0e0e0',
-                //     padding: 10,
-                //     margin: 5,
-                //   }}>
-                //   <Text>
-                //     {index + 1}
-                //     {'    '}
-                //     {item}
-                //   </Text>
-                // </TouchableOpacity>
-                handleRenderOptions(item, index)
-              }
-              keyExtractor={(item, index) => index.toString()}
-              showsVerticalScrollIndicator={false}
-              nestedScrollEnabled={true}
-              style={{width: '100%'}}
-            />
           </View>
         </ScrollView>
       </View>

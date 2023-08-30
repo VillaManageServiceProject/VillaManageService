@@ -45,10 +45,11 @@ export const LoginScreen = ({route}) => {
       if (response.status === 200) {
         handleLogin();
         setUserInfo(response.data.member);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'LoginedMap'}],
-        });
+        navigation.goBack();
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'LoginedMap'}],
+        // });
       }
     } catch (error) {
       if (error.response) {

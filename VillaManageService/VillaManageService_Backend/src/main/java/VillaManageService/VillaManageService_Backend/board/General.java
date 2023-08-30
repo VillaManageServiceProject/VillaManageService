@@ -24,12 +24,14 @@ public class General extends Timestamped {
     @JoinColumn(name = "publisher", referencedColumnName = "id")
     private Member publisher;
 
+    @Column(columnDefinition = "TEXT")
     private String title;
 
     private String noticeType;
 
 //    private String relatedMemberId;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private LocalDate dateStart;

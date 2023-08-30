@@ -30,18 +30,21 @@ public class Survey extends Timestamped {
 
     private String villaId;
 
+    @Column(columnDefinition = "TEXT")
     private String title;
 
     private LocalDate dateStart;
 
     private LocalDate dateEnd;
 
+    @Column(columnDefinition = "TEXT")
     private String question;
 
 //    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "survey")
 //    private VoteOption voteOption;
 
     @Convert(converter = ListMapConverter.class)
+    @Column(columnDefinition = "TEXT")
     private ArrayList<Map<String, Object>> options;
 
 //    @ManyToOne

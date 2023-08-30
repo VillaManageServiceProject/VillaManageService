@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import NoticeBoardItem from '../components/NoticeBoardItem';
 import SegmentedControl from '../components/SegmentedControl';
 import {formatDate} from '../utils/formatters';
+import {orderByImportanceAndDateDesc} from '../utils/sorters';
 
 const NoticeBoardData = [
   {
@@ -127,7 +128,7 @@ export const GeneralBoardScreen = ({route}) => {
       console.log(response);
 
       // if (response.status === 'success') {
-      setPostData(response);
+      setPostData(orderByImportanceAndDateDesc(response));
       // }
     } catch (error) {
       if (error.response) {
@@ -233,6 +234,7 @@ export const SurveyBoardScreen = ({route}) => {
       //     : segmentedControlRef?.current?.currentIndex,
       // );
       handleTabsChange(tabIndex);
+      requestGetpost();
 
       return () => {
         console.log('ScreenOne is unfocused');
@@ -260,7 +262,7 @@ export const SurveyBoardScreen = ({route}) => {
       console.log(response);
 
       // if (response.status === 'success') {
-      setPostData(response);
+      setPostData(orderByImportanceAndDateDesc(response));
       // }
     } catch (error) {
       if (error.response) {
@@ -385,6 +387,8 @@ export const AnnounceBoardScreen = ({route}) => {
   const [postData, setPostData] = useState({
     COMMUNITY_CENTER: [],
     BUILDING_MANAGER: [],
+    LANDLORD: [],
+    RESIDENT: [],
   });
   // const [postData, setPostData] = useState([{
   //   generalId: '',
@@ -416,7 +420,7 @@ export const AnnounceBoardScreen = ({route}) => {
     try {
       const roles = Object.keys(postData).join(',');
       console.log(roles);
-      const response = await requestGET(`/generals/board/role/${villaId}`, {
+      const response = await requestGET(`/announces/board/role/${villaId}`, {
         roles,
       });
       // Handle the response from the signup API
@@ -467,7 +471,7 @@ export const AnnounceBoardScreen = ({route}) => {
         <View style={styles.body}>
           <View style={{borderRadius: 3, marginBottom: 15}}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('AddGeneral')}
+              onPress={() => navigation.navigate('AddAnnounce')}
               style={{
                 paddingHorizontal: 5,
                 alignItems: 'center',
@@ -498,7 +502,7 @@ export const AnnounceBoardScreen = ({route}) => {
             <View style={styles.separator} />
             <Spacing height={10} />
             <FlatList
-              data={postData.COMMUNITY_CENTER}
+              data={orderByImportanceAndDateDesc(postData.COMMUNITY_CENTER)}
               // data={NoticeBoardData.filter(post => post.noticeType === 'cc')}
               renderItem={({item}) => (
                 <NoticeBoardItem
@@ -508,7 +512,9 @@ export const AnnounceBoardScreen = ({route}) => {
                   createDate={formatDate(new Date(item.createdAt))}
                   backgroundColor="#F5F5F5"
                   onPress={() => {
-                    navigation.navigate('General', {generalId: item.generalId});
+                    navigation.navigate('Announce', {
+                      announceId: item.announceId,
+                    });
                   }}
                 />
               )}
@@ -532,7 +538,7 @@ export const AnnounceBoardScreen = ({route}) => {
             <View style={styles.separator} />
             <Spacing height={10} />
             <FlatList
-              data={postData.BUILDING_MANAGER}
+              data={orderByImportanceAndDateDesc(postData.BUILDING_MANAGER)}
               // data={NoticeBoardData.filter(post => post.noticeType === 'bm')}
               renderItem={({item}) => (
                 <NoticeBoardItem
@@ -542,7 +548,48 @@ export const AnnounceBoardScreen = ({route}) => {
                   createDate={formatDate(new Date(item.createdAt))}
                   backgroundColor="#F5F5F5"
                   onPress={() => {
-                    navigation.navigate('General', {generalId: item.generalId});
+                    navigation.navigate('Announce', {
+                      announceId: item.announceId,
+                    });
+                  }}
+                />
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={() => <Spacing height={5} />}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={<EmptyListComponent />}
+              style={{width: '100%'}}
+            />
+          </View>
+          <Spacing height={30} />
+          <View
+            style={{
+              flex: 0.8,
+              width: '100%',
+              // height: '30%',
+              flexDirection: 'column',
+              // backgroundColor: 'red',
+            }}>
+            <Text style={{fontSize: 18, color: 'black'}}>빌라 공지</Text>
+            <View style={styles.separator} />
+            <Spacing height={10} />
+            <FlatList
+              data={orderByImportanceAndDateDesc([
+                ...postData.LANDLORD,
+                ...postData.RESIDENT,
+              ])}
+              // data={NoticeBoardData.filter(post => post.noticeType === 'bm')}
+              renderItem={({item}) => (
+                <NoticeBoardItem
+                  noticeType={item.noticeType}
+                  title={item.title}
+                  text={item.context}
+                  createDate={formatDate(new Date(item.createdAt))}
+                  backgroundColor="#F5F5F5"
+                  onPress={() => {
+                    navigation.navigate('Announce', {
+                      announceId: item.announceId,
+                    });
                   }}
                 />
               )}
