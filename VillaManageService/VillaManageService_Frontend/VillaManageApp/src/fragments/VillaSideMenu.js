@@ -126,24 +126,24 @@ export default VillaSideMenu = ({onClose, navigationReset}) => {
           <SideMenu
             title="빌라소개"
             IconName="infocirlceo"
-            childMenuList={{빌라정보: 'villaInfo', 호수별정보: ''}}
+            childMenuList={{빌라정보: 'villaInfo'}}
           />
           <SideMenu
             title="공용메뉴"
             IconName="home"
             childMenuList={{
               공지사항: 'AnnounceBoard',
-              일정관리: '',
+              // 일정관리: '',
               '설문조사/투표': 'SurveyBoard',
               게시판: 'GeneralBoard',
-              갤러리: '',
+              // 갤러리: '',
             }}
           />
-          <SideMenu
+          {/* <SideMenu
             title="관리메뉴"
             IconName="setting"
             childMenuList={{관리비: '', 입주자회의: '', 시설관리: ''}}
-          />
+          /> */}
         </View>
         <View
           style={{

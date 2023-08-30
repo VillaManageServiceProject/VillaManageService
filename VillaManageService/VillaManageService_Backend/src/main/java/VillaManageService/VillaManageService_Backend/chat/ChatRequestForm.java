@@ -6,8 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ChatRequestForm {
-    private Long chatRoomId;
-    private Long senderId;
+    private String sender;
     private String content;
-    // getters and setters
 }

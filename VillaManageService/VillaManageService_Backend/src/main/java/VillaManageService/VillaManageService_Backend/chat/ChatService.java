@@ -6,6 +6,7 @@ import VillaManageService.VillaManageService_Backend.user.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 //import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,7 +59,8 @@ public class ChatService {
                 String localCC = residentUser.getHouse().getVilla().getLocalCC();
                 if(!communityCenterRepository.findByLocalCC(localCC).isEmpty()) ccs.add(localCC);
                 bms.addAll(residentUser.getHouse().getVilla().getBuildingManagers().stream().map(BuildingManager::getName).collect(Collectors.toList()));
-                members.add(Map.of("villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
+                residents = residents.stream().filter((addressDetail) -> addressDetail != residentUser.getHouse().getAddressDetail()).collect(Collectors.toList());
+                members.add(Map.of("villaId", villaId, "villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
             }
             else if (user.getRoles().contains(MemberRole.LANDLORD)) {
                 Landlord landlordUser = (Landlord) user;
@@ -65,10 +68,11 @@ public class ChatService {
                     villaId = v.getId();
                     villaAddress = v.getAddress();
                     residents.addAll(v.getHouses().stream().filter(house -> house.getResidents().size() != 0).map(House::getAddressDetail).collect(Collectors.toList()));
-                    landlords.addAll(v.getHouses().stream().filter(house -> house.getLandlord() != null).map(House::getAddressDetail).collect(Collectors.toList()));
-                    ccs.add(v.getLocalCC());
+                    landlords.addAll(v.getHouses().stream().filter(house -> house.getLandlord() != null && !house.getLandlord().equals(landlordUser)).map(House::getAddressDetail).collect(Collectors.toList()));
+                    String localCC = landlordUser.getHouses().stream().findAny().get().getVilla().getLocalCC();
+                    if(!communityCenterRepository.findByLocalCC(localCC).isEmpty()) ccs.add(localCC);
                     bms.addAll(v.getBuildingManagers().stream().map(BuildingManager::getName).collect(Collectors.toList()));
-                    members.add(Map.of("villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
+                    members.add(Map.of("villaId", villaId, "villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
                 }
             }
             else if (user.getRoles().contains(MemberRole.BUILDING_MANAGER)) {
@@ -78,8 +82,8 @@ public class ChatService {
                 residents.addAll(BMUser.getManageVilla().getHouses().stream().filter(house -> house.getResidents().size() != 0).map(House::getAddressDetail).collect(Collectors.toList()));
                 landlords.addAll(BMUser.getManageVilla().getHouses().stream().filter(house -> house.getLandlord() != null).map(House::getAddressDetail).collect(Collectors.toList()));
                 ccs.add(BMUser.getManageVilla().getLocalCC());
-                bms.addAll(BMUser.getManageVilla().getBuildingManagers().stream().map(BuildingManager::getName).collect(Collectors.toList()));
-                members.add(Map.of("villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
+                bms.addAll(BMUser.getManageVilla().getBuildingManagers().stream().map((buildingManager -> {if(buildingManager.getName() != BMUser.getName()) return buildingManager.getName(); else return null;})).collect(Collectors.toList()));
+                members.add(Map.of("villaId", villaId, "villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
             }
             else if (user.getRoles().contains(MemberRole.COMMUNITY_CENTER)) {
                 CommunityCenter CCUser = (CommunityCenter) user;
@@ -92,9 +96,9 @@ public class ChatService {
                     villaAddress = v.getAddress();
                     residents.addAll(v.getHouses().stream().filter(house -> house.getResidents().size() != 0).map(House::getAddressDetail).collect(Collectors.toList()));
                     landlords.addAll(v.getHouses().stream().filter(house -> house.getLandlord() != null).map(House::getAddressDetail).collect(Collectors.toList()));
-                    ccs.add(v.getLocalCC());
+                    if(v.getLocalCC() != CCUser.getLocalCC()) ccs.add(v.getLocalCC());
                     bms.addAll(v.getBuildingManagers().stream().map(BuildingManager::getName).collect(Collectors.toList()));
-                    members.add(Map.of("villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
+                    members.add(Map.of("villaId", villaId, "villaAddress", villaAddress, "residents", residents, "landlords", landlords, "ccs", ccs, "bms", bms));
                 }
             }
 
@@ -103,6 +107,7 @@ public class ChatService {
         return null;
     }
 
+    @Transactional
     public ChatRoom createChatRoom(ChatRoomRequestForm chatRoomRequestForm) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication.isAuthenticated()) {
@@ -125,9 +130,16 @@ public class ChatService {
 
                 if(invitee.getLandlords().size() > 0) {
                     TypedQuery<Member> landlordQuery = entityManager.createQuery("SELECT l FROM Landlord l JOIN l.houses h JOIN h.villa v WHERE v.id = :villaId AND h.addressDetail IN :addressDetail", Member.class);
+//                    TypedQuery<Member> landlordQuery = entityManager.createQuery("SELECT l FROM Landlord l JOIN l.houses h WHERE h.addressDetail IN :addressDetail", Member.class);
                     landlordQuery.setParameter("villaId", invitee.getVillaId());
                     landlordQuery.setParameter("addressDetail", invitee.getLandlords());
                     landlords = landlordQuery.getResultList();
+//                    landlords.stream().filter((landlord) -> ((Landlord)landlord).getHouses().stream().filter((house -> house.getVilla().getId() == invitee.getVillaId())).collect(Collectors.toList()).size() > 0);
+//                            .forEach((landlord) -> {
+//                        Landlord member = (Landlord) landlord;
+//                        member.getHouses().stream().filter((house) -> house.getVilla().getId() == invitee.getVillaId());
+//                    });
+                    Member t = landlords.get(0);
                 }
 
                 if(invitee.getCcs().size() > 0) {
@@ -137,22 +149,24 @@ public class ChatService {
                 }
 
                 if(invitee.getBms().size() > 0) {
-                    TypedQuery<Member> bmQuery = entityManager.createQuery("SELECT b FROM BuildingManager b WHERE b.id IN :managerId", Member.class);
-                    bmQuery.setParameter("managerId", invitee.getBms());
+                    TypedQuery<Member> bmQuery = entityManager.createQuery("SELECT b FROM BuildingManager b WHERE b.name IN :managerName", Member.class);
+                    bmQuery.setParameter("managerName", invitee.getBms());
                     buildingManagers = bmQuery.getResultList();
                 }
 
                 combined.addAll(residents);
                 combined.addAll(landlords);
                 combined.addAll(buildingManagers);
-                combined.add(communityCenter);
+                if(communityCenter != null) combined.add(communityCenter);
             });
 
             if(combined.size() > 0) {
                 ChatRoom chatRoom = new ChatRoom();
-                chatRoom.setName(chatRoomRequestForm.getName());
+                if(chatRoomRequestForm.getName() == "")chatRoom.setName(String.join(", ", combined.stream().map(Member::getName).collect(Collectors.toList())));
+                else chatRoom.setName(chatRoomRequestForm.getName());
                 chatRoom.setCreator(creator);
                 chatRoom.setParticipants(combined);
+                combined.forEach(member -> {member.getChatRooms().add(chatRoom);});
                 chatRoomRepository.save(chatRoom);
 //                return chatRoom;
             }
@@ -183,6 +197,24 @@ public class ChatService {
         return null;
     }
 
+    public List<ChatResponseForm> getChatMessages(Long roomId) {
+            TypedQuery<ChatMessage> query = entityManager.createQuery(
+                    "SELECT cm FROM ChatMessage cm JOIN cm.chatRoom cr WHERE cr.id = :roomId",
+                    ChatMessage.class
+            );
+            query.setParameter("roomId", roomId);
+            List<ChatMessage> chatMessages = query.getResultList();
+
+            List<ChatResponseForm> responseFormList = new ArrayList<>();
+
+            for (ChatMessage chatMessage : chatMessages) {
+                responseFormList.add(
+                        new ChatResponseForm(chatMessage)
+                );
+            }
+            return responseFormList;
+    }
+
 //    public void inviteUsers(String chatRoomId, List<String> userIds) {
 //        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
 //                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
@@ -202,15 +234,17 @@ public class ChatService {
 //        }
 //    }
 
-//    public ChatMessage sendMessage(Long chatRoomId, Long senderId, String content) {
-//        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow();
-//        Member sender = memberRepository.findById(senderId).orElseThrow();
-//        ChatMessage chatMessage = new ChatMessage();
-//        chatMessage.setContent(content);
-//        chatMessage.setChatRoom(chatRoom);
-//        chatMessage.setSender(sender);
-//        return chatRepository.save(chatMessage);
-//    }
+    @Transactional
+    public ChatMessage saveChatMessage(Long roomId, ChatRequestForm chatRequestForm) {
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow();
+        Member sender = memberRepository.findById(chatRequestForm.getSender()).orElseThrow();
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setContent(chatRequestForm.getContent());
+        chatMessage.setChatRoom(chatRoom);
+        chatMessage.setSender(sender);
+        chatRoom.getChatMessage().add(chatMessage);
+        return chatRepository.save(chatMessage);
+    }
 //
 //    public ChatRoomState getInitialState(String roomId) {
 //        Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findById(roomId);

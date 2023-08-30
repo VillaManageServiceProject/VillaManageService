@@ -20,12 +20,12 @@
 
 //////////////////////////////////////////////////////////////
 
-import React from 'react';
+import React, {useEffect} from 'react';
 // import 'react-native-reanimated';
 // import 'react-native-gesture-handler';
 // import {enableScreens} from 'react-native-screens';
 // enableScreens();
-
+import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {AuthenticationProvider} from './src/navigations/RootStackNavigations';
 
@@ -44,6 +44,14 @@ import {AuthenticationProvider} from './src/navigations/RootStackNavigations';
 // };
 
 export default function App() {
+  useEffect(() => {
+    SplashScreen.hide();
+
+    setTimeout(() => {
+      SplashScreen.hide();
+    }, 1500);
+  }, []);
+
   // return <Screens />;
   return <AuthenticationProvider />;
 }

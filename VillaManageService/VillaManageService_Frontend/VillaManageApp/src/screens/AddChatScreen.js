@@ -135,7 +135,7 @@ export const AddChatScreen = ({route}) => {
           invitees: chatRoomInvitees,
         };
       }
-
+      console.log('payload: ', payload);
       const response = await requestPOST('/chat/createRoom', payload);
 
       console.log(response);

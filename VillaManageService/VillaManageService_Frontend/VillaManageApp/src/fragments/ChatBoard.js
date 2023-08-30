@@ -204,19 +204,27 @@ export default ChatBoard = ({onClose}) => {
         <View style={styles.body}>
           <FlatList
             data={chatBoardItems}
-            renderItem={({item}) => (
+            renderItem={({item, index}) => (
               <ChatBoardItem
                 // noticeType={item.noticeType}
-                title={item.name}
+                IconName={
+                  item.participants.length > 1 ? 'account-multiple' : 'account'
+                }
+                title={
+                  item.name === '' ? item.participants.join(',') : item.name
+                }
                 text={
                   item.recentChatMessage !== null
                     ? item.recentChatMessage.content
-                    : ''
+                    : 'no message'
                 }
                 // newMessageCount={item.newMessageCount}
-                onPress={() =>
-                  navigation.navigate('Chat', {roomId: chatBoardItems.id})
-                }
+                onPress={() => {
+                  console.log('chatBoardItems.id: ', chatBoardItems);
+                  navigation.navigate('Chat', {
+                    roomInfo: chatBoardItems[index],
+                  });
+                }}
               />
             )}
             keyExtractor={(item, index) => index.toString()}
