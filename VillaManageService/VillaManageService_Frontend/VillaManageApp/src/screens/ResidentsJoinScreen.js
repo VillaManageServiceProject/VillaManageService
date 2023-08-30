@@ -41,6 +41,7 @@ export const ResidentsJoinScreen = ({route}) => {
   const [position, setPosition] = React.useState('');
   const [selectedIsContractor, setSelectedIsContractor] = useState('');
   const [submitError, setSubmitError] = useState('');
+  const [lastClick, setLastClick] = useState(0);
 
   const [userData, setUserData] = useState({
     id: 'aaa',
@@ -110,12 +111,18 @@ export const ResidentsJoinScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const userType = 'resident';
-      const response = await signup({userType: userType, userData: userData});
-      // Handle the response from the signup API
-      console.log(response);
-      if (response === 'ok') {
-        navigation.navigate('Login');
+      const now = new Date().getTime();
+      if (now - lastClick > 2000) {
+        // 300ms 내에 두 번 클릭 방지
+        setLastClick(now);
+
+        const userType = 'resident';
+        const response = await signup({userType: userType, userData: userData});
+        // Handle the response from the signup API
+        console.log(response);
+        if (response === 'ok') {
+          navigation.navigate('Login');
+        }
       }
     } catch (error) {
       if (error.response) {

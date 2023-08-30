@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import styled from 'styled-components/native';
 import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
 import IconInput from '../components/IconInput';
@@ -30,10 +30,35 @@ export const CommunityCenterJoinScreen = ({route}) => {
     password1: '',
     password2: '',
     name: '',
+    ccId: '',
     contactNumber: '',
     centerAddress: '',
     department: '',
   });
+
+  useLayoutEffect(() => {
+    console.log(addressData);
+    if (addressData && addressData.address) {
+      console.log(addressData.address);
+      setUserData(prev => ({
+        ...prev,
+        ccId:
+          addressData.bcode +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[0]
+            .padStart(4, '0') +
+          addressData.jibunAddress
+            .split(' ')
+            .reverse()[0]
+            .split('-')[1]
+            .padStart(4, '0'),
+        centerAddress: addressData.address,
+      }));
+      // addressComp.current.text = addressData.address;
+    }
+  }, [addressData]);
 
   const handleTabsChange = index => {
     setTabIndex(index);
@@ -114,13 +139,28 @@ export const CommunityCenterJoinScreen = ({route}) => {
           }
         />
         <Spacing height={10} />
-        <IconInput
-          Icon="none"
-          placeholder="주민센터 주소"
-          onChangeText={text =>
-            setUserData(prev => ({...prev, centerAddress: text}))
-          }
-        />
+        <View
+          style={{
+            width: '100%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingLeft: 15,
+          }}>
+          <Text>주민센터 주소</Text>
+          <SpecificButton
+            // ref={addressComp}
+            width={150}
+            height={40}
+            fontSize={14}
+            text={addressData === undefined ? '주소찾기' : addressData.address}
+            onPress={() =>
+              navigation.navigate('SearchAddress', {
+                parentScreenName: 'CommunityCenterJoin',
+              })
+            }
+          />
+        </View>
         <Spacing height={10} />
         <IconInput
           Icon="none"

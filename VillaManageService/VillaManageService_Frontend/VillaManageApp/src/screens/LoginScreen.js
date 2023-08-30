@@ -30,6 +30,7 @@ export const LoginScreen = ({route}) => {
 
   const {userInfo, setUserInfo, handleLogin} = useContext(UserContext);
   const [submitError, setSubmitError] = useState('');
+  const [lastClick, setLastClick] = useState(0);
 
   const [userData, setUserData] = useState({
     id: '',
@@ -38,18 +39,20 @@ export const LoginScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const response = await login({credentials: userData});
-      // Handle the response from the signup API
-      console.log(response);
+      const now = new Date().getTime();
+      if (now - lastClick > 2000) {
+        const response = await login({credentials: userData});
+        // Handle the response from the signup API
+        console.log(response);
 
-      if (response.status === 200) {
-        handleLogin();
-        setUserInfo(response.data.member);
-        navigation.goBack();
-        // navigation.reset({
-        //   index: 0,
-        //   routes: [{name: 'LoginedMap'}],
-        // });
+        if (response.status === 200) {
+          handleLogin();
+          setUserInfo(response.data.member);
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'LoginedMap'}],
+          });
+        }
       }
     } catch (error) {
       if (error.response) {
