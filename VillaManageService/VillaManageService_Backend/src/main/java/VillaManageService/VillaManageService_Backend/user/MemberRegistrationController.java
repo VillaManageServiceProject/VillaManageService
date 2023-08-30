@@ -1,6 +1,8 @@
 package VillaManageService.VillaManageService_Backend.user;
 
-import VillaManageService.VillaManageService_Backend.villa.VillaService;
+import VillaManageService.VillaManageService_Backend.building.House;
+import VillaManageService.VillaManageService_Backend.building.Villa;
+import VillaManageService.VillaManageService_Backend.building.VillaService;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -52,7 +54,7 @@ public class MemberRegistrationController {
         try {
             memberRegistrationService.createBuildingManager(buildingManagerCreateForm.getId(), buildingManagerCreateForm.getPassword1(),
                     buildingManagerCreateForm.getName(), buildingManagerCreateForm.getContactNumber(),
-                    buildingManagerCreateForm.getDepartment(), buildingManagerCreateForm.getManageAddress());
+                    buildingManagerCreateForm.getDepartment(), buildingManagerCreateForm.getManageVillaId());
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
@@ -94,7 +96,7 @@ public class MemberRegistrationController {
 
         try {
             memberRegistrationService.createCommunityCenter(communityCenterCreateForm.getId(), communityCenterCreateForm.getPassword1(),
-                    communityCenterCreateForm.getName(), communityCenterCreateForm.getContactNumber(),
+                    communityCenterCreateForm.getName(), communityCenterCreateForm.getContactNumber(),communityCenterCreateForm.getCcId(),
                     communityCenterCreateForm.getDepartment(), communityCenterCreateForm.getCenterAddress());
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
@@ -136,13 +138,17 @@ public class MemberRegistrationController {
         }
 
         try {
-            createVilla(landlordCreateForm.getVillaId(), landlordCreateForm.getOwnedAddress(), landlordCreateForm.getOwnedAddressDetail());
+//            House house = villaService.generateHouse(landlordCreateForm.getVillaId(), landlordCreateForm.getOwnedAddressDetail());
+//            Villa villa = villaService.generateVilla(landlordCreateForm.getVillaId(), landlordCreateForm.getOwnedAddress(), house);
 
-            memberRegistrationService.createLandlord(landlordCreateForm.getId(), landlordCreateForm.getPassword1(),
-                    landlordCreateForm.getName(), landlordCreateForm.getEmail(), landlordCreateForm.getGender(),
-                    landlordCreateForm.getContactNumber(), landlordCreateForm.getContactNumberSub(),
-                    landlordCreateForm.getBirth(), landlordCreateForm.getOwnedAddress(),
-                    landlordCreateForm.getOwnedAddressDetail(), landlordCreateForm.getCoOwnerId());
+//            Landlord landlord = memberRegistrationService.createLandlord(landlordCreateForm.getId(), landlordCreateForm.getPassword1(),
+//                    landlordCreateForm.getName(), landlordCreateForm.getEmail(), landlordCreateForm.getGender(),
+//                    landlordCreateForm.getContactNumber(), landlordCreateForm.getContactNumberSub(),
+//                    landlordCreateForm.getBirth(), house, landlordCreateForm.getCoOwnerId());
+
+            Landlord landlord = memberRegistrationService.createLandlord(landlordCreateForm);
+
+//            memberRegistrationService.setHouseLandlord(house, landlord);
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
@@ -183,15 +189,17 @@ public class MemberRegistrationController {
         }
 
         try {
-            createVilla(residentCreateForm.getVillaId(), residentCreateForm.getAddress(), residentCreateForm.getAddressDetail());
+//            House house = villaService.generateHouse(residentCreateForm.getVillaId(), residentCreateForm.getAddressDetail());
+//            villaService.generateVilla(residentCreateForm.getVillaId(), residentCreateForm.getAddress(), house);
+//
+//            memberRegistrationService.createResident(residentCreateForm.getId(), residentCreateForm.getPassword1(),
+//                    residentCreateForm.getName(), house, residentCreateForm.getEmail(),
+//                    residentCreateForm.getGender(), residentCreateForm.getContactNumber(),
+//                    residentCreateForm.getContactNumberSub(), residentCreateForm.getBirth(),
+//                    residentCreateForm.getRelationHousehold(), residentCreateForm.getIsContractor(),
+//                    residentCreateForm.getIsMaster(), residentCreateForm.getIsOwner());
 
-            memberRegistrationService.createResident(residentCreateForm.getId(), residentCreateForm.getPassword1(),
-                    residentCreateForm.getName(), residentCreateForm.getAddress(),
-                    residentCreateForm.getAddressDetail(), residentCreateForm.getEmail(),
-                    residentCreateForm.getGender(), residentCreateForm.getContactNumber(),
-                    residentCreateForm.getContactNumberSub(), residentCreateForm.getBirth(),
-                    residentCreateForm.getRelationHousehold(), residentCreateForm.getIsContractor(),
-                    residentCreateForm.getIsMaster(), residentCreateForm.getIsOwner());
+            Resident resident = memberRegistrationService.createResident(residentCreateForm);
         } catch (DataIntegrityViolationException e) {
             e.printStackTrace();
             bindingResult.reject("signupFailed", "이미 등록된 사용자입니다.");
@@ -205,7 +213,4 @@ public class MemberRegistrationController {
         return ResponseEntity.ok("ok");
     }
 
-    private void createVilla(String villaId, String address, int addressDetail) throws Exception {
-        villaService.generateVilla(villaId, address, addressDetail);
-    }
 }

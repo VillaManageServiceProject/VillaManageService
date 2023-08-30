@@ -1,7 +1,6 @@
 package VillaManageService.VillaManageService_Backend.board;
 
 import VillaManageService.VillaManageService_Backend.user.*;
-import VillaManageService.VillaManageService_Backend.villa.Villa;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;

@@ -19,6 +19,7 @@
     "@react-navigation/drawer": "^6.6.3",
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.4.0",
     "expo-font": "^11.4.0",
     "http-proxy-middleware": "^2.0.6",
@@ -40,7 +41,9 @@
     "react-native-web": "^0.19.6",
     "react-native-webview": "^13.2.2",
     "react-navigation": "^4.4.4",
-    "styled-components": "^6.0.3"
+    "rxjs": "^7.8.1",
+    "styled-components": "^6.0.3",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",

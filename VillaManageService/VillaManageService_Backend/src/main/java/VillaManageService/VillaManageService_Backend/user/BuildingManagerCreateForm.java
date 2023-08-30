@@ -29,5 +29,5 @@ public class BuildingManagerCreateForm {
     private String department;
 
     @NotBlank(message = "관리 건물의 주소는 필수항목입니다.")
-    private String manageAddress;
+    private String manageVillaId;
 }

@@ -1,4 +1,4 @@
-package VillaManageService.VillaManageService_Backend.villa;
+package VillaManageService.VillaManageService_Backend.building;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

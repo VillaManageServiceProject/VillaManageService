@@ -22,6 +22,9 @@ public class CommunityCenterCreateForm {
     @NotBlank(message = "이름은 필수항목입니다.")
     private String name;
 
+    @NotBlank
+    private String ccId;
+
     @NotBlank(message = "연락처는 필수항목입니다.")
     private String contactNumber;
 

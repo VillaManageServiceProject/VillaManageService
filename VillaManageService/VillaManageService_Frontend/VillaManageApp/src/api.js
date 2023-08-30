@@ -100,11 +100,11 @@ export const checkSession = async () => {
   // }
 };
 
-export const requestPOST = async (data, targetURL) => {
+export const requestPOST = async (targetURL, payload) => {
   try {
-    console.log(data);
+    console.log(payload);
     // console.log(csrfToken);
-    const response = await api.post(targetURL, data);
+    const response = await api.post(targetURL, payload);
     return response.data;
   } catch (error) {
     throw error;
