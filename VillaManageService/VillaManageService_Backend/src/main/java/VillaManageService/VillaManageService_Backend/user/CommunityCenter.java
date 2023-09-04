@@ -18,4 +18,13 @@ public class CommunityCenter extends Member{
     private String department;
 
     private String centerAddress;
+
+    @Override
+    public void updateMember(MemberRequestForm requestForm) {
+        this.setPassword(requestForm.getPassword1());
+        this.setName(requestForm.getName());
+        this.setContactNumber(((CommunityCenterCreateForm)requestForm).getContactNumber());
+        this.setDepartment(((CommunityCenterCreateForm)requestForm).getDepartment());
+        this.setFavorites(requestForm.getFavorites());
+    }
 }

@@ -93,6 +93,7 @@ export const ChatScreen = ({route}) => {
       //         // Handle real-time messages
       //     });
       // });
+      console.log('route.params.roomInfo: ', route.params.roomInfo);
       requestGetChats();
 
       // const socket = new SockJS('http://172.30.1.69:8080/chatSession');
@@ -272,7 +273,11 @@ export const ChatScreen = ({route}) => {
           <View style={styles.center}>
             {/* <Text style={styles.headerTitle}>{route.param.perticipants}</Text> */}
             <Text style={styles.headerTitle}>{route.params.roomInfo.name}</Text>
-            <Text>{route.params.roomInfo.participants.join(',')}</Text>
+            <Text>
+              {route.params.roomInfo.participants.join(',') +
+                ',' +
+                route.params.roomInfo.creator}
+            </Text>
           </View>
           <View style={styles.right}>
             <Icon
@@ -294,7 +299,7 @@ export const ChatScreen = ({route}) => {
             data={combinedChats}
             renderItem={({item}) => (
               <View style={{paddingHorizontal: 20}}>
-                {item.sender === userInfo.id ? (
+                {item.sender === userInfo.name ? (
                   // <View
                   //   style={{
                   //     flexDirection: 'column',
@@ -314,6 +319,7 @@ export const ChatScreen = ({route}) => {
                       justifyContent: 'flex-end',
                       alignItems: 'flex-end',
                       marginVertical: 5,
+                      // backgroundColor: 'red',
                     }}>
                     <Text
                       style={{
@@ -344,6 +350,7 @@ export const ChatScreen = ({route}) => {
                       justifyContent: 'flex-start',
                       alignItems: 'flex-start',
                       padding: 2,
+                      // backgroundColor: 'blue',
                     }}>
                     <Text
                       style={{

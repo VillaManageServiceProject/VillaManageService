@@ -92,6 +92,7 @@ export const LoginScreen = ({route}) => {
         />
         <Spacing height={10} />
         <IconInput
+          secureTextEntry
           IconName="key-outline"
           placeholder="비밀번호"
           onChangeText={text =>

@@ -1,4 +1,5 @@
 import React, {createContext, useState} from 'react';
+import {requestGET} from '../api';
 
 export const VillaContext = createContext({
   villaId: '',
@@ -15,6 +16,7 @@ export const VillaContext = createContext({
   setVillaHouses: () => {},
   setVillaLocalCC: () => {},
   setVillaBM: () => {},
+  updateInfo: () => {},
 });
 
 export const VillaProvider = ({children}) => {
@@ -26,13 +28,39 @@ export const VillaProvider = ({children}) => {
   const [villaLocalCC, setVillaLocalCC] = useState('');
   const [villaBM, setVillaBM] = useState('');
 
-  // const handleSetId = id => {
-  //   setVillaId(id);
-  // };
+  const setVillaState = currVilla => {
+    console.log('currVilla: ', currVilla);
+    setVillaId(currVilla.id);
+    setVillaAddress(currVilla.address);
+    setVillaDetail(JSON.parse(currVilla.villaInfo).body.items.item[0]);
+    setVillaHouses(currVilla.houses);
+    setVillaLocalCC(currVilla.localCC);
+    setVillaBM(currVilla.buildingManagers);
+  };
 
-  // const handleSetName = name => {
-  //   setVillaName(name);
-  // };
+  const updateInfo = async () => {
+    try {
+      console.log('villa update');
+      const response = await requestGET(`/villa/${villaId}`);
+
+      setVillaState(response);
+    } catch (error) {
+      if (error.response) {
+        // The server responded with a status other than 2xx
+        console.log('Response Data:', error.response.data);
+        console.log('Response Status:', error.response.status);
+        console.log('Response Headers:', error.response.headers);
+
+        setSubmitError(error.response.data);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.log('Request:', error.request);
+      } else {
+        // Something happened in setting up the request
+        console.log('Error:', error.message);
+      }
+    }
+  };
 
   return (
     <VillaContext.Provider
@@ -51,6 +79,7 @@ export const VillaProvider = ({children}) => {
         setVillaHouses,
         setVillaLocalCC,
         setVillaBM,
+        updateInfo,
       }}>
       {children}
     </VillaContext.Provider>

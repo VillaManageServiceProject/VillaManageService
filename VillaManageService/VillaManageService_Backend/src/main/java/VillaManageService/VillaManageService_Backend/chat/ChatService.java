@@ -162,7 +162,7 @@ public class ChatService {
 
             if(combined.size() > 0) {
                 ChatRoom chatRoom = new ChatRoom();
-                if(chatRoomRequestForm.getName() == "")chatRoom.setName(String.join(", ", combined.stream().map(Member::getName).collect(Collectors.toList())));
+                if(chatRoomRequestForm.getName() == "")chatRoom.setName(String.join(", ", combined.stream().map(Member::getName).collect(Collectors.toList())) + ", " + creator.getName());
                 else chatRoom.setName(chatRoomRequestForm.getName());
                 chatRoom.setCreator(creator);
                 chatRoom.setParticipants(combined);

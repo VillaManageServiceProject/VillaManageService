@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {Component} from 'react';
 import styled from 'styled-components/native';
-import {StyleSheet, View, Text} from 'react-native';
+import {StyleSheet, View, Text, TouchableWithoutFeedback} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import SearchBar from '../components/SearchBar';
 import Icon from '../components/Icon';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import NaverMap from '../components/Map';
 import ChatBoard from '../fragments/ChatBoard';
+import {UserContext} from '../contexts/UserProvider';
 
 // interface ScreenProps {
 //     title?: String;
@@ -19,6 +20,7 @@ class UnLoginedMapScreen extends React.Component {
     this.state = {
       searchQuery: '',
       reRender: false,
+      toggleGlobalTouched: false,
     };
   }
 
@@ -29,20 +31,28 @@ class UnLoginedMapScreen extends React.Component {
     this.setState({searchQuery: query});
   };
 
-  // handleGlobalTouch = (state) => {
-  //   this.setState({isTouched: state});
-  // };
+  handleScreenTouch = () => {
+    // this.textInputRef.current.blur();
+    console.log('out');
+    this.setState({toggleGlobalTouched: !this.state.toggleGlobalTouched});
+  };
 
   render() {
-    const {searchQuery, reRender} = this.state;
+    const {searchQuery, reRender, toggleGlobalTouched} = this.state;
 
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.foreground}>
+          {/* <TouchableWithoutFeedback
+            style={{zIndex: 1}}
+            onPress={this.handleScreenTouch}> */}
           <View style={styles.header}>
             <View style={styles.left} />
             <View style={styles.center}>
-              <SearchBar onSearch={this.handleSearch} />
+              <SearchBar
+                onSearch={this.handleSearch}
+                toggleGlobalTouched={toggleGlobalTouched}
+              />
             </View>
             <View style={styles.right}>
               <Icon
@@ -59,6 +69,7 @@ class UnLoginedMapScreen extends React.Component {
               />
             </View>
           </View>
+          {/* </TouchableWithoutFeedback> */}
           <View style={styles.body}></View>
         </View>
         <View style={styles.background}>
@@ -68,6 +79,7 @@ class UnLoginedMapScreen extends React.Component {
             // onPress={() => this.props.navigation.navigate('Villa')}
             nav={this.props.navigation}
             style={{flex: 1}}
+            onTouchStart={this.handleScreenTouch}
           />
         </View>
       </SafeAreaView>
@@ -76,6 +88,8 @@ class UnLoginedMapScreen extends React.Component {
 }
 
 class LoginedMapScreen extends React.Component {
+  static contextType = UserContext;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -84,12 +98,15 @@ class LoginedMapScreen extends React.Component {
       favoriteRecords: [],
       isChatListOpen: false,
       reRender: false,
+      toggleGlobalTouched: false,
     };
   }
 
   handleToggleChatList = () => {
     console.log(!this.state.isChatListOpen);
     this.setState({isChatListOpen: !this.state.isChatListOpen});
+    this.setState({isFavoriteTouched: false});
+    this.setState({toggleGlobalTouched: true});
   };
 
   handleSearch = query => {
@@ -97,6 +114,7 @@ class LoginedMapScreen extends React.Component {
     console.log(this.props.navigation.getState());
     this.setState({reRender: !this.state.reRender});
     this.setState({searchQuery: query});
+    this.setState({isFavoriteTouched: false});
   };
 
   handleTouchFavorite = text => {
@@ -113,7 +131,7 @@ class LoginedMapScreen extends React.Component {
     // }
     this.setState({
       searchQuery: item,
-      isTextInputTouched: false,
+      isFavoriteTouched: false,
     });
   };
 
@@ -123,11 +141,18 @@ class LoginedMapScreen extends React.Component {
       // console.log(storedRecords);
       // if (storedRecords) {
       // this.setState({favoriteRecords: JSON.parse(storedRecords)});
-      this.setState({favoriteRecords: ['a', 'b', 'c']});
+      this.setState({favoriteRecords: this.context.userInfo.favorites});
       // }
     } catch (error) {
       console.log('Error loading favorite records:', error);
     }
+  };
+
+  handleScreenTouch = () => {
+    // this.textInputRef.current.blur();
+    console.log('out');
+    this.setState({toggleGlobalTouched: !this.state.toggleGlobalTouched});
+    this.setState({isFavoriteTouched: false});
   };
 
   render() {
@@ -137,6 +162,7 @@ class LoginedMapScreen extends React.Component {
       favoriteRecords,
       isChatListOpen,
       reRender,
+      toggleGlobalTouched,
     } = this.state;
 
     return (
@@ -156,6 +182,7 @@ class LoginedMapScreen extends React.Component {
               <SearchBar
                 searchQuery={searchQuery}
                 onSearch={this.handleSearch}
+                toggleGlobalTouched={toggleGlobalTouched}
               />
             </View>
             <View style={styles.right}>
@@ -199,6 +226,7 @@ class LoginedMapScreen extends React.Component {
                     <Text>{item}</Text>
                   </FavoriteListComp>
                 )}
+                ListEmptyComponent={<EmptyListComponent />}
                 keyExtractor={(item, index) => index.toString()}
                 onLayout={
                   // e => console.log(e.nativeEvent.layout.height)
@@ -219,13 +247,25 @@ class LoginedMapScreen extends React.Component {
             // onPress={() => this.props.navigation.navigate('Villa')}
             nav={this.props.navigation}
             style={{flex: 1}}
+            onTouchStart={this.handleScreenTouch}
           />
-          {isChatListOpen && <ChatBoard onClose={this.handleToggleChatList} />}
+          <ChatBoard onToggle={isChatListOpen} />
+          {/* {isChatListOpen &&  */}
+          {/* <ChatBoard onClose={this.handleToggleChatList} /> */}
+          {/* } */}
         </View>
       </SafeAreaView>
     );
   }
 }
+
+const EmptyListComponent = () => {
+  return (
+    <View>
+      <Text>등록된 즐겨찾기가 없습니다.</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -247,12 +287,15 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 1,
-    // backgroundColor: "red",
+    // zIndex: 1,
+    // backgroundColor: 'red',
   },
   header: {
+    // width: '100%',
+    // height: 100,
     flexDirection: 'row',
     marginVertical: 10,
+    // backgroundColor: 'red',
   },
   center: {
     flex: 3,

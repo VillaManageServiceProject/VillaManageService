@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {VillaContext} from '../contexts/VillaProvider';
 import {StyleSheet, View, Text, ScrollView, TextInput} from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
@@ -17,9 +17,9 @@ export const VillaInfoScreen = ({route}) => {
   const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
   const [selectAllChecked, setSelectAllChecked] = useState('');
   const [selectManagerChecked, setSelectManagerChecked] = useState('');
-  const [selectCCChecked, setSelectCCChecked] = useState('');
+  const [fields, setFields] = useState([]);
 
-  const {villaDetail} = useContext(VillaContext);
+  const {villaDetail, updateInfo} = useContext(VillaContext);
 
   // const textData = Object.entries()
   //   .map(([key, value]) => `${key}: ${value}`)
@@ -27,7 +27,7 @@ export const VillaInfoScreen = ({route}) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log('villaDetail: ', villaDetail);
+      updateInfo();
 
       return () => {
         console.log('ScreenOne is unfocused');
@@ -35,21 +35,26 @@ export const VillaInfoScreen = ({route}) => {
     }, []),
   );
 
-  const fields = [
-    {title: '세대수', value: villaDetail.hhldCnt},
-    {title: '가구수', value: villaDetail.fmlyCnt},
-    {title: '지상층수', value: villaDetail.grndFlrCnt},
-    {title: '지하층수', value: villaDetail.ugrndFlrCnt},
-    {title: '호수', value: villaDetail.hoCnt},
-    {title: '사용승인일', value: villaDetail.useAprDay},
-    {title: '대지위치', value: villaDetail.platPlc},
-    {title: '시군구코드', value: villaDetail.sigunguCd},
-    {title: '법정동코드', value: villaDetail.bjdongCd},
-    {title: '번', value: villaDetail.bun},
-    {title: '지', value: villaDetail.ji},
-    {title: '건물명', value: villaDetail.bldNm},
-    {title: '건축면적', value: villaDetail.archArea},
-  ];
+  useEffect(() => {
+    console.log('villaDetail: ', villaDetail);
+    if (villaDetail) {
+      setFields([
+        {title: '세대수', value: villaDetail.hhldCnt},
+        {title: '가구수', value: villaDetail.fmlyCnt},
+        {title: '지상층수', value: villaDetail.grndFlrCnt},
+        {title: '지하층수', value: villaDetail.ugrndFlrCnt},
+        {title: '호수', value: villaDetail.hoCnt},
+        {title: '사용승인일', value: villaDetail.useAprDay},
+        {title: '대지위치', value: villaDetail.platPlc},
+        {title: '시군구코드', value: villaDetail.sigunguCd},
+        {title: '법정동코드', value: villaDetail.bjdongCd},
+        {title: '번', value: villaDetail.bun},
+        {title: '지', value: villaDetail.ji},
+        {title: '건물명', value: villaDetail.bldNm},
+        {title: '건축면적', value: villaDetail.archArea},
+      ]);
+    }
+  }, [villaDetail]);
 
   return (
     <SafeAreaView style={styles.container}>

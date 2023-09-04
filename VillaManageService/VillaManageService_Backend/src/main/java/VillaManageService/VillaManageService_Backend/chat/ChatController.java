@@ -6,16 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @AllArgsConstructor
@@ -35,9 +33,19 @@ public class ChatController {
     }
 
     @PostMapping("/chat/createRoom")
-    public ResponseEntity<ChatRoom> createChatRoom(@RequestBody ChatRoomRequestForm request) {
+    public ResponseEntity<String> createChatRoom(@RequestBody ChatRoomRequestForm request, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder("Validation failed. ");
+
+            for (FieldError error : bindingResult.getFieldErrors()) {
+                errorMessage.append(error.getDefaultMessage()).append("; ");
+            }
+
+            return ResponseEntity.badRequest().body(errorMessage.toString());
+        }
+
         ChatRoom chatRoom = chatService.createChatRoom(request);
-        return new ResponseEntity<>(chatRoom, HttpStatus.CREATED);
+        return ResponseEntity.ok("ok");
     }
 
     @GetMapping("/chat/board")

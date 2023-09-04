@@ -37,7 +37,7 @@ export const signup = async ({userType, userData}) => {
     // const csrfToken = await getCSRFToken();
     console.log('/user/signup/' + userType);
     console.log(userData);
-    const response = await api.post('/user/signup/' + userType, userData);
+    const response = await api.post('/user/signup', userData);
     // const response = await api.post('/user/signup/' + userType, userData);
 
     console.log(response);

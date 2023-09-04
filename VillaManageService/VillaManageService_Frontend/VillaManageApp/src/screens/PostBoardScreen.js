@@ -14,81 +14,6 @@ import SegmentedControl from '../components/SegmentedControl';
 import {formatDate} from '../utils/formatters';
 import {orderByImportanceAndDateDesc} from '../utils/sorters';
 
-const NoticeBoardData = [
-  {
-    noticeType: 'cc',
-    title: '공지1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'bm',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'vi',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'bm',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-  {
-    noticeType: 'common',
-    title: '게시글1',
-    text: '내용..',
-    createDate: '2023-07-21',
-  },
-];
-
 export const GeneralBoardScreen = ({route}) => {
   const navigation = useNavigation();
   const {villaId} = useContext(VillaContext);
@@ -357,7 +282,7 @@ export const SurveyBoardScreen = ({route}) => {
             renderItem={({item, index}) => (
               <NoticeBoardItem
                 title={item.title}
-                // text={item.text}
+                text={item.question}
                 createDate={formatDate(new Date(item.createdAt))}
                 onPress={() => {
                   navigation.navigate('Survey', {surveyId: item.surveyId});

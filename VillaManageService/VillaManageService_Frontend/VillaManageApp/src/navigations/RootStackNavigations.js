@@ -146,7 +146,7 @@ export const RootStackNavigations = () => {
           {/* <Stack.Screen name="villaInfo" component={VillaInfoScreen} /> */}
         </>
       )}
-      <Stack.Screen name="villaInfo" component={VillaInfoScreen} />
+      <Stack.Screen name="VillaInfo" component={VillaInfoScreen} />
     </Stack.Navigator>
   );
 };

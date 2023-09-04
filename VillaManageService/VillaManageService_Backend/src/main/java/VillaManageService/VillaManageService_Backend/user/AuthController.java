@@ -44,7 +44,12 @@ public class AuthController {
             // generate token
             final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getId());
             final String jwt = jwtTokenProvider.generateToken(userDetails);
-            final Member member = memberRepository.findById(request.getId()).get();
+            Member member = memberRepository.findById(request.getId()).get();
+
+            if(member instanceof Resident) member = (Resident)member;
+            else if(member instanceof Landlord) member = (Landlord)member;
+            else if(member instanceof CommunityCenter) member = (CommunityCenter)member;
+            else if(member instanceof BuildingManager) member = (BuildingManager)member;
 
             // response token
             return ResponseEntity.ok(new AuthenticationResponse(jwt, member));

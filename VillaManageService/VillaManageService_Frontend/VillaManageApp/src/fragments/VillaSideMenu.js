@@ -1,17 +1,18 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {UserContext} from '../contexts/UserProvider';
 import {useNavigation} from '@react-navigation/native';
 import {
   StyleSheet,
   View,
   Text,
-  Button,
-  TouchableOpacity,
+  Dimensions,
+  TouchableWithoutFeedback,
   Animated,
 } from 'react-native';
 import SideMenu from '../components/SideMenu';
 import TextButton from '../components/TextButton';
 import {logout} from '../api';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 // export const VillaSideMenu = () => {
 //   //   const progress = useDrawerProgress();
@@ -41,18 +42,34 @@ import {logout} from '../api';
 //   // );
 // };
 
-export default VillaSideMenu = ({onClose, navigationReset}) => {
+export default VillaSideMenu = ({onToggle, navigationReset}) => {
   const {navigation} = useNavigation();
   const {isLoggedIn, userInfo, handleLogout} = useContext(UserContext);
 
+  let currentAnimatedValue = 0;
   const menuAnimation = new Animated.Value(0);
+  menuAnimation.addListener(({value}) => {
+    currentAnimatedValue = value;
+  });
+
+  useEffect(() => {
+    if (onToggle) slideIn();
+    else slideOut();
+    console.log('onToggle: ', onToggle);
+  }, [onToggle]);
 
   const slideIn = () => {
     Animated.timing(menuAnimation, {
       toValue: 1,
       duration: 300,
       useNativeDriver: false,
-    }).start();
+    }).start(({finished}) => {
+      if (!finished) {
+        // 애니메이션 중간에 멈췄다면,
+        console.log('animation finished');
+        moveToDestination(currentAnimatedValue, Dimensions.get('window').width); // 현재 위치에서 300까지 다시 이동
+      }
+    });
   };
 
   const slideOut = () => {
@@ -60,7 +77,27 @@ export default VillaSideMenu = ({onClose, navigationReset}) => {
       toValue: 0,
       duration: 300,
       useNativeDriver: false,
-    }).start(onClose);
+    }).start(({finished}) => {
+      if (!finished) {
+        // 애니메이션 중간에 멈췄다면,
+        console.log('animation finished');
+        moveToDestination(currentAnimatedValue, 100); // 현재 위치에서 300까지 다시 이동
+      }
+    });
+  };
+
+  const menuTranslateX = menuAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [Dimensions.get('window').width, 100], // Adjust this range as needed to control the slide distance
+  });
+
+  const moveToDestination = (fromValue, toValue) => {
+    menuAnimation.setValue(fromValue); // 애니메이션의 현재 값을 설정
+    Animated.timing(menuAnimation, {
+      toValue: toValue,
+      duration: ((toValue - fromValue) / 300) * 1000, // 남은 거리만큼 애니메이션 시간 조절
+      useNativeDriver: false,
+    }).start();
   };
 
   const handleLogoutSubmit = async () => {
@@ -97,11 +134,6 @@ export default VillaSideMenu = ({onClose, navigationReset}) => {
     // const response = await checkSession();
   };
 
-  const menuTranslateX = menuAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [100, 0], // Adjust this range as needed to control the slide distance
-  });
-
   return (
     <Animated.View
       style={[styles.container, {transform: [{translateX: menuTranslateX}]}]}>
@@ -112,7 +144,24 @@ export default VillaSideMenu = ({onClose, navigationReset}) => {
           width: '70%',
           // backgroundColor: 'red',
         }}>
-        <View style={{flex: 1, flexDirection: 'column'}}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}>
+          <View
+            style={{
+              width: 45,
+              height: 45,
+              borderRadius: 15,
+              borderWidth: 1,
+              marginRight: 15,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderColor: '#9AA0A6',
+            }}>
+            <MaterialCommunityIcons name="account" size={25} color="black" />
+          </View>
           <View style={{flexDirection: 'column'}}>
             <Text>{userInfo.name}</Text>
             <Text>{userInfo.id}</Text>
@@ -126,7 +175,7 @@ export default VillaSideMenu = ({onClose, navigationReset}) => {
           <SideMenu
             title="빌라소개"
             IconName="infocirlceo"
-            childMenuList={{빌라정보: 'villaInfo'}}
+            childMenuList={{빌라정보: 'VillaInfo'}}
           />
           <SideMenu
             title="공용메뉴"

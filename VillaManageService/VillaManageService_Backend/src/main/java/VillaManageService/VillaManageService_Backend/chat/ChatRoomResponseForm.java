@@ -9,12 +9,14 @@ import java.util.List;
 public class ChatRoomResponseForm {
     private Long id;
     private String name;
+    private String creator;
     private List<String> participants;
     private ChatMessage recentChatMessage;
 
     public ChatRoomResponseForm(ChatRoom chatRoom) {
         this.id = chatRoom.getId();
         this.name = chatRoom.getName();
+        this.creator = chatRoom.getCreator().getName();
         this.participants = chatRoom.getParticipants().stream().map(Member::getName).toList();
         List<ChatMessage> chatMessages = chatRoom.getChatMessage();
         if(chatMessages.size() > 0) this.recentChatMessage = chatMessages.get(chatMessages.size() - 1);

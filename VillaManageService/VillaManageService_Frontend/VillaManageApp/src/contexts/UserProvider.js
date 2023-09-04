@@ -5,13 +5,14 @@ export const UserContext = createContext({
   userInfo: {},
   setIsLoggedIn: () => {},
   setUserInfo: () => {},
+  setUserType: () => {},
   handleLogin: () => {},
   handleLogout: () => {},
 });
 
 export const UserProvider = ({children}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState({name: '비회원'});
+  const [userInfo, setUserInfo] = useState({name: '비회원', role: 'ananymous'});
 
   const handleLogin = () => {
     // Your login logic here, if login is successful, set isLoggedIn to true
@@ -22,7 +23,7 @@ export const UserProvider = ({children}) => {
   const handleLogout = () => {
     // Your login logic here, if login is successful, set isLoggedIn to true
     setIsLoggedIn(false);
-    setUserInfo({name: '비회원'});
+    setUserInfo({name: '비회원', role: 'ananymous'});
   };
 
   return (

@@ -1,6 +1,7 @@
-import React, {useState, useLayoutEffect, useContext} from 'react';
+import React, {useState, useLayoutEffect, useContext, useEffect} from 'react';
 import styled from 'styled-components/native';
-import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import Modal from 'react-native-modal';
 import {VillaContext} from '../contexts/VillaProvider';
 import IconInput from '../components/IconInput';
 import {CommonButton, SpecificButton} from '../components/Button';
@@ -10,22 +11,25 @@ import SegmentedControl from '../components/SegmentedControl';
 import DatePicker from 'react-native-date-picker';
 import Postcode from '@actbase/react-daum-postcode';
 import {useNavigation} from '@react-navigation/native';
-import {SelectList} from 'react-native-dropdown-select-list';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {signup} from '../api';
+import {UserContext} from '../contexts/UserProvider';
 
 export const LandlordJoinScreen = ({route}) => {
   const navigation = useNavigation();
   const {villaId} = useContext(VillaContext);
+  const {setUserType, setUserInfo} = useContext(UserContext);
   const addressData = route?.params?.addressData;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [tabIndex, setTabIndex] = React.useState(1);
+  const [tabIndex, setTabIndex] = React.useState(0);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
-  const [isModal, setModal] = useState(false);
+  const [toggleModal, setToggleModal] = useState(false);
   const [position, setPosition] = React.useState('');
   const [submitError, setSubmitError] = useState('');
+  const [lastClick, setLastClick] = useState(0);
 
   const [userData, setUserData] = useState({
     id: '',
@@ -37,10 +41,11 @@ export const LandlordJoinScreen = ({route}) => {
     contactNumberSub: '',
     email: '',
     gender: 0,
-    birth: '1998-02-20',
+    birth: null,
     ownedAddress: '',
-    ownedAddressDetail: 0,
+    ownedAddressDetail: null,
     coOwnerId: '',
+    isMaster: false,
   });
 
   useLayoutEffect(() => {
@@ -67,6 +72,14 @@ export const LandlordJoinScreen = ({route}) => {
     }
   }, [addressData]);
 
+  useEffect(() => {
+    if (toggleModal) {
+      setTimeout(() => {
+        setToggleModal(false);
+      }, 1500);
+    }
+  }, [toggleModal]);
+
   const handleTabsChange = index => {
     setTabIndex(index);
     setUserData(prev => ({...prev, gender: index}));
@@ -83,13 +96,20 @@ export const LandlordJoinScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      console.log(userData);
-      const userType = 'landlord';
-      const response = await signup({userType: userType, userData: userData});
-      // Handle the response from the signup API
-      console.log(response);
-      if (response === 'ok') {
-        navigation.navigate('Login');
+      const now = new Date().getTime();
+      if (now - lastClick > 2000) {
+        console.log(userData);
+        const userType = 'LANDLORD';
+        // const response = await signup({userType: userType, userData: userData});
+        const response = await signup({
+          userType: userType,
+          userData: {...userData, userType: userType},
+        });
+        // Handle the response from the signup API
+        console.log(response);
+        if (response === 'ok') {
+          navigation.navigate('Login');
+        }
       }
     } catch (error) {
       if (error.response) {
@@ -126,35 +146,37 @@ export const LandlordJoinScreen = ({route}) => {
         <Spacing height={40} />
         <IconInput
           Icon="none"
-          placeholder="아이디"
+          title="아이디"
           onChangeText={text => setUserData(prev => ({...prev, id: text}))}
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
+          secureTextEntry
           Icon="none"
-          placeholder="비밀번호"
+          title="비밀번호"
           onChangeText={text =>
             setUserData(prev => ({...prev, password1: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
+          secureTextEntry
           Icon="none"
-          placeholder="비밀번호 확인"
+          title="비밀번호 확인"
           onChangeText={text =>
             setUserData(prev => ({...prev, password2: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="이름"
+          title="이름"
           onChangeText={text => setUserData(prev => ({...prev, name: text}))}
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="E-mail"
+          title="E-mail"
           onChangeText={text => setUserData(prev => ({...prev, email: text}))}
         />
         <View
@@ -163,7 +185,7 @@ export const LandlordJoinScreen = ({route}) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingLeft: 15,
+            paddingHorizontal: 10,
           }}>
           <Text>성별</Text>
           <SegmentedControl
@@ -183,7 +205,7 @@ export const LandlordJoinScreen = ({route}) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingLeft: 15,
+            paddingHorizontal: 10,
           }}>
           <Text>생년월일</Text>
           <SpecificButton
@@ -198,12 +220,17 @@ export const LandlordJoinScreen = ({route}) => {
             open={open}
             date={date}
             onConfirm={date => {
-              setDate(date);
-              setOpen(false);
-              setUserData(prev => ({
-                ...prev,
-                birth: date.toISOString().substring(0, 10),
-              }));
+              if (date > new Date()) {
+                setToggleModal(!toggleModal);
+                setOpen(false);
+              } else {
+                setDate(date);
+                setOpen(false);
+                setUserData(prev => ({
+                  ...prev,
+                  birth: date.toISOString().substring(0, 10),
+                }));
+              }
             }}
             onCancel={() => {
               setOpen(false);
@@ -215,23 +242,23 @@ export const LandlordJoinScreen = ({route}) => {
         <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="전화번호1(본인)"
+          title="전화번호1(본인)"
           onChangeText={text =>
             setUserData(prev => ({...prev, contactNumber: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="전화번호2(가족,친척 등 비상연락망)"
+          title="전화번호2(가족,친척 등 비상연락망)"
           onChangeText={text =>
             setUserData(prev => ({...prev, contactNumberSub: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="공동소유자 아이디"
+          title="공동소유자 아이디"
           onChangeText={text =>
             setUserData(prev => ({...prev, coOwnerId: text}))
           }
@@ -243,7 +270,7 @@ export const LandlordJoinScreen = ({route}) => {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingLeft: 15,
+            paddingHorizontal: 10,
           }}>
           <Text>임대지주소(동)</Text>
           <SpecificButton
@@ -258,10 +285,10 @@ export const LandlordJoinScreen = ({route}) => {
             }
           />
         </View>
-        <Spacing height={20} />
+        <Spacing height={25} />
         <IconInput
           Icon="none"
-          placeholder="상세주소(호수)"
+          title="상세주소(호수)"
           onChangeText={text =>
             setUserData(prev => ({
               ...prev,
@@ -271,7 +298,7 @@ export const LandlordJoinScreen = ({route}) => {
         />
         <Spacing height={40} />
         <Text style={{color: 'red'}}>{submitError}</Text>
-        <Spacing height={10} />
+        <Spacing height={20} />
         <CommonButton
           text="완료"
           fontSize={15}
@@ -279,6 +306,30 @@ export const LandlordJoinScreen = ({route}) => {
           onPress={handleFormSubmit}
         />
       </View>
+      {toggleModal && (
+        <View>
+          <Modal
+            isVisible={toggleModal}
+            animationIn={'fadeIn'}
+            animationOut={'fadeOut'}>
+            <View
+              style={{
+                height: 'auto',
+                padding: 30,
+                borderRadius: 10,
+                backgroundColor: 'white',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <AntDesign name="exclamationcircle" color="#FF383890" size={17} />
+              <Text style={{fontSize: 17, margin: 10}}>
+                유효하지 않은 생년월일입니다.
+              </Text>
+            </View>
+          </Modal>
+        </View>
+      )}
     </Container>
   );
 };

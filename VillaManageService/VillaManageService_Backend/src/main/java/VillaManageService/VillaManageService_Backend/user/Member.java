@@ -2,12 +2,15 @@ package VillaManageService.VillaManageService_Backend.user;
 
 //import VillaManageService.VillaManageService_Backend.board.Vote;
 import VillaManageService.VillaManageService_Backend.chat.ChatRoom;
+import VillaManageService.VillaManageService_Backend.util.ListConverter;
+import VillaManageService.VillaManageService_Backend.util.ListMapConverter;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +21,7 @@ import java.util.Set;
 @Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Member {
+public abstract class Member {
     @Id
     @Column(unique = true)
     private String id;
@@ -29,7 +32,9 @@ public class Member {
 
     private String contactNumber;
 
-    private String favorite;
+    @Convert(converter = ListConverter.class)
+    @Column(columnDefinition = "TEXT")
+    private List<String> favorites = new ArrayList<>();
 
     @ElementCollection(targetClass = MemberRole.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -44,4 +49,6 @@ public class Member {
 
 //    @OneToMany(mappedBy = "member")
 //    private List<Vote> votes;
+
+    public abstract void updateMember(MemberRequestForm requestForm);
 }

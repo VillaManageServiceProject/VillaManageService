@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
@@ -69,16 +70,7 @@ function LoadingAnimation() {
 
 export const VillaHomeScreen = ({route}) => {
   const navigation = useNavigation();
-  const {
-    villaId,
-    villaName,
-    setVillaId,
-    setVillaHouses,
-    setVillaAddress,
-    setVillaDetail,
-    setVillaLocalCC,
-    setVillaBM,
-  } = useContext(VillaContext);
+  const {villaId, villaName, updateInfo} = useContext(VillaContext);
 
   const [loading, setLoading] = useState({
     announceUI: true,
@@ -138,17 +130,21 @@ export const VillaHomeScreen = ({route}) => {
       });
       // setCalendarPeriods([]);
 
-      requestGetVillaInfo();
+      // requestGetVillaInfo();
+      updateInfo();
       requestGetAnnouncePost();
       requestGetSurveyPost();
       requestGetPeriods();
-
-      setIsMenuOpen(false);
 
       // console.log('villaName: ', villaName);
       // console.log('villaId: ', villaId);
 
       return () => {
+        // setIsMenuOpen(false);
+        // setTimeout(() => {
+        //   console.log('side menu out, ', isMenuOpen);
+        //   setIsMenuOpen(false);
+        // }, 1500);
         console.log('ScreenOne is unfocused');
       };
     }, []),
@@ -290,28 +286,28 @@ export const VillaHomeScreen = ({route}) => {
     };
   }, []);
 
-  const requestGetVillaInfo = async () => {
-    try {
-      const response = await requestGET(`/villa/${villaId}`);
+  // const requestGetVillaInfo = () => {
+  // try {
+  //   const response = await requestGET(`/villa/${villaId}`);
 
-      setVillaState(response);
-    } catch (error) {
-      if (error.response) {
-        // The server responded with a status other than 2xx
-        console.log('Response Data:', error.response.data);
-        console.log('Response Status:', error.response.status);
-        console.log('Response Headers:', error.response.headers);
+  //   setVillaState(response);
+  // } catch (error) {
+  //   if (error.response) {
+  //     // The server responded with a status other than 2xx
+  //     console.log('Response Data:', error.response.data);
+  //     console.log('Response Status:', error.response.status);
+  //     console.log('Response Headers:', error.response.headers);
 
-        setSubmitError(error.response.data);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.log('Request:', error.request);
-      } else {
-        // Something happened in setting up the request
-        console.log('Error:', error.message);
-      }
-    }
-  };
+  //     setSubmitError(error.response.data);
+  //   } else if (error.request) {
+  //     // The request was made but no response was received
+  //     console.log('Request:', error.request);
+  //   } else {
+  //     // Something happened in setting up the request
+  //     console.log('Error:', error.message);
+  //   }
+  // }
+  // };
 
   const requestGetAnnouncePost = async () => {
     try {
@@ -437,15 +433,15 @@ export const VillaHomeScreen = ({route}) => {
     // const response = await checkSession();
   };
 
-  const setVillaState = currVilla => {
-    console.log('currVilla: ', currVilla);
-    setVillaId(currVilla.id);
-    setVillaAddress(currVilla.address);
-    setVillaDetail(JSON.parse(currVilla.villaInfo).body.items.item[0]);
-    setVillaHouses(currVilla.houses);
-    setVillaLocalCC(currVilla.localCC);
-    setVillaBM(currVilla.buildingManagers);
-  };
+  // const setVillaState = currVilla => {
+  //   console.log('currVilla: ', currVilla);
+  //   setVillaId(currVilla.id);
+  //   setVillaAddress(currVilla.address);
+  //   setVillaDetail(JSON.parse(currVilla.villaInfo).body.items.item[0]);
+  //   setVillaHouses(currVilla.houses);
+  //   setVillaLocalCC(currVilla.localCC);
+  //   setVillaBM(currVilla.buildingManagers);
+  // };
 
   const selectVillaName = address => {
     const addressElements = address.split(' ');
@@ -510,6 +506,12 @@ export const VillaHomeScreen = ({route}) => {
   const onSurveyLayout = () => {
     setLoading(prevLoading => ({...prevLoading, surveyUI: false}));
   };
+
+  // const handleScreenTouch = () => {
+  //   // this.textInputRef.current.blur();
+  //   console.log('out');
+  //   setIsMenuOpen(false);
+  // };
 
   // {periods.map((period, index) => {
   //   <TouchableOpacity>
@@ -682,66 +684,67 @@ export const VillaHomeScreen = ({route}) => {
                 onPress={() => navigation.navigate('SurveyBoard')}
               />
 
-              <View
-                style={{
-                  flex: 1,
-                  borderRadius: 30,
-                  paddingVertical: 10,
-                }}>
-                <Swiper
-                  showsButtons
-                  style={styles.voteWrapper}
-                  dot={
-                    <View
-                      style={{
-                        backgroundColor: 'rgba(0,0,0,.2)',
-                        width: '10%',
-                        height: 3,
-                        borderRadius: 4,
-                        marginLeft: 3,
-                        marginRight: 3,
-                        marginTop: 3,
-                        marginBottom: 3,
-                      }}
-                    />
-                  }
-                  activeDot={
-                    <View
-                      style={{
-                        backgroundColor: '#000',
-                        width: '10%',
-                        height: 5,
-                        borderRadius: 4,
-                        marginLeft: 3,
-                        marginRight: 3,
-                        marginTop: 3,
-                        marginBottom: 3,
-                      }}
-                    />
-                  }
-                  paginationStyle={{
-                    bottom: 330,
-                    // left: null,
-                    // right: 10,
-                  }}
-                  loop>
-                  {/* <View> */}
-                  {surveyPostData.length !== 0 ? (
-                    surveyPostData.map((item, index) => (
+              {surveyPostData.length !== 0 ? (
+                <View
+                  style={{
+                    flex: 1,
+                    borderRadius: 30,
+                    paddingVertical: 10,
+                  }}>
+                  <Swiper
+                    showsButtons
+                    style={styles.voteWrapper}
+                    dot={
+                      <View
+                        style={{
+                          backgroundColor: 'rgba(0,0,0,.2)',
+                          width: '10%',
+                          height: 3,
+                          borderRadius: 4,
+                          marginLeft: 3,
+                          marginRight: 3,
+                          marginTop: 3,
+                          marginBottom: 3,
+                        }}
+                      />
+                    }
+                    activeDot={
+                      <View
+                        style={{
+                          backgroundColor: '#000',
+                          width: '10%',
+                          height: 5,
+                          borderRadius: 4,
+                          marginLeft: 3,
+                          marginRight: 3,
+                          marginTop: 3,
+                          marginBottom: 3,
+                        }}
+                      />
+                    }
+                    paginationStyle={{
+                      bottom: 330,
+                      // left: null,
+                      // right: 10,
+                    }}
+                    loop={false}>
+                    {/* <View> */}
+                    {surveyPostData.map((item, index) => (
                       <View key={index} style={styles.slide1}>
                         <Survey
                           surveyData={item}
                           setSurveyRender={setSurveyRender}
                         />
                       </View>
-                    ))
-                  ) : (
-                    <View style={{alignItems: 'center'}}>
-                      <Text>※ 설문조사가 없습니다.</Text>
-                    </View>
-                  )}
-                </Swiper>
-              </View>
+                    ))}
+                  </Swiper>
+                </View>
+              ) : (
+                <View
+                  style={{width: '100%', alignItems: 'center', padding: 20}}>
+                  <Text>※ 설문조사가 없습니다.</Text>
+                </View>
+              )}
               {/* // <View style={{width: '100%', backgroundColor: 'blue'}}>
                     //   <Text style={{backgroundColor: 'red'}}>{item.title}</Text>
                     //   <Spacing height={5} />
@@ -780,12 +783,9 @@ export const VillaHomeScreen = ({route}) => {
           </View>
         </ScrollView>
       </View>
-      {isMenuOpen && (
-        <VillaSideMenu
-          onClose={toggleSideMenu}
-          navigationReset={navigationReset}
-        />
-      )}
+      {/* <TouchableWithoutFeedback onPress={handleScreenTouch}> */}
+      <VillaSideMenu onToggle={isMenuOpen} navigationReset={navigationReset} />
+      {/* </TouchableWithoutFeedback> */}
       {isCalendarModalVisible && (
         <View>
           <Modal

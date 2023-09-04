@@ -108,8 +108,11 @@ export const GeneralScreen = ({route}) => {
         console.log('Error:', error.message);
       }
     }
-
     // const response = await checkSession();
+  };
+
+  const handlePressBack = () => {
+    navigation.goBack();
   };
 
   return (

@@ -20,4 +20,13 @@ public class BuildingManager extends Member {
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
     @JsonIdentityReference(alwaysAsId = true)
     private Villa manageVilla;
+
+    @Override
+    public void updateMember(MemberRequestForm requestForm) {
+        this.setPassword(requestForm.getPassword1());
+        this.setName(requestForm.getName());
+        this.setContactNumber(((BuildingManagerCreateForm)requestForm).getContactNumber());
+        this.setDepartment(((BuildingManagerCreateForm)requestForm).getDepartment());
+        this.setFavorites(requestForm.getFavorites());
+    }
 }

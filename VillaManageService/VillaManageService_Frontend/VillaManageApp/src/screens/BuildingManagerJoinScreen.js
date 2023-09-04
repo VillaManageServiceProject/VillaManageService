@@ -1,6 +1,6 @@
-import React, {useLayoutEffect, useState, useRef} from 'react';
+import React, {useLayoutEffect, useState, useRef, useContext} from 'react';
 import styled from 'styled-components/native';
-import {View, Text, Modal, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import IconInput from '../components/IconInput';
 import {CommonButton, SpecificButton} from '../components/Button';
 import TextButton from '../components/TextButton';
@@ -11,13 +11,15 @@ import Postcode from '@actbase/react-daum-postcode';
 import {useNavigation} from '@react-navigation/native';
 import {SelectList} from 'react-native-dropdown-select-list';
 import {signup} from '../api';
+import {UserContext} from '../contexts/UserProvider';
 
 export const BuildingManagerJoinScreen = ({route}) => {
   const navigation = useNavigation();
   const addressComp = useRef(null);
   const addressData = route?.params?.addressData;
+  const {setUserType, setUserInfo} = useContext(UserContext);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [lastClick, setLastClick] = useState(0);
   const [tabIndex, setTabIndex] = React.useState(1);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [date, setDate] = useState(new Date());
@@ -74,12 +76,19 @@ export const BuildingManagerJoinScreen = ({route}) => {
 
   const handleFormSubmit = async () => {
     try {
-      const userType = 'buildingManager';
-      const response = await signup({userType: userType, userData: userData});
-      // Handle the response from the signup API
-      console.log(response);
-      if (response === 'ok') {
-        navigation.navigate('Login');
+      const now = new Date().getTime();
+      if (now - lastClick > 2000) {
+        const userType = 'BUILDING_MANAGER';
+        // const response = await signup({userType: userType, userData: userData});
+        const response = await signup({
+          userType: userType,
+          userData: {...userData, userType: userType},
+        });
+        // Handle the response from the signup API
+        console.log(response);
+        if (response === 'ok') {
+          navigation.navigate('Login');
+        }
       }
     } catch (error) {
       if (error.response) {
@@ -117,43 +126,45 @@ export const BuildingManagerJoinScreen = ({route}) => {
         <Spacing height={40} />
         <IconInput
           Icon="none"
-          placeholder="아이디"
+          title="아이디"
           onChangeText={text => setUserData(prev => ({...prev, id: text}))}
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
+          secureTextEntry
           Icon="none"
-          placeholder="비밀번호"
+          title="비밀번호"
           onChangeText={text =>
             setUserData(prev => ({...prev, password1: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
+          secureTextEntry
           Icon="none"
-          placeholder="비밀번호 확인"
+          title="비밀번호 확인"
           onChangeText={text =>
             setUserData(prev => ({...prev, password2: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="담당자명"
+          title="담당자명"
           onChangeText={text => setUserData(prev => ({...prev, name: text}))}
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="직함(부서)"
+          title="직함(부서)"
           onChangeText={text =>
             setUserData(prev => ({...prev, department: text}))
           }
         />
-        <Spacing height={10} />
+        <Spacing height={20} />
         <IconInput
           Icon="none"
-          placeholder="전화번호"
+          title="전화번호"
           onChangeText={text =>
             setUserData(prev => ({...prev, contactNumber: text}))
           }
@@ -183,7 +194,7 @@ export const BuildingManagerJoinScreen = ({route}) => {
         </View>
         <Spacing height={40} />
         <Text style={{color: 'red'}}>{submitError}</Text>
-        <Spacing height={10} />
+        <Spacing height={20} />
         <CommonButton
           text="완료"
           fontSize={15}

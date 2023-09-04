@@ -37,4 +37,16 @@ public class Landlord extends Member{
 //    private int ownedAddressDetail;
 
     private String coOwnerId;
+
+    private Boolean isMaster;
+
+    @Override
+    public void updateMember(MemberRequestForm requestForm) {
+        this.setPassword(requestForm.getPassword1());
+        this.setName(requestForm.getName());
+        this.setContactNumber(((LandlordCreateForm)requestForm).getContactNumber());
+        this.setContactNumberSub(((LandlordCreateForm)requestForm).getContactNumberSub());
+        this.setIsMaster(((LandlordCreateForm)requestForm).getIsMaster());
+        this.setFavorites(requestForm.getFavorites());
+    }
 }

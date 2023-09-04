@@ -33,8 +33,6 @@ public class Resident extends Member{
 
     private int gender;
 
-    private String contactNumber;
-
     private String contactNumberSub;
 
     private Date birth;
@@ -46,4 +44,17 @@ public class Resident extends Member{
     private Boolean isMaster;
 
     private Boolean isOwner;
+
+    @Override
+    public void updateMember(MemberRequestForm requestForm) {
+        this.setPassword(requestForm.getPassword1());
+        this.setName(requestForm.getName());
+        this.setContactNumber(((ResidentCreateForm)requestForm).getContactNumber());
+        this.setContactNumberSub(((ResidentCreateForm)requestForm).getContactNumberSub());
+        this.setRelationHousehold(((ResidentCreateForm)requestForm).getRelationHousehold());
+        this.setIsContractor(((ResidentCreateForm)requestForm).getIsContractor());
+        this.setIsMaster(((ResidentCreateForm)requestForm).getIsMaster());
+        this.setIsOwner(((ResidentCreateForm)requestForm).getIsOwner());
+        this.setFavorites(requestForm.getFavorites());
+    }
 }

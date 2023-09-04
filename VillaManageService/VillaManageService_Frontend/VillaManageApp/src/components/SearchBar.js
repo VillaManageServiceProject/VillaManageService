@@ -5,13 +5,7 @@ import * as Animatable from 'react-native-animatable';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from './Icon';
 
-import {
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  Text,
-  FlatList,
-  Keyboard,
-} from 'react-native';
+import {TouchableOpacity, Text, View, Keyboard} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Animatable.createAnimatableComponent(
@@ -80,6 +74,7 @@ class SearchBar extends Component {
       textInputHeight: 53, // Initial height
       searchQuery: '',
       searchRecords: [],
+      // toggleGlobalTouched: this.props.toggleGlobalTouched,
     };
     this.textInputRef = React.createRef();
     // this.onPress = () => setCount(prevCount => prevCount + 1);
@@ -99,6 +94,11 @@ class SearchBar extends Component {
       );
       this.handleItemPress(this.props.searchQuery);
     }
+
+    if (prevProps.toggleGlobalTouched !== this.props.toggleGlobalTouched) {
+      this.setState({isTextInputTouched: false});
+      this.textInputRef.current.blur();
+    }
   }
 
   loadSearchRecords = async () => {
@@ -114,7 +114,8 @@ class SearchBar extends Component {
   };
 
   handleInputFocus = text => {
-    this.setState({isTextInputTouched: true});
+    console.log('touched');
+    // this.setState({isTextInputTouched: true});
     this.loadSearchRecords();
   };
 
@@ -130,6 +131,7 @@ class SearchBar extends Component {
     );
     if (this.textInputRef.current) {
       this.textInputRef.current.setNativeProps({text: item});
+      this.textInputRef.current.blur();
     }
     this.setState({
       searchQuery: item,
@@ -158,10 +160,6 @@ class SearchBar extends Component {
     }
   };
 
-  // handleScreenTouch = () => {
-  //   this.textInputRef.current.blur();
-  // };
-
   saveSearchRecords = async records => {
     try {
       const jsonRecords = JSON.stringify(records);
@@ -187,22 +185,28 @@ class SearchBar extends Component {
         touched={isTextInputTouched}
         height={textInputHeight}>
         <SearchView>
-          {/* <TouchableWithoutFeedback onPress={this.handleScreenTouch}> */}
           <SearchTextInput
             placeholder="Search Address"
             onFocus={this.handleInputFocus}
+            onPressIn={() => {
+              console.log(this.state.isTextInputTouched);
+              this.setState({
+                isTextInputTouched: !this.state.isTextInputTouched,
+              });
+            }}
             // onBlur={() => this.setState({isTextInputTouched: false})}/
             onChangeText={this.handleInputChange}
             // value={selectedRecord}
             ref={this.textInputRef}
           />
-          {/* </TouchableWithoutFeedback> */}
+
           <TouchableOpacity
             style={{justifyContent: 'center'}}
             onPress={this.handleSearch}>
             <Ionicons name="search" size={20} color="black" />
           </TouchableOpacity>
         </SearchView>
+
         {isTextInputTouched && (
           <RecentSearchList
             data={searchRecords}
@@ -218,6 +222,11 @@ class SearchBar extends Component {
                 />
                 <Text>{item}</Text>
               </RecentSearchListComp>
+            )}
+            ListEmptyComponent={() => (
+              <View>
+                <Text>최신 검색이 없습니다.</Text>
+              </View>
             )}
             keyExtractor={(item, index) => index.toString()}
             onLayout={

@@ -627,13 +627,13 @@ export const AddAnnounceScreen = ({route}) => {
   const [dateEnd, setDateEnd] = useState(new Date());
   const [isDateStartPickerOpened, setDateStartPickerOpen] = useState(false);
   const [isDateEndPickerOpened, setDateEndPickerOpen] = useState(false);
-  const [noticeChecked, setNoticeChecked] = useState('common');
+  const [noticeChecked, setNoticeChecked] = useState('important');
 
   const [postData, setPostData] = useState({
     villaId: villaId,
     title: '',
     // postDate: new Date().toISOString().substring(0, 10),
-    noticeType: 'common',
+    noticeType: 'important',
     // relatedMemberId: '',
     content: '',
     dateStart: new Date().toISOString().substring(0, 10),
@@ -742,7 +742,7 @@ export const AddAnnounceScreen = ({route}) => {
                     }}
                   />
                 </View>
-                <View
+                {/* <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -759,7 +759,7 @@ export const AddAnnounceScreen = ({route}) => {
                       setPostData(prev => ({...prev, noticeType: 'common'}));
                     }}
                   />
-                </View>
+                </View> */}
               </View>
             </View>
             <View

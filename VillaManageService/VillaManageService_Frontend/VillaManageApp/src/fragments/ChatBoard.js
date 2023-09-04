@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,23 +7,26 @@ import {
   TouchableOpacity,
   Animated,
   PanResponder,
+  Dimensions,
 } from 'react-native';
-import SideMenu from '../components/SideMenu';
+import Modal from 'react-native-modal';
 import TextButton from '../components/TextButton';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ChatBoardItem from '../components/ChatBoardItem';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {requestGET} from '../api';
 
-
-export default ChatBoard = ({onClose}) => {
+export default ChatBoard = ({onToggle}) => {
   const menuAnimation = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
+
+  const screenHeight = Dimensions.get('window').height;
 
   const [chatBoardItems, setChatBoardItems] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
+      // slideIn();
       requestGetChatBoards();
 
       return () => {
@@ -31,6 +34,14 @@ export default ChatBoard = ({onClose}) => {
       };
     }, []),
   );
+
+  useEffect(() => {
+    if (onToggle) {
+      console.log('slide in');
+      slideIn();
+    } else slideOut();
+    console.log('onToggle: ', onToggle);
+  }, [onToggle]);
 
   const requestGetChatBoards = async () => {
     try {
@@ -69,20 +80,25 @@ export default ChatBoard = ({onClose}) => {
       toValue: 0,
       duration: 300,
       useNativeDriver: true,
-    }).start(onClose);
+    }).start();
   };
 
   const menuTranslateY = menuAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [100, 0], // Adjust this range as needed to control the slide distance
+    outputRange: [screenHeight, 200], // Adjust this range as needed to control the slide distance
   });
 
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
-      onPanResponderRelease: () => {
-        // Slide down when the touch is released
-        slideOut();
+      // onPanResponderRelease: () => {
+      //   // Slide down when the touch is released
+      //   slideOut();
+      // },
+      onPanResponderMove: (_, gestureState) => {
+        if (gestureState.dy > 50) {
+          slideOut();
+        }
       },
     }),
   ).current;
@@ -91,6 +107,7 @@ export default ChatBoard = ({onClose}) => {
     <Animated.View
       {...panResponder.panHandlers}
       style={[styles.container, {transform: [{translateY: menuTranslateY}]}]}>
+      {/* <Modal  isVisible={true}> */}
       <View
         style={{
           flex: 1,
@@ -173,6 +190,7 @@ export default ChatBoard = ({onClose}) => {
         </View>
       </View>
     </Animated.View>
+    // </Modal>
   );
 };
 

@@ -29,6 +29,8 @@ import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
 import {AuthenticationProvider} from './src/navigations/RootStackNavigations';
 
+console.disableYellowBox = true;
+
 // if (__DEV__) {
 //   import('react-native-reanimated/src/ReanimatedDevTools').then(() => {});
 // }
