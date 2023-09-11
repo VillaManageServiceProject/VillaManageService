@@ -121,7 +121,7 @@ export const AnnounceScreen = ({route}) => {
           <View style={styles.left} />
 
           <View style={styles.center}>
-            <Text style={styles.headerTitle}>게시글</Text>
+            <Text style={styles.headerTitle}>공지글</Text>
           </View>
           <View style={styles.right}>
             <Icon
